@@ -1,6 +1,9 @@
 ﻿<!DOCTYPE html>
 <html lang="ml">
 <head>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#070b14">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>KOZHIKODE VISION NEWS - Card Maker</title>
@@ -10,6 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@300;400;500;600;700;800;900&family=Manjari:wght@700;900&display=swap" rel="stylesheet">
+
   <style>
     * {
       box-sizing: border-box;
@@ -730,9 +734,657 @@
     #toastMsg.show {
       opacity: 1;
     }
-  </style>
+      /* === AUTH & ADMIN CONTROL SYSTEM STYLES === */
+    body.kv-locked .app-wrapper {
+      display: none !important;
+    }
+
+    #kvAuthOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99990;
+      background: radial-gradient(circle at top, #111c33 0%, #070b14 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    #kvAuthOverlay.kv-hidden {
+      display: none !important;
+    }
+
+    .kv-auth-card {
+      width: 100%;
+      max-width: 400px;
+      background: rgba(15, 23, 42, 0.94);
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      border-radius: 20px;
+      padding: 26px 22px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+      color: #f8fafc;
+    }
+
+    .kv-auth-brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .kv-auth-logo-wrap {
+      width: 78px;
+      height: 78px;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      margin-bottom: 12px;
+    }
+    .kv-auth-logo-wrap img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .kv-auth-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 0.4px;
+    }
+    .kv-auth-sub {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 3px;
+    }
+    .kv-demo-banner {
+      background: rgba(245, 158, 11, 0.14);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: #fde68a;
+      border-radius: 10px;
+      padding: 9px 11px;
+      font-size: 11px;
+      line-height: 1.5;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+    .kv-auth-field {
+      margin-bottom: 13px;
+    }
+    .kv-auth-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 6px;
+    }
+    .kv-auth-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .kv-auth-input {
+      width: 100%;
+      background: #0b1220;
+      border: 1px solid #334155;
+      color: #ffffff;
+      border-radius: 10px;
+      padding: 11px 13px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+    .kv-auth-input:focus {
+      border-color: #38bdf8;
+    }
+    .kv-pass-toggle {
+      position: absolute;
+      right: 10px;
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 15px;
+      padding: 4px;
+    }
+    .kv-auth-error {
+      display: none;
+      background: rgba(220, 38, 38, 0.16);
+      border: 1px solid rgba(239, 68, 68, 0.55);
+      color: #fecaca;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 12px;
+      line-height: 1.45;
+      margin-bottom: 13px;
+      text-align: center;
+    }
+    .kv-auth-error.show {
+      display: block;
+    }
+    .kv-auth-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 11px;
+      padding: 13px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(220, 38, 38, 0.35);
+      transition: transform 0.15s, opacity 0.15s;
+      font-family: inherit;
+    }
+    .kv-auth-btn:active {
+      transform: scale(0.98);
+    }
+    .kv-auth-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .kv-auth-footer {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    /* Header Auth Controls Bar */
+    .kv-header-auth-bar {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .kv-user-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #f1f5f9;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .kv-role-tag {
+      background: #0284c7;
+      color: #ffffff;
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+    .kv-role-tag.admin {
+      background: #d97706;
+    }
+    .kv-hdr-btn {
+      border: none;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: inherit;
+    }
+    .kv-hdr-admin-btn {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #fbbf24;
+      border: 1px solid #f59e0b;
+    }
+    .kv-hdr-logout-btn {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fca5a5;
+    }
+    .kv-hidden {
+      display: none !important;
+    }
+
+    /* Admin Dashboard Modal */
+    #kvAdminModal {
+      position: fixed;
+      inset: 0;
+      z-index: 99995;
+      background: rgba(2, 6, 23, 0.86);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+    }
+    #kvAdminModal.kv-hidden {
+      display: none !important;
+    }
+    .kv-admin-dialog {
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      background: #0f172a;
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75);
+      color: #f8fafc;
+    }
+    .kv-admin-header {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      padding: 14px 18px;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .kv-admin-header h3 {
+      margin: 0;
+      font-size: 15px;
+      color: #fbbf24;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .kv-admin-close {
+      background: #334155;
+      color: #ffffff;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .kv-admin-body {
+      padding: 16px 18px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .kv-admin-section {
+      background: rgba(30, 41, 59, 0.55);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .kv-admin-sec-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #38bdf8;
+      margin: 0 0 11px 0;
+    }
+    .kv-admin-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 520px) {
+      .kv-admin-grid {
+        grid-template-columns: 1fr;
+      }
+      .app-header {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .kv-header-auth-bar {
+        width: 100%;
+        justify-content: space-between;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 8px;
+        margin-top: 4px;
+      }
+    }
+    .kv-admin-input {
+      width: 100%;
+      background: #0b1220;
+      border: 1px solid #334155;
+      color: #ffffff;
+      border-radius: 8px;
+      padding: 9px 11px;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+    }
+    .kv-admin-input:focus {
+      border-color: #38bdf8;
+    }
+    .kv-admin-create-btn {
+      margin-top: 10px;
+      width: 100%;
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #ffffff;
+      border: none;
+      border-radius: 9px;
+      padding: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .kv-admin-status-msg {
+      margin-top: 8px;
+      font-size: 12px;
+      text-align: center;
+      display: none;
+      padding: 7px 10px;
+      border-radius: 8px;
+    }
+    .kv-admin-status-msg.ok {
+      display: block;
+      background: rgba(16, 185, 129, 0.16);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #6ee7b7;
+    }
+    .kv-admin-status-msg.err {
+      display: block;
+      background: rgba(239, 68, 68, 0.16);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+    }
+    .kv-user-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .kv-user-row {
+      background: #0b1220;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .kv-user-row.blocked {
+      border-color: rgba(239, 68, 68, 0.5);
+      background: rgba(127, 29, 29, 0.15);
+    }
+    .kv-user-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .kv-user-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .kv-user-sub {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .kv-status-pill {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+    }
+    .kv-status-pill.active {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    .kv-status-pill.blocked {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.5);
+    }
+    .kv-user-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .kv-act-btn {
+      border: none;
+      border-radius: 7px;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .kv-act-block {
+      background: #dc2626;
+      color: #ffffff;
+    }
+    .kv-act-unblock {
+      background: #059669;
+      color: #ffffff;
+    }
+    .kv-act-delete {
+      background: #334155;
+      color: #fca5a5;
+      border: 1px solid rgba(248, 113, 113, 0.4);
+    }
+  
+    .kv-quick-user-card {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #e2e8f0;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.18s ease;
+      font-family: inherit;
+    }
+    .kv-quick-user-card:hover {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: #38bdf8;
+      transform: translateY(-1px);
+    }
+    .kv-quick-user-card.admin {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: rgba(245, 158, 11, 0.4);
+      color: #fbbf24;
+    }
+    .kv-quick-user-card.admin:hover {
+      background: rgba(245, 158, 11, 0.28);
+      border-color: #f59e0b;
+    }
+    .kv-quick-user-card.is-new {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.16);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.35);
+    }
+    .kv-quick-user-card.selected {
+      border-color: #38bdf8;
+      background: rgba(2, 132, 199, 0.4);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+      color: #ffffff;
+    }
+    .kv-user-row.is-new {
+      border-color: rgba(16, 185, 129, 0.6);
+      background: rgba(6, 78, 59, 0.2);
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
+    }
+</style>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <!-- Firebase Compat SDKs (Auth + Firestore) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </head>
-<body>
+<body class="kv-locked">
+  <!-- === SECURE LOGIN OVERLAY === -->
+  <div id="kvAuthOverlay">
+    <div class="kv-auth-card">
+      <div class="kv-auth-brand">
+        <div class="kv-auth-logo-wrap">
+          <img id="kvAuthLogoImg" alt="Kozhikode Vision">
+        </div>
+        <div class="kv-auth-title">KOZHIKODE VISION NEWS</div>
+        <div class="kv-auth-sub">Official Staff &amp; Admin Login • കാർഡ് സ്റ്റുഡിയോ</div>
+      </div>
+
+      <div id="kvDemoBanner" class="kv-demo-banner kv-hidden" style="display:none!important;">
+        ⚠️ <b>Staff &amp; Admin Test Mode</b><br>
+        👑 Admin: <b>admin</b> (Pass: <b>123456</b>) &nbsp;|&nbsp; 👤 Staff: <b>reporter1</b> (Pass: <b>1234</b>)
+      </div>
+
+      <div id="kvAuthError" class="kv-auth-error"></div>
+
+      <form id="kvAuthForm" autocomplete="off">
+        <div class="kv-auth-field">
+          <label for="kvAuthUsername">യൂസർനെയിം (Username):</label>
+          <input id="kvAuthUsername" type="text" class="kv-auth-input" placeholder="ഉദാ: admin അല്ലെങ്കിൽ reporter1" required autofocus>
+        </div>
+
+        <div class="kv-auth-field">
+          <label for="kvAuthPassword">പാസ്‌വേഡ് (Password):</label>
+          <div class="kv-auth-input-wrap">
+            <input id="kvAuthPassword" type="password" class="kv-auth-input" placeholder="••••••" required style="padding-right:38px;">
+            <button id="kvTogglePass" type="button" class="kv-pass-toggle" title="Show/Hide Password">👁️</button>
+          </div>
+        </div>
+
+        <button id="kvBtnLogin" type="submit" class="kv-auth-btn">🔐 ലോഗിൻ ചെയ്യുക (Login)</button>
+      </form>
+
+      <div class="kv-auth-footer">
+        🔒 കോഴിക്കോട് വിഷൻ അഡ്മിൻ അംഗീകരിച്ച സ്റ്റാഫുകൾക്ക് മാത്രം പ്രവേശനം
+      </div>
+    </div>
+  </div>
+
+  <!-- === ADMIN USER MANAGEMENT MODAL (ADMIN ONLY) === -->
+  <div id="kvAdminModal" class="kv-hidden">
+    <div class="kv-admin-dialog">
+      <div class="kv-admin-header">
+        <h3>👑 അഡ്മിൻ യൂസർ കൺട്രോൾ <span style="background:#0284c7;color:#fff;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;">v6.3</span></h3>
+        <button id="kvBtnCloseAdmin" type="button" class="kv-admin-close">✕</button>
+      </div>
+      <div class="kv-admin-body">
+        <div id="kvAdminModeBadge" style="font-size:11px; color:#94a3b8; text-align:center;"></div>
+
+        <!-- Add New User Form -->
+                <!-- Online Cloud Database (Google Firebase Firestore) Section -->
+        <div class="kv-admin-section" style="background:rgba(2,132,199,0.08);border:1px solid rgba(56,189,248,0.3);border-radius:10px;padding:12px;margin-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div style="font-weight:700;color:#38bdf8;font-size:12px;display:flex;align-items:center;gap:6px;">
+              <span>☁️ ഓൺലൈൻ ക്ലൗഡ് ഡാറ്റാബേസ് (Firebase Sync)</span>
+            </div>
+            <span id="kvCloudStatusBadge" class="kv-status-pill" style="background:#475569;color:#fff;font-size:10px;padding:3px 8px;">🟡 ലോക്കൽ മോഡ് (Local Only)</span>
+          </div>
+
+          <div style="font-size:11px;color:#cbd5e1;line-height:1.4;margin-bottom:8px;">
+            എല്ലാ റിപ്പോർട്ടർമാരുടെയും ഫോണുകളിൽ യൂസർമാർ തത്സമയം സിങ്ക് ആകാൻ നിങ്ങളുടെ സൗജന്യ Firebase Config ഇവിടെ നൽകാം.
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <button id="kvBtnToggleCloudConfig" type="button" class="btn-tactile" style="font-size:11px;padding:5px 12px;background:#0284c7;color:#fff;border-radius:6px;border:none;cursor:pointer;">
+              ⚙️ Firebase Config നൽകുക / മാറ്റുക
+            </button>
+            <button id="kvBtnSyncDefaultsToCloud" type="button" class="btn-tactile" style="font-size:11px;padding:5px 12px;background:#059669;color:#fff;border-radius:6px;border:none;cursor:pointer;">
+              🚀 യൂസർമാരെ ക്ലൗഡിലേക്ക് സിങ്ക് ചെയ്യുക
+            </button>
+          </div>
+
+          <!-- Collapsible Firebase Config Box -->
+          <div id="kvCloudConfigBox" class="kv-hidden" style="margin-top:10px;padding-top:10px;border-top:1px dashed rgba(255,255,255,0.12);">
+            <label style="font-size:11px;color:#cbd5e1;display:block;margin-bottom:4px;">
+              Firebase Console ➔ Project Settings ➔ Web App-ൽ നിന്നുള്ള Config കോഡ് ഇവിടെ പേസ്റ്റ് ചെയ്യുക:
+            </label>
+            <textarea id="kvTxtFirebaseConfig" rows="6" style="width:100%;font-family:monospace;font-size:11px;background:#0b1329;color:#38bdf8;border:1px solid #334155;border-radius:6px;padding:8px;resize:vertical;" placeholder='const firebaseConfig = {
+  apiKey: "AIzaSyBnkBPGoVZS4UO417eQrxr94kXJTLzm2Bo",
+  authDomain: "kozhikode-vision-news.firebaseapp.com",
+  projectId: "kozhikode-vision-news",
+  storageBucket: "kozhikode-vision-news.firebasestorage.app",
+  messagingSenderId: "822240406412",
+  appId: "1:822240406412:web:2407061f774c5febfc84a9"
+};'></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px;">
+              <button id="kvBtnSaveFirebaseConfig" type="button" class="btn-tactile" style="font-size:11px;font-weight:700;padding:6px 14px;background:#10b981;color:#fff;border-radius:6px;border:none;cursor:pointer;">
+                💾 സേവ് &amp; കണക്റ്റ് ചെയ്യുക (Save &amp; Connect)
+              </button>
+              <button id="kvBtnClearFirebaseConfig" type="button" class="btn-tactile" style="font-size:11px;padding:6px 12px;background:#ef4444;color:#fff;border-radius:6px;border:none;cursor:pointer;">
+                🗑️ റീസെറ്റ് (Reset to Local)
+              </button>
+            </div>
+            <div id="kvCloudConfigHelp" style="font-size:10px;color:#94a3b8;margin-top:6px;line-height:1.4;">
+              💡 <b>സൗജന്യ Firebase ഉണ്ടാക്കാൻ:</b> <a href="https://console.firebase.google.com" target="_blank" style="color:#38bdf8;text-decoration:underline;">console.firebase.google.com</a> തുറക്കുക ➔ <i>Add Project</i> ➔ <i>Firestore Database</i> (Start in Test mode) ➔ <i>Project Settings</i>-ൽ Web App ഉണ്ടാക്കി ആ കോഡ് ഇവിടെ ഒട്ടിക്കുക.
+            </div>
+          </div>
+        </div>
+
+        <div class="kv-admin-section">
+          <div class="kv-admin-sec-title">➕ പുതിയ യൂസറെ ചേർക്കുക (Add Staff / User)</div>
+          <div id="kvAdminAddFormBox">
+            <div class="kv-admin-grid">
+              <div>
+                <label style="font-size:11px;color:#cbd5e1;display:block;margin-bottom:4px;">1. പേര് (Full Name)</label>
+                <input id="kvNewName" type="text" class="kv-admin-input" placeholder="ഉദാ: അരുൺ (റിപ്പോർട്ടർ)">
+              </div>
+              <div>
+                <label style="font-size:11px;color:#cbd5e1;display:block;margin-bottom:4px;">2. യൂസർനെയിം (Username - Optional)</label>
+                <input id="kvNewUser" type="text" class="kv-admin-input" placeholder="ഉദാ: arun">
+              </div>
+              <div>
+                <label style="font-size:11px;color:#cbd5e1;display:block;margin-bottom:4px;">3. പാസ്‌വേഡ് (Password)</label>
+                <input id="kvNewPass" type="text" class="kv-admin-input" placeholder="ഉദാ: 1234">
+              </div>
+              <div>
+                <label style="font-size:11px;color:#cbd5e1;display:block;margin-bottom:4px;">4. റോൾ (Role)</label>
+                <select id="kvNewRole" class="kv-admin-input">
+                  <option value="user">Staff User (കാർഡ് ഉണ്ടാക്കാൻ മാത്രം)</option>
+                  <option value="admin">Admin (ഫുൾ കൺട്രോൾ)</option>
+                </select>
+              </div>
+            </div>
+            <button id="kvBtnAddUser" type="button" class="kv-admin-create-btn" style="cursor:pointer;">➕ പുതിയ യൂസർ അക്കൗണ്ട് ഉണ്ടാക്കുക (Add User)</button>
+          </div>
+          <div id="kvAdminStatusMsg" class="kv-admin-status-msg"></div>
+        </div>
+
+                <!-- Deleted Users / Recycle Bin (Restore Any Deleted User) -->
+        <div id="kvDeletedUsersSection" class="kv-admin-section kv-hidden" style="border-top:1px dashed rgba(248,113,113,0.3);padding-top:12px;margin-top:14px;">
+          <div class="kv-admin-sec-title" style="color:#f87171;font-size:12px;display:flex;justify-content:space-between;align-items:center;">
+            <span>♻️ നീക്കം ചെയ്ത യൂസർമാർ (Recycle Bin - Restore Any Time)</span>
+            <span id="kvDeletedCountBadge" style="font-size:10px;color:#fca5a5;">0 deleted</span>
+          </div>
+          <div id="kvDeletedUsersListContainer" class="kv-user-list"></div>
+        </div>
+
+        <!-- Registered Users List -->
+        <div class="kv-admin-section">
+          <div class="kv-admin-sec-title" style="display:flex;justify-content:space-between;align-items:center;">
+            <span>👥 യൂസർ ലിസ്റ്റ് (Manage Users)</span>
+            <span id="kvUserCountBadge" style="font-size:11px;color:#94a3b8;">0 users</span>
+          </div>
+          <div id="kvUsersListContainer" class="kv-user-list">
+            <div style="text-align:center;color:#94a3b8;font-size:12px;padding:12px;">ലോഡ് ചെയ്യുന്നു...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="app-wrapper">
 
@@ -745,6 +1397,14 @@
         <span class="brand-title-top">KOZHIKODE VISION NEWS</span>
         <span class="brand-sub-title">Official News &amp; Obituary</span>
         <span class="brand-main-title">Card Maker</span>
+      </div>
+          <div id="kvHeaderAuthBar" class="kv-header-auth-bar kv-hidden">
+        <div class="kv-user-chip">
+          <span id="kvCurrentUserName">User</span>
+          <span id="kvCurrentUserRole" class="kv-role-tag">STAFF</span>
+        </div>
+        <button id="kvBtnOpenAdmin" type="button" class="kv-hdr-btn kv-hdr-admin-btn kv-hidden">👑 അഡ്മിൻ</button>
+        <button id="kvBtnLogout" type="button" class="kv-hdr-btn kv-hdr-logout-btn">🚪 ലോഗൗട്ട്</button>
       </div>
     </header>
 
@@ -960,8 +1620,11 @@
 
               <!-- Summary -->
               <div class="form-group">
-                <label class="form-label">വിവരണം (Subline / Summary):</label>
-                <textarea id="txtSummary" class="form-textarea" rows="2">മന്ത്രി മുഹമ്മദ് റിയാസ് ഉദ്ഘാടനം ചെയ്തു; ആദ്യഘട്ടത്തിൽ 10 കോടിയുടെ സമഗ്ര വികസനം നടപ്പാക്കും.</textarea>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                  <label class="form-label" style="margin-bottom:0;">വിവരണം (Subline / Summary):</label>
+                  <span style="font-size:10px;color:#38bdf8;font-weight:600;">↵ Enter അടിച്ചാൽ അടുത്ത വരി (Next Line)</span>
+                </div>
+                <textarea id="txtSummary" class="form-textarea" rows="4" placeholder="വിവരണത്തിന്റെ വരികൾ ഇവിടെ ടൈപ്പ് ചെയ്യുക. അടുത്ത വരിയിലേക്ക് മാറാൻ Enter കീ അമർത്താം (Enter for Next Line)...">മന്ത്രി മുഹമ്മദ് റിയാസ് ഉദ്ഘാടനം ചെയ്തു; ആദ്യഘട്ടത്തിൽ 10 കോടിയുടെ സമഗ്ര വികസനം നടപ്പാക്കും.</textarea>
               </div>
 
               <!-- Reporter -->
@@ -1055,12 +1718,60 @@
                 <input id="summaryYRange" type="range" min="-120" max="120" step="2" value="0">
               </div>
 
+              <!-- Line Space (Line Height) Slider -->
+              <div class="slider-item">
+                <div class="slider-head">
+                  <span>↕ വരികൾ തമ്മിലുള്ള അകലം (Line Space):</span>
+                  <span id="summaryLineHeightVal" class="val">1.35x</span>
+                </div>
+                <input id="summaryLineHeightRange" type="range" min="1.0" max="2.3" step="0.05" value="1.35">
+              </div>
+
+              <!-- Max Lines Allowed Slider -->
+              <div class="slider-item">
+                <div class="slider-head">
+                  <span>≡ പരമാവധി വരികൾ (Max Lines):</span>
+                  <span id="summaryMaxLinesVal" class="val">4 വരികൾ</span>
+                </div>
+                <input id="summaryMaxLinesRange" type="range" min="1" max="6" step="1" value="4">
+              </div>
+
+              <!-- Summary X Position (Left/Right) -->
+              <div class="slider-item">
+                <div class="slider-head">
+                  <span>↔ വിവരണം ഇടത്/വലത് (Summary X):</span>
+                  <span id="summaryXVal" class="val">0px</span>
+                </div>
+                <input id="summaryXRange" type="range" min="-100" max="100" step="2" value="0">
+              </div>
+
               <div class="form-group">
-                <label class="form-label">വാർത്ത ബാക്ക്ഗ്രൗണ്ട് ശൈലി:</label>
-                <div class="pills-wrap">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                  <label class="form-label" style="margin-bottom:0;">വാർത്ത ബാക്ക്ഗ്രൗണ്ട് ശൈലി / നിറം (Background Color):</label>
+                </div>
+                <div class="pills-wrap" style="margin-bottom:8px;">
                   <button id="btnStyleGrad" type="button" class="btn-tactile pill-btn active">ഡാർക്ക് ഗ്രേഡിയന്റ്</button>
                   <button id="btnStyleRed" type="button" class="btn-tactile pill-btn">റെഡ് അക്സന്റ്</button>
                   <button id="btnStyleSolid" type="button" class="btn-tactile pill-btn">ഫുൾ ഡാർക്ക്</button>
+                  <button id="btnStyleCustom" type="button" class="btn-tactile pill-btn">🎨 കസ്റ്റം കളർ</button>
+                </div>
+
+                <!-- Color Picker & News Category Palette -->
+                <div id="customColorPickerRow" style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);flex-wrap:wrap;">
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <label for="newsBgColorPicker" style="font-size:11px;color:#cbd5e1;cursor:pointer;font-weight:600;">🎨 കളർ പിക്കർ:</label>
+                    <input id="newsBgColorPicker" type="color" value="#1e3a8a" style="width:38px;height:30px;padding:0;border:1px solid #64748b;border-radius:6px;cursor:pointer;background:transparent;">
+                  </div>
+                  <!-- Quick News Color Swatches -->
+                  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                    <span style="font-size:10px;color:#94a3b8;">റെഡി നിറങ്ങൾ:</span>
+                    <button type="button" class="news-color-swatch" data-color="#1e3a8a" title="നേവി ബ്ലൂ (General / Local News)" style="background:#1e3a8a;width:24px;height:24px;border-radius:50%;border:2px solid #fff;cursor:pointer;box-shadow:0 0 4px rgba(0,0,0,0.5);"></button>
+                    <button type="button" class="news-color-swatch" data-color="#991b1b" title="ഡീപ് റെഡ് (Breaking / Crime / Alert)" style="background:#991b1b;width:24px;height:24px;border-radius:50%;border:2px solid #fff;cursor:pointer;box-shadow:0 0 4px rgba(0,0,0,0.5);"></button>
+                    <button type="button" class="news-color-swatch" data-color="#065f46" title="ഡാർക്ക് ഗ്രീൻ (Sports / Agri / Environment)" style="background:#065f46;width:24px;height:24px;border-radius:50%;border:2px solid #fff;cursor:pointer;box-shadow:0 0 4px rgba(0,0,0,0.5);"></button>
+                    <button type="button" class="news-color-swatch" data-color="#581c87" title="റോയൽ പർപ്പിൾ (Special / Entertainment)" style="background:#581c87;width:24px;height:24px;border-radius:50%;border:2px solid #fff;cursor:pointer;box-shadow:0 0 4px rgba(0,0,0,0.5);"></button>
+                    <button type="button" class="news-color-swatch" data-color="#854d0e" title="ഡാർക്ക് ഗോൾഡ് (Celebration / Award)" style="background:#854d0e;width:24px;height:24px;border-radius:50%;border:2px solid #fff;cursor:pointer;box-shadow:0 0 4px rgba(0,0,0,0.5);"></button>
+                    <button type="button" class="news-color-swatch" data-color="#0f172a" title="സ്ലേറ്റ് ഡാർക്ക് (Neutral Official)" style="background:#0f172a;width:24px;height:24px;border-radius:50%;border:2px solid #fff;cursor:pointer;box-shadow:0 0 4px rgba(0,0,0,0.5);"></button>
+                  </div>
                 </div>
               </div>
 
@@ -1387,7 +2098,11 @@
     let headlineOffsetX = 0;
     let headlineOffsetY = 0;
     let summaryOffsetY = 0;
-    let overlayStyle = 'gradient'; // 'gradient', 'red', 'solid'
+    let summaryOffsetX = 0;
+    let summaryLineHeightMult = 1.35;
+    let summaryMaxLines = 4;
+    let overlayStyle = 'gradient';
+    let customNewsColor = '#1e3a8a'; // 'gradient', 'red', 'solid'
 
     // Obituary state
     let obitPhotoShape = 'round'; // 'round' (circle/oval) or 'rectangle'
@@ -2003,6 +2718,36 @@
       renderCard();
     });
 
+    const summaryLineHeightRange = document.getElementById('summaryLineHeightRange');
+    const summaryLineHeightVal = document.getElementById('summaryLineHeightVal');
+    if (summaryLineHeightRange) {
+      summaryLineHeightRange.addEventListener('input', (e) => {
+        summaryLineHeightMult = parseFloat(e.target.value);
+        if (summaryLineHeightVal) summaryLineHeightVal.textContent = summaryLineHeightMult.toFixed(2) + 'x';
+        renderCard();
+      });
+    }
+
+    const summaryMaxLinesRange = document.getElementById('summaryMaxLinesRange');
+    const summaryMaxLinesVal = document.getElementById('summaryMaxLinesVal');
+    if (summaryMaxLinesRange) {
+      summaryMaxLinesRange.addEventListener('input', (e) => {
+        summaryMaxLines = parseInt(e.target.value, 10);
+        if (summaryMaxLinesVal) summaryMaxLinesVal.textContent = summaryMaxLines + ' വരികൾ';
+        renderCard();
+      });
+    }
+
+    const summaryXRange = document.getElementById('summaryXRange');
+    const summaryXVal = document.getElementById('summaryXVal');
+    if (summaryXRange) {
+      summaryXRange.addEventListener('input', (e) => {
+        summaryOffsetX = parseInt(e.target.value, 10);
+        if (summaryXVal) summaryXVal.textContent = summaryOffsetX + 'px';
+        renderCard();
+      });
+    }
+
     document.getElementById('btnFontIncr').addEventListener('click', () => {
       headlineFontSize = Math.min(84, headlineFontSize + 4);
       headlineSizeRange.value = headlineFontSize;
@@ -2149,24 +2894,48 @@
     const btnStyleGrad = document.getElementById('btnStyleGrad');
     const btnStyleRed = document.getElementById('btnStyleRed');
     const btnStyleSolid = document.getElementById('btnStyleSolid');
+    const btnStyleCustom = document.getElementById('btnStyleCustom');
+    const newsBgColorPicker = document.getElementById('newsBgColorPicker');
 
-    btnStyleGrad.addEventListener('click', () => {
-      overlayStyle = 'gradient';
-      [btnStyleGrad, btnStyleRed, btnStyleSolid].forEach(b => b.classList.remove('active'));
-      btnStyleGrad.classList.add('active');
+    function setOverlayStyle(style) {
+      overlayStyle = style;
+      const allBtns = [btnStyleGrad, btnStyleRed, btnStyleSolid, btnStyleCustom];
+      allBtns.forEach(b => { if (b) b.classList.remove('active'); });
+
+      if (style === 'gradient' && btnStyleGrad) btnStyleGrad.classList.add('active');
+      if (style === 'red' && btnStyleRed) btnStyleRed.classList.add('active');
+      if (style === 'solid' && btnStyleSolid) btnStyleSolid.classList.add('active');
+      if (style === 'custom' && btnStyleCustom) btnStyleCustom.classList.add('active');
       renderCard();
-    });
-    btnStyleRed.addEventListener('click', () => {
-      overlayStyle = 'red';
-      [btnStyleGrad, btnStyleRed, btnStyleSolid].forEach(b => b.classList.remove('active'));
-      btnStyleRed.classList.add('active');
-      renderCard();
-    });
-    btnStyleSolid.addEventListener('click', () => {
-      overlayStyle = 'solid';
-      [btnStyleGrad, btnStyleRed, btnStyleSolid].forEach(b => b.classList.remove('active'));
-      btnStyleSolid.classList.add('active');
-      renderCard();
+    }
+
+    if (btnStyleGrad) btnStyleGrad.addEventListener('click', () => setOverlayStyle('gradient'));
+    if (btnStyleRed) btnStyleRed.addEventListener('click', () => setOverlayStyle('red'));
+    if (btnStyleSolid) btnStyleSolid.addEventListener('click', () => setOverlayStyle('solid'));
+
+    function applyCustomNewsColor(col) {
+      customNewsColor = col;
+      if (newsBgColorPicker) newsBgColorPicker.value = col;
+      setOverlayStyle('custom');
+    }
+
+    if (btnStyleCustom) {
+      btnStyleCustom.addEventListener('click', () => {
+        applyCustomNewsColor(newsBgColorPicker ? newsBgColorPicker.value : '#1e3a8a');
+      });
+    }
+
+    if (newsBgColorPicker) {
+      newsBgColorPicker.addEventListener('input', (e) => {
+        applyCustomNewsColor(e.target.value);
+      });
+    }
+
+    document.querySelectorAll('.news-color-swatch').forEach(swatch => {
+      swatch.addEventListener('click', () => {
+        const col = swatch.getAttribute('data-color');
+        if (col) applyCustomNewsColor(col);
+      });
     });
 
     document.getElementById('btnTextUp').addEventListener('click', () => {
@@ -2193,6 +2962,15 @@
       if (headXVal) headXVal.textContent = '0px';
       summaryYRange.value = 0;
       summaryYVal.textContent = '0px';
+      summaryLineHeightMult = 1.35;
+      if (document.getElementById('summaryLineHeightRange')) document.getElementById('summaryLineHeightRange').value = 1.35;
+      if (document.getElementById('summaryLineHeightVal')) document.getElementById('summaryLineHeightVal').textContent = '1.35x';
+      summaryMaxLines = 4;
+      if (document.getElementById('summaryMaxLinesRange')) document.getElementById('summaryMaxLinesRange').value = 4;
+      if (document.getElementById('summaryMaxLinesVal')) document.getElementById('summaryMaxLinesVal').textContent = '4 വരികൾ';
+      summaryOffsetX = 0;
+      if (document.getElementById('summaryXRange')) document.getElementById('summaryXRange').value = 0;
+      if (document.getElementById('summaryXVal')) document.getElementById('summaryXVal').textContent = '0px';
       renderCard();
     });
 
@@ -2365,8 +3143,8 @@
         const pngFilename = baseName + '.png';
         const jpgFilename = baseName + '.jpg';
 
-        // High quality JPEG (fits safely under Chrome 2MB URL limit and loads fast)
-        const jpgDataUrl = canvas.toDataURL('image/jpeg', 0.94);
+        // High quality JPEG
+        const jpgDataUrl = canvas.toDataURL('image/jpeg', 0.95);
 
         // 1. Android App Native Bridge Check (When running inside the APK)
         if (window.AndroidApp && typeof window.AndroidApp.saveImage === 'function') {
@@ -2375,49 +3153,30 @@
           return;
         }
 
-        // 2. Browser Anchor Download using Blob (Most reliable on desktop Chrome/Edge/Firefox)
-        let downloadedViaBlob = false;
-        if (canvas.toBlob) {
-          try {
-            canvas.toBlob(function(blob) {
-              if (blob) {
-                const blobUrl = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = blobUrl;
-                a.download = jpgFilename;
-                document.body.appendChild(a);
-                a.click();
-                downloadedViaBlob = true;
-                setTimeout(function() {
-                  document.body.removeChild(a);
-                  URL.revokeObjectURL(blobUrl);
-                }, 2000);
-              }
-            }, 'image/jpeg', 0.94);
-          } catch(e) {
-            console.warn('Blob download error:', e);
-          }
-        }
-
-        // 3. Browser Anchor Download using Data URL (~280KB)
+        // 2. Bulletproof Synchronous Blob Download (Works 100% in Chrome, Edge, Firefox, Mobile)
         try {
-          const aJpg = document.createElement('a');
-          aJpg.style.display = 'none';
-          aJpg.href = jpgDataUrl;
-          aJpg.download = jpgFilename;
-          document.body.appendChild(aJpg);
-          aJpg.click();
+          const blob = dataURLtoBlob(jpgDataUrl);
+          const blobUrl = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = blobUrl;
+          a.download = jpgFilename;
+          document.body.appendChild(a);
+          a.click();
           setTimeout(function() {
-            document.body.removeChild(aJpg);
-          }, 2000);
-        } catch(e) {
-          console.warn('DataURL download error:', e);
+            try {
+              document.body.removeChild(a);
+              URL.revokeObjectURL(blobUrl);
+            } catch(e) {}
+          }, 4000);
+          showToast('✅ കാർഡ് ഡൗൺലോഡ് ആകുന്നു...');
+        } catch (blobErr) {
+          console.warn('Direct blob download error:', blobErr);
+          openSaveModal(jpgDataUrl, pngFilename);
+          return;
         }
 
-        showToast('കാർഡ് ഡൗൺലോഡ് ആകുന്നു...');
-
-        // 4. Always open Save Confirmation Modal on screen so user has a 100% visible save option!
+        // Also update Save Modal links
         openSaveModal(jpgDataUrl, pngFilename);
 
       } catch (err) {
@@ -2457,35 +3216,156 @@
     // ==========================================
     // CANVAS RENDERING ENGINE
     // ==========================================
-    function wrapText(context, text, x, y, maxWidth, lineHeight, maxLines = 4) {
-      if (!text) return y;
-      const words = text.split(' ');
-      let line = '';
-      let currentY = y;
-      let lineCount = 0;
+        function hexToRgb(hex) {
+      let c = String(hex || '#1e3a8a').trim().replace('#', '');
+      if (c.length === 3) c = c.split('').map(x => x + x).join('');
+      const num = parseInt(c, 16);
+      if (isNaN(num)) return { r: 30, g: 58, b: 138 };
+      return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+    }
 
-      for (let n = 0; n < words.length; n++) {
-        const testLine = line + words[n] + ' ';
-        const metrics = context.measureText(testLine);
-        if (metrics.width > maxWidth && n > 0) {
-          context.fillText(line.trim(), x, currentY);
-          line = words[n] + ' ';
-          currentY += lineHeight;
-          lineCount++;
-          if (lineCount >= maxLines - 1) {
-            let rest = words.slice(n).join(' ');
-            while (context.measureText(rest + '...').width > maxWidth && rest.length > 0) {
-              rest = rest.slice(0, -1);
+    function wrapMultilineText(context, text, x, y, maxWidth, lineHeight, maxLines = 4) {
+      if (!text) return y;
+
+      // Split into paragraphs by newline (\n) to preserve manual line breaks
+      const paragraphs = String(text).replace(/\r\n/g, '\n').split('\n');
+      let currentY = y;
+      let totalLinesRendered = 0;
+
+      for (let p = 0; p < paragraphs.length; p++) {
+        if (totalLinesRendered >= maxLines) break;
+
+        const pText = paragraphs[p].trim();
+        if (!pText) {
+          // Empty newline -> create subtle paragraph gap
+          currentY += lineHeight * 0.55;
+          continue;
+        }
+
+        const words = pText.split(/\s+/);
+        let currentLine = '';
+
+        for (let w = 0; w < words.length; w++) {
+          const word = words[w];
+          const testLine = currentLine ? (currentLine + ' ' + word) : word;
+          const metrics = context.measureText(testLine);
+
+          if (metrics.width > maxWidth && currentLine) {
+            context.fillText(currentLine, x, currentY);
+            currentY += lineHeight;
+            totalLinesRendered++;
+
+            if (totalLinesRendered >= maxLines) {
+              return currentY;
             }
-            context.fillText(rest + '...', x, currentY);
-            return currentY + lineHeight;
+
+            // If reaching maxLines limit, truncate remaining with ellipsis
+            if (totalLinesRendered === maxLines - 1 && (w < words.length - 1 || p < paragraphs.length - 1)) {
+              let remainder = words.slice(w).join(' ');
+              while (context.measureText(remainder + '...').width > maxWidth && remainder.length > 0) {
+                remainder = remainder.slice(0, -1);
+              }
+              context.fillText(remainder + '...', x, currentY);
+              return currentY + lineHeight;
+            }
+
+            currentLine = word;
+          } else {
+            currentLine = testLine;
           }
-        } else {
-          line = testLine;
+        }
+
+        if (currentLine && totalLinesRendered < maxLines) {
+          context.fillText(currentLine, x, currentY);
+          currentY += lineHeight;
+          totalLinesRendered++;
         }
       }
-      context.fillText(line.trim(), x, currentY);
-      return currentY + lineHeight;
+
+      return currentY;
+    }
+
+    function wrapText(context, text, x, y, maxWidth, lineHeight, maxLines = 4) {
+      return wrapMultilineText(context, text, x, y, maxWidth, lineHeight, maxLines);
+    }
+
+        // ==========================================
+    // VECTOR CALENDAR ICON DRAWING (Clean Grid Dots - No Confusing Date Numbers!)
+    // ==========================================
+    function drawVectorCalendar(ctx, x, y, size, isGold) {
+      ctx.save();
+      const w = size;
+      const h = size * 0.95;
+      const r = 4;
+      const topH = h * 0.32;
+
+      // 1. Calendar Body (Rounded Rect)
+      ctx.fillStyle = isGold ? '#fef3c7' : '#ffffff';
+      ctx.beginPath();
+      if (ctx.roundRect) {
+        ctx.roundRect(x, y, w, h, [r, r, r, r]);
+      } else {
+        ctx.rect(x, y, w, h);
+      }
+      ctx.fill();
+
+      // 2. Top Header Strip (Red for News, Dark Gold for Obit)
+      ctx.fillStyle = isGold ? '#d97706' : '#dc2626';
+      ctx.beginPath();
+      if (ctx.roundRect) {
+        ctx.roundRect(x, y, w, topH, [r, r, 0, 0]);
+      } else {
+        ctx.rect(x, y, w, topH);
+      }
+      ctx.fill();
+
+      // 3. Top Binder Rings (2 little metal loops)
+      const ringW = Math.max(2, size * 0.09);
+      const ringH = size * 0.26;
+      const ringY = y - size * 0.12;
+      const ring1X = x + w * 0.26;
+      const ring2X = x + w * 0.74;
+
+      ctx.fillStyle = isGold ? '#78350f' : '#334155';
+      ctx.beginPath();
+      if (ctx.roundRect) {
+        ctx.roundRect(ring1X - ringW/2, ringY, ringW, ringH, 2);
+        ctx.roundRect(ring2X - ringW/2, ringY, ringW, ringH, 2);
+      } else {
+        ctx.rect(ring1X - ringW/2, ringY, ringW, ringH);
+        ctx.rect(ring2X - ringW/2, ringY, ringW, ringH);
+      }
+      ctx.fill();
+
+      // 4. Calendar Grid (6 subtle dots - NO NUMBERS!)
+      ctx.fillStyle = isGold ? '#b45309' : '#94a3b8';
+      const dotSize = Math.max(2, size * 0.1);
+      const startX = x + w * 0.24;
+      const startY = y + topH + (h - topH) * 0.28;
+      const gapX = w * 0.26;
+      const gapY = (h - topH) * 0.36;
+
+      for (let row = 0; row < 2; row++) {
+        for (let col = 0; col < 3; col++) {
+          ctx.beginPath();
+          ctx.arc(startX + col * gapX, startY + row * gapY, dotSize / 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      ctx.restore();
+    }
+
+    function dataURLtoBlob(dataurl) {
+      const parts = dataurl.split(',');
+      const mime = parts[0].match(/:(.*?);/)[1];
+      const bstr = atob(parts[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new Blob([u8arr], { type: mime });
     }
 
     function renderCard() {
@@ -2540,6 +3420,12 @@
           overlayGrad.addColorStop(0, 'rgba(0,0,0,0)');
           overlayGrad.addColorStop(0.4, 'rgba(0, 0, 0, 0.88)');
           overlayGrad.addColorStop(1, 'rgba(0, 0, 0, 0.98)');
+        } else if (overlayStyle === 'custom') {
+          const rgb = hexToRgb(customNewsColor || '#1e3a8a');
+          overlayGrad.addColorStop(0, 'rgba(0,0,0,0)');
+          overlayGrad.addColorStop(0.45, 'rgba(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ', 0.82)');
+          overlayGrad.addColorStop(0.75, 'rgba(' + Math.floor(rgb.r * 0.35) + ', ' + Math.floor(rgb.g * 0.35) + ', ' + Math.floor(rgb.b * 0.45) + ', 0.95)');
+          overlayGrad.addColorStop(1, 'rgba(4, 7, 18, 0.98)');
         } else {
           overlayGrad.addColorStop(0, 'rgba(0,0,0,0)');
           overlayGrad.addColorStop(0.45, 'rgba(5, 10, 24, 0.75)');
@@ -2558,7 +3444,7 @@
         const badgeX = 50 + headlineOffsetX;
 
         // Badge background (Red with white text)
-        ctx.fillStyle = '#dc2626';
+        ctx.fillStyle = (overlayStyle === 'custom') ? (customNewsColor || '#dc2626') : '#dc2626';
         ctx.beginPath();
         ctx.roundRect(badgeX, badgeY - 30, badgeW, badgeH, 8);
         ctx.fill();
@@ -2574,7 +3460,7 @@
         }
 
         // Red Accent Vertical Bar
-        ctx.fillStyle = '#dc2626';
+        ctx.fillStyle = (overlayStyle === 'custom') ? (customNewsColor || '#dc2626') : '#dc2626';
         ctx.fillRect(badgeX, badgeY + 20, 6, H * 0.28);
 
         // Main Headline
@@ -2592,12 +3478,14 @@
 
         ctx.shadowColor = 'transparent';
 
-        // Summary Text
+        // Summary Text (Enhanced Multiline, Next-Line & Spacing Control!)
         if (summaryText) {
           ctx.font = '500 ' + summaryFontSize + 'px "Anek Malayalam", sans-serif';
           ctx.fillStyle = '#e2e8f0';
-          const summaryY = nextY + 12 + summaryOffsetY;
-          wrapText(ctx, summaryText, textStartX, summaryY, maxTextWidth, summaryFontSize * 1.35, 2);
+          const summaryX = textStartX + summaryOffsetX;
+          const summaryY = nextY + 14 + summaryOffsetY;
+          const summaryLineHeight = summaryFontSize * summaryLineHeightMult;
+          wrapMultilineText(ctx, summaryText, summaryX, summaryY, maxTextWidth, summaryLineHeight, summaryMaxLines);
         }
 
         // Reporter Byline
@@ -2841,16 +3729,927 @@
       ctx.fillStyle = '#dc2626';
       ctx.fillRect(0, H - 48, W, 2);
 
-      ctx.font = 'bold 18px sans-serif';
-      ctx.fillStyle = '#94a3b8';
-      ctx.textAlign = 'center';
-      ctx.fillText(socialText, W / 2, H - 18);
-      ctx.textAlign = 'left';
+      const activeUsr = window.KV_ACTIVE_USER;
+      if (activeUsr && (activeUsr.username || activeUsr.name)) {
+        // Left: Official Social Handle
+        ctx.font = 'bold 17px sans-serif';
+        ctx.fillStyle = '#94a3b8';
+        ctx.textAlign = 'left';
+        ctx.fillText(socialText, 26, H - 17);
+
+        // Right: Permanent Uneditable Creator Stamp (So Admin Instantly Knows Who Made This Card)
+        const uName = activeUsr.name ? String(activeUsr.name).trim() : '';
+        const uId = activeUsr.username ? String(activeUsr.username).trim() : '';
+        const creatorLabel = (uName && uId && uName.toLowerCase() !== uId.toLowerCase())
+          ? ('Card by: ' + uName + ' (@' + uId + ')')
+          : ('Card by: ' + (uName || uId));
+
+        ctx.font = '600 17px "Anek Malayalam", -apple-system, sans-serif';
+        ctx.fillStyle = '#38bdf8';
+        ctx.textAlign = 'right';
+        ctx.fillText(creatorLabel, W - 26, H - 17);
+        ctx.textAlign = 'left';
+      } else {
+        ctx.font = 'bold 18px sans-serif';
+        ctx.fillStyle = '#94a3b8';
+        ctx.textAlign = 'center';
+        ctx.fillText(socialText, W / 2, H - 18);
+        ctx.textAlign = 'left';
+      }
     }
+
+    // Re-render card automatically whenever login/logout occurs
+    window.addEventListener('kv-auth-changed', renderCard);
 
     // Initial render
     renderCard();
 
+  </script>
+  <script id="kvAuthAdminScript">
+(function() {
+  'use strict';
+
+  // =========================================================================
+  // 1. CONFIGURATION & DOM REFERENCES (WITH FIREBASE CLOUD DB SUPPORT)
+  // =========================================================================
+  const FIREBASE_CONFIG_STORAGE_KEY = 'kv_firebase_config_custom_v1';
+  const KV_USER_DOMAIN = "kozhikodevision.app";
+  const KV_PRIMARY_ADMIN_EMAIL = "admin@kozhikodevision.app";
+
+  let firebaseDb = null;
+  let isFirebaseLive = false;
+  let firestoreUnsubscribe = null;
+
+  // OFFICIAL KOZHIKODE VISION FIREBASE CONFIGURATION
+  const DEFAULT_FIREBASE_CONFIG = {
+    apiKey: "AIzaSyBnkBPGoVZS4UO417eQrxr94kXJTLzm2Bo",
+    authDomain: "kozhikode-vision-news.firebaseapp.com",
+    projectId: "kozhikode-vision-news",
+    storageBucket: "kozhikode-vision-news.firebasestorage.app",
+    messagingSenderId: "822240406412",
+    appId: "1:822240406412:web:2407061f774c5febfc84a9",
+    measurementId: "G-CHPCKSWSX6"
+  };
+    function parseFirebaseConfigInput(raw) {
+    if (!raw || typeof raw !== 'string') return null;
+    const cleaned = raw.trim();
+    try {
+      const parsed = JSON.parse(cleaned);
+      if (parsed && parsed.apiKey && parsed.projectId) return parsed;
+    } catch (e) {}
+
+    const extractKey = function(k) {
+      const m = cleaned.match(new RegExp(k + "\\s*:\\s*['\"]([^'\"]+)['\"]"));
+      return m ? m[1] : '';
+    };
+    const apiKey = extractKey('apiKey');
+    const authDomain = extractKey('authDomain');
+    const projectId = extractKey('projectId');
+    const storageBucket = extractKey('storageBucket');
+    const messagingSenderId = extractKey('messagingSenderId');
+    const appId = extractKey('appId');
+    if (apiKey && projectId) {
+      return { apiKey: apiKey, authDomain: authDomain, projectId: projectId, storageBucket: storageBucket, messagingSenderId: messagingSenderId, appId: appId };
+    }
+    return null;
+  }
+
+  function getSavedFirebaseConfig() {
+    try {
+      const raw = localStorage.getItem(FIREBASE_CONFIG_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.apiKey && parsed.projectId) return parsed;
+      }
+    } catch (e) {}
+    return DEFAULT_FIREBASE_CONFIG;
+  }
+
+  function updateCloudStatusPill(status, text) {
+    const badge = document.getElementById('kvCloudStatusBadge');
+    if (!badge) return;
+    if (status === 'connected') {
+      badge.style.background = '#059669';
+      badge.style.color = '#ffffff';
+      badge.innerHTML = '🟢 ' + (text || 'ക്ലൗഡ് സിങ്ക് ആക്റ്റീവ് (Cloud Live)');
+    } else if (status === 'connecting') {
+      badge.style.background = '#0284c7';
+      badge.style.color = '#ffffff';
+      badge.innerHTML = '⏳ ' + (text || 'കണക്റ്റ് ചെയ്യുന്നു...');
+    } else if (status === 'error') {
+      badge.style.background = '#dc2626';
+      badge.style.color = '#ffffff';
+      badge.innerHTML = '⚠️ ' + (text || 'ക്ലൗഡ് കണക്ഷൻ എറർ');
+    } else {
+      badge.style.background = '#475569';
+      badge.style.color = '#ffffff';
+      badge.innerHTML = '🟡 ' + (text || 'ലോക്കൽ മോഡ് (Local Only)');
+    }
+  }
+
+  function seedDefaultsToFirestore() {
+    if (!firebaseDb) return;
+    const currentList = getDemoUsers();
+    currentList.forEach(function(u) {
+      firebaseDb.collection('kv_users').doc(u.uid).set(u, { merge: true }).catch(function(){});
+    });
+    showAdminStatus('☁️ യൂസർമാരെ വിജയകരമായി ക്ലൗഡിലേക്ക് സിങ്ക് ചെയ്തു!', false);
+  }
+
+  function initFirebaseDatabase() {
+    const cfg = getSavedFirebaseConfig();
+    if (!cfg || !cfg.apiKey || !cfg.projectId) {
+      updateCloudStatusPill('local', 'ലോക്കൽ മോഡ് (Config നൽകിയിട്ടില്ല)');
+      return;
+    }
+
+    if (typeof window.firebase === 'undefined') {
+      updateCloudStatusPill('error', 'Firebase SDK ലഭ്യമല്ല (Check Net)');
+      return;
+    }
+
+    try {
+      updateCloudStatusPill('connecting', 'ക്ലൗഡിലേക്ക് കണക്റ്റ് ചെയ്യുന്നു...');
+      let app;
+      if (!firebase.apps.length) {
+        app = firebase.initializeApp(cfg);
+      } else {
+        app = firebase.app();
+      }
+      firebaseDb = firebase.firestore();
+      isFirebaseLive = true;
+
+      // Realtime listener for cross-device synchronization
+      if (firestoreUnsubscribe) firestoreUnsubscribe();
+      firestoreUnsubscribe = firebaseDb.collection('kv_users').onSnapshot(function(snapshot) {
+        updateCloudStatusPill('connected', 'ക്ലൗഡ് സിങ്ക് ആക്റ്റീവ് (' + snapshot.docs.length + ' users)');
+
+        if (snapshot.empty) {
+          seedDefaultsToFirestore();
+          return;
+        }
+
+        const cloudUsers = [];
+        snapshot.forEach(function(doc) {
+          const data = doc.data();
+          if (data && data.uid) {
+            cloudUsers.push(data);
+          }
+        });
+
+        if (cloudUsers.length > 0) {
+          inMemoryUsers = cloudUsers;
+          saveDemoUsers(cloudUsers);
+          refreshDemoAdminList();
+
+          // Remote block enforcement
+          if (currentProfile) {
+            const matched = cloudUsers.find(function(u) { return u.uid === currentProfile.uid; });
+            if (matched && (matched.active === false || matched.deleted === true)) {
+              lockApp('🚫 നിങ്ങളുടെ അക്കൗണ്ട് അഡ്മിൻ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു.');
+            }
+          }
+        }
+      }, function(err) {
+        console.warn('Firestore snapshot error:', err);
+        updateCloudStatusPill('error', 'കണക്ഷൻ തടസ്സപ്പെട്ടു (ലോക്കൽ മോഡ്)');
+      });
+
+    } catch (err) {
+      console.warn('Firebase init error:', err);
+      updateCloudStatusPill('error', 'Config തെറ്റാണ് / പരാജയപ്പെട്ടു');
+    }
+  }
+
+  const overlay = document.getElementById('kvAuthOverlay');
+  const authLogoImg = document.getElementById('kvAuthLogoImg');
+  const hdrLogoImg = document.getElementById('hdrLogoImg');
+  const demoBanner = document.getElementById('kvDemoBanner');
+  const authError = document.getElementById('kvAuthError');
+  const authForm = document.getElementById('kvAuthForm');
+  const inpUser = document.getElementById('kvAuthUsername');
+  const inpPass = document.getElementById('kvAuthPassword');
+  const btnTogglePass = document.getElementById('kvTogglePass');
+  const btnLogin = document.getElementById('kvBtnLogin');
+
+  const headerAuthBar = document.getElementById('kvHeaderAuthBar');
+  const lblUserName = document.getElementById('kvCurrentUserName');
+  const lblUserRole = document.getElementById('kvCurrentUserRole');
+  const btnOpenAdmin = document.getElementById('kvBtnOpenAdmin');
+  const btnLogout = document.getElementById('kvBtnLogout');
+
+  const adminModal = document.getElementById('kvAdminModal');
+  const btnCloseAdmin = document.getElementById('kvBtnCloseAdmin');
+  const adminModeBadge = document.getElementById('kvAdminModeBadge');
+  const inpNewName = document.getElementById('kvNewName');
+  const inpNewUser = document.getElementById('kvNewUser');
+  const inpNewPass = document.getElementById('kvNewPass');
+  const selNewRole = document.getElementById('kvNewRole');
+  const btnAddUser = document.getElementById('kvBtnAddUser');
+  const adminStatusMsg = document.getElementById('kvAdminStatusMsg');
+  const usersListContainer = document.getElementById('kvUsersListContainer');
+  const userCountBadge = document.getElementById('kvUserCountBadge');
+  const deletedSection = document.getElementById('kvDeletedUsersSection');
+  const deletedContainer = document.getElementById('kvDeletedUsersListContainer');
+  const deletedCountBadge = document.getElementById('kvDeletedCountBadge');
+
+  if (authLogoImg && hdrLogoImg && hdrLogoImg.src) {
+    authLogoImg.src = hdrLogoImg.src;
+  }
+  document.body.classList.add('kv-locked');
+
+  if (btnTogglePass && inpPass) {
+    btnTogglePass.addEventListener('click', function() {
+      const isPwd = inpPass.type === 'password';
+      inpPass.type = isPwd ? 'text' : 'password';
+      btnTogglePass.textContent = isPwd ? '🙈' : '👁️';
+    });
+  }
+
+  function showAuthError(msg) {
+    if (!authError) return;
+    if (!msg) {
+      authError.classList.remove('show');
+      authError.textContent = '';
+    } else {
+      authError.textContent = msg;
+      authError.classList.add('show');
+    }
+  }
+
+  function showAdminStatus(msg, isError) {
+    if (!adminStatusMsg) return;
+    adminStatusMsg.textContent = msg;
+    adminStatusMsg.className = 'kv-admin-status-msg ' + (isError ? 'err' : 'ok');
+    setTimeout(function() {
+      adminStatusMsg.className = 'kv-admin-status-msg';
+    }, 4500);
+  }
+
+  function normalizeEmail(rawInput) {
+    const cleaned = (rawInput || '').trim().toLowerCase();
+    if (!cleaned) return '';
+    if (cleaned.includes('@')) return cleaned;
+    return cleaned.replace(/[^a-z0-9._-]/g, '') + '@' + KV_USER_DOMAIN;
+  }
+
+  function extractUsername(email) {
+    if (!email) return '';
+    if (email.endsWith('@' + KV_USER_DOMAIN)) {
+      return email.slice(0, -('@' + KV_USER_DOMAIN).length);
+    }
+    return email;
+  }
+
+  function norm(s) {
+    return String(s || '').trim().toLowerCase().normalize('NFC');
+  }
+
+  function escapeHtml(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // =========================================================================
+  // 2. ULTRA-RESILIENT MULTI-LAYER USER PERSISTENCE ENGINE (NEVER LOSES USERS)
+  // =========================================================================
+  const STORE_KEY_V3 = 'kv_studio_demo_users_v3';
+  const STORE_KEY_V2 = 'kv_studio_demo_users_v2';
+  const STORE_KEY_BACKUP = 'kv_users_backup';
+  const SESSION_USER_KEY = 'kv_active_session_uid_v3';
+
+  const DEFAULT_USERS = [
+    { uid: 'u-admin', name: 'Channel Admin', username: 'admin', email: 'admin@kozhikodevision.app', password: '123456', role: 'admin', active: true, deleted: false },
+    { uid: 'u-reporter1', name: 'അരുൺ (റിപ്പോർട്ടർ)', username: 'reporter1', email: 'reporter1@kozhikodevision.app', password: '1234', role: 'user', active: true, deleted: false },
+    { uid: 'u-reporter2', name: 'രാഹുൽ (റിപ്പോർട്ടർ)', username: 'reporter2', email: 'reporter2@kozhikodevision.app', password: '1234', role: 'user', active: true, deleted: false },
+    { uid: 'u-staff', name: 'സ്റ്റാഫ് ഡെസ്ക്', username: 'staff', email: 'staff@kozhikodevision.app', password: '123456', role: 'user', active: true, deleted: false }
+  ];
+
+  let inMemoryUsers = null;
+
+  function getDemoUsers() {
+    if (inMemoryUsers && inMemoryUsers.length > 0) return inMemoryUsers;
+    if (window.KV_GLOBAL_USERS && window.KV_GLOBAL_USERS.length > 0) {
+      inMemoryUsers = window.KV_GLOBAL_USERS;
+      return inMemoryUsers;
+    }
+
+    let loaded = null;
+
+    // Layer 1: Primary localStorage
+    try {
+      const raw = localStorage.getItem(STORE_KEY_V3);
+      if (raw) loaded = JSON.parse(raw);
+    } catch (e) {}
+
+    // Layer 2: Fallback localStorage
+    if (!Array.isArray(loaded) || loaded.length === 0) {
+      try {
+        const raw2 = localStorage.getItem(STORE_KEY_V2) || localStorage.getItem(STORE_KEY_BACKUP);
+        if (raw2) loaded = JSON.parse(raw2);
+      } catch (e) {}
+    }
+
+    // Layer 3: sessionStorage
+    if (!Array.isArray(loaded) || loaded.length === 0) {
+      try {
+        const sRaw = sessionStorage.getItem(STORE_KEY_V3);
+        if (sRaw) loaded = JSON.parse(sRaw);
+      } catch (e) {}
+    }
+
+    // Layer 4: window.name payload
+    if (!Array.isArray(loaded) || loaded.length === 0) {
+      try {
+        if (window.name && window.name.indexOf('kv_users') !== -1) {
+          const wObj = JSON.parse(window.name);
+          if (wObj && Array.isArray(wObj.kv_users)) loaded = wObj.kv_users;
+        }
+      } catch (e) {}
+    }
+
+    // Merge defaults so core admin/staff exist, while preserving ALL custom users!
+    if (Array.isArray(loaded) && loaded.length > 0) {
+      const map = {};
+      loaded.forEach(function(u) { if (u && u.uid) map[u.uid] = u; });
+      DEFAULT_USERS.forEach(function(def) {
+        if (!map[def.uid]) loaded.push(def);
+      });
+      inMemoryUsers = loaded;
+    } else {
+      inMemoryUsers = DEFAULT_USERS.slice(0);
+    }
+
+    saveDemoUsers(inMemoryUsers);
+    return inMemoryUsers;
+  }
+
+  function saveDemoUsers(list) {
+    if (!Array.isArray(list)) return;
+    inMemoryUsers = list;
+    window.KV_GLOBAL_USERS = list;
+    const json = JSON.stringify(list);
+
+    // Save to all layers simultaneously
+    try { localStorage.setItem(STORE_KEY_V3, json); } catch (e) {}
+    try { localStorage.setItem(STORE_KEY_V2, json); } catch (e) {}
+    try { localStorage.setItem(STORE_KEY_BACKUP, json); } catch (e) {}
+    try { sessionStorage.setItem(STORE_KEY_V3, json); } catch (e) {}
+    try {
+      window.name = JSON.stringify({ kv_users: list });
+    } catch (e) {}
+  }
+
+  // =========================================================================
+  // 3. APP UNLOCK, LOCK & QUICK USER PILLS (TOP-LEVEL ACCESSIBLE!)
+  // =========================================================================
+  let currentProfile = null;
+  let unsubscribeUserWatch = null;
+  let unsubscribeAdminList = null;
+
+  function unlockApp(profile) {
+    currentProfile = profile;
+    window.KV_ACTIVE_USER = profile;
+    document.body.classList.remove('kv-locked');
+    if (overlay) overlay.classList.add('kv-hidden');
+    if (headerAuthBar) headerAuthBar.classList.remove('kv-hidden');
+
+    if (lblUserName) lblUserName.textContent = profile.name || profile.username || 'User';
+    if (lblUserRole) {
+      const isAdm = profile.role === 'admin';
+      lblUserRole.textContent = isAdm ? 'ADMIN' : 'STAFF';
+      lblUserRole.className = 'kv-role-tag' + (isAdm ? ' admin' : '');
+    }
+    if (btnOpenAdmin) {
+      if (profile.role === 'admin') {
+        btnOpenAdmin.classList.remove('kv-hidden');
+      } else {
+        btnOpenAdmin.classList.add('kv-hidden');
+      }
+    }
+    showAuthError('');
+
+    // Trigger canvas redraw with active creator stamp
+    window.dispatchEvent(new CustomEvent('kv-auth-changed'));
+    setTimeout(function() {
+      window.dispatchEvent(new Event('resize'));
+      window.dispatchEvent(new CustomEvent('kv-auth-changed'));
+    }, 60);
+  }
+
+  function lockApp(reasonMsg) {
+    currentProfile = null;
+    window.KV_ACTIVE_USER = null;
+    window.dispatchEvent(new CustomEvent('kv-auth-changed'));
+    if (unsubscribeUserWatch) { unsubscribeUserWatch(); unsubscribeUserWatch = null; }
+    if (unsubscribeAdminList) { unsubscribeAdminList(); unsubscribeAdminList = null; }
+    if (adminModal) adminModal.classList.add('kv-hidden');
+    if (headerAuthBar) headerAuthBar.classList.add('kv-hidden');
+    if (btnOpenAdmin) btnOpenAdmin.classList.add('kv-hidden');
+    document.body.classList.add('kv-locked');
+    if (overlay) overlay.classList.remove('kv-hidden');
+    if (reasonMsg) showAuthError(reasonMsg);
+    renderQuickUserPills();
+  }
+
+  function renderQuickUserPills() {
+    const dropdown = document.getElementById('kvUserSelectDropdown');
+    if (!dropdown) return;
+
+    dropdown.innerHTML = '<option value="">-- അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക (Select Account) --</option>';
+
+    const users = getDemoUsers().filter(function(u) { return !u.deleted && u.active !== false; });
+
+    users.forEach(function(u) {
+      const opt = document.createElement('option');
+      opt.value = u.username || extractUsername(u.email);
+      const roleIcon = u.role === 'admin' ? '👑' : '👤';
+      const roleLabel = u.role === 'admin' ? 'ADMIN' : 'STAFF';
+      const newTag = u.isNew ? ' ✨ പുതിയത്' : '';
+      opt.textContent = roleIcon + ' ' + (u.name || u.username) + newTag + ' (@' + (u.username || extractUsername(u.email)) + ') [' + roleLabel + ']';
+      dropdown.appendChild(opt);
+    });
+
+    const manualOpt = document.createElement('option');
+    manualOpt.value = '__manual__';
+    manualOpt.textContent = '✏️ മറ്റൊരു യൂസർ നേരിട്ട് ടൈപ്പ് ചെയ്യുക (Manual Type)...';
+    dropdown.appendChild(manualOpt);
+  }
+
+  // =========================================================================
+  // 4. ADMIN USER LIST RENDERING (ACTIVE & RESTORABLE USERS)
+  // =========================================================================
+  function renderUsersList(users, handlers) {
+    if (!usersListContainer) return;
+    const activeUsers = users.filter(function(u) { return !u.deleted; });
+    const deletedUsers = users.filter(function(u) { return u.deleted === true; });
+
+    if (userCountBadge) userCountBadge.textContent = activeUsers.length + ' users';
+    if (deletedCountBadge) deletedCountBadge.textContent = deletedUsers.length + ' deleted';
+
+    // 1. Active Users List
+    if (activeUsers.length === 0) {
+      usersListContainer.innerHTML = '<div style="text-align:center;color:#94a3b8;font-size:12px;padding:12px;">യൂസർമാരൊന്നും ഇല്ല</div>';
+    } else {
+      usersListContainer.innerHTML = '';
+      activeUsers.forEach(function(u) {
+        const isSelf = currentProfile && (u.uid === currentProfile.uid || u.email === currentProfile.email || u.username === currentProfile.username);
+        const isBlocked = u.active === false;
+
+        const row = document.createElement('div');
+        row.className = 'kv-user-row' + (isBlocked ? ' blocked' : '') + (u.isNew ? ' is-new' : '');
+
+        const meta = document.createElement('div');
+        meta.className = 'kv-user-meta';
+        const newBadge = u.isNew ? ' <span style="background:#10b981;color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700;">✨ പുതിയത്</span>' : '';
+
+        meta.innerHTML =
+          '<div class="kv-user-name">' +
+            escapeHtml(u.name || u.username) + newBadge +
+            ' <span class="kv-role-tag' + (u.role === 'admin' ? ' admin' : '') + '">' + (u.role === 'admin' ? 'ADMIN' : 'STAFF') + '</span>' +
+            ' <span class="kv-status-pill ' + (isBlocked ? 'blocked' : 'active') + '">' + (isBlocked ? '🚫 Blocked' : '✅ Active') + '</span>' +
+          '</div>' +
+          '<div class="kv-user-sub">Username: <b style="color:#38bdf8;">' + escapeHtml(u.username || extractUsername(u.email)) + '</b> &nbsp;|&nbsp; പാസ്‌വേഡ്: <span style="color:#fbbf24;font-weight:700;">' + escapeHtml(u.password || '1234') + '</span>' + (isSelf ? ' <b style="color:#6ee7b7;">(നിങ്ങൾ)</b>' : '') + '</div>';
+
+        row.appendChild(meta);
+
+        const actions = document.createElement('div');
+        actions.className = 'kv-user-actions';
+
+        // Instant Switch Button
+        if (!isSelf && !isBlocked && handlers.onInstantSwitch) {
+          const btnSwitch = document.createElement('button');
+          btnSwitch.type = 'button';
+          btnSwitch.className = 'kv-act-btn';
+          btnSwitch.style.background = '#0284c7';
+          btnSwitch.style.color = '#ffffff';
+          btnSwitch.textContent = '🚀 ഈ യൂസറാകുക';
+          btnSwitch.title = 'ഈ യൂസറുടെ അക്കൗണ്ടിലേക്ക് ഉടൻ സ്വിച്ച് ചെയ്ത് കാർഡ് കാണുക';
+          btnSwitch.addEventListener('click', function() {
+            handlers.onInstantSwitch(u);
+          });
+          actions.appendChild(btnSwitch);
+        }
+
+        if (!isSelf) {
+          const btnToggle = document.createElement('button');
+          btnToggle.type = 'button';
+          btnToggle.className = 'kv-act-btn ' + (isBlocked ? 'kv-act-unblock' : 'kv-act-block');
+          btnToggle.textContent = isBlocked ? '✅ അൺബ്ലോക്ക്' : '🚫 ബ്ലോക്ക്';
+          btnToggle.addEventListener('click', function() {
+            handlers.onToggleBlock(u);
+          });
+
+          const btnDel = document.createElement('button');
+          btnDel.type = 'button';
+          btnDel.className = 'kv-act-btn kv-act-delete';
+          btnDel.textContent = '🗑️ ഡിലീറ്റ്';
+          btnDel.addEventListener('click', function() {
+            if (confirm('"' + (u.name || u.username) + '" എന്ന യൂസറെ നീക്കം ചെയ്യണോ? (നിങ്ങൾക്ക് ആവശ്യമെങ്കിൽ താഴെ നിന്ന് തിരികെ എടുക്കാം)')) {
+              handlers.onDelete(u);
+            }
+          });
+
+          actions.appendChild(btnToggle);
+          actions.appendChild(btnDel);
+        }
+
+        row.appendChild(actions);
+        usersListContainer.appendChild(row);
+      });
+    }
+
+    // 2. Recycle Bin (Deleted Users section)
+    if (deletedSection && deletedContainer) {
+      if (deletedUsers.length > 0) {
+        deletedSection.classList.remove('kv-hidden');
+        deletedContainer.innerHTML = '';
+        deletedUsers.forEach(function(du) {
+          const dRow = document.createElement('div');
+          dRow.className = 'kv-user-row';
+          dRow.style.opacity = '0.75';
+          dRow.style.border = '1px dashed #64748b';
+
+          dRow.innerHTML =
+            '<div class="kv-user-meta">' +
+              '<div class="kv-user-name" style="text-decoration:line-through;color:#94a3b8;">' + escapeHtml(du.name || du.username) + ' (@' + escapeHtml(du.username || extractUsername(du.email)) + ')</div>' +
+              '<div class="kv-user-sub" style="color:#64748b;">പാസ്‌വേഡ്: ' + escapeHtml(du.password || '1234') + '</div>' +
+            '</div>' +
+            '<div class="kv-user-actions">' +
+              '<button type="button" class="kv-act-btn" style="background:#059669;color:#fff;">♻️ തിരികെ എടുക്കുക (Restore)</button>' +
+            '</div>';
+
+          const restoreBtn = dRow.querySelector('button');
+          restoreBtn.addEventListener('click', function() {
+            handlers.onRestore(du);
+          });
+
+          deletedContainer.appendChild(dRow);
+        });
+      } else {
+        deletedSection.classList.add('kv-hidden');
+      }
+    }
+  }
+
+  function refreshDemoAdminList() {
+    const users = getDemoUsers();
+    renderQuickUserPills();
+    renderUsersList(users, {
+      onInstantSwitch: function(u) {
+        if (u.active === false || u.deleted) {
+          alert('ഈ യൂസർ ബ്ലോക്ക് ചെയ്യപ്പെട്ടതാണ്!');
+          return;
+        }
+        if (adminModal) adminModal.classList.add('kv-hidden');
+        try { sessionStorage.setItem(SESSION_USER_KEY, u.uid); } catch (e) {}
+        unlockApp(u);
+        if (typeof showToast === 'function') {
+          showToast('🚀 സ്വിച്ച് ചെയ്തു: ' + (u.name || u.username));
+        }
+      },
+      onToggleBlock: function(u) {
+        const list = getDemoUsers();
+        const item = list.find(function(x) { return x.uid === u.uid; });
+        if (item) {
+                    item.active = item.active === false ? true : false;
+          saveDemoUsers(list);
+          if (firebaseDb && isFirebaseLive) {
+            firebaseDb.collection('kv_users').doc(item.uid).update({ active: item.active }).catch(function(){});
+          }
+          refreshDemoAdminList();
+          renderQuickUserPills();
+          showAdminStatus(item.active ? '✅ യൂസറെ അൺബ്ലോക്ക് ചെയ്തു!' : '🚫 യൂസറെ ബ്ലോക്ക് ചെയ്തു!', false);
+          if (typeof showToast === 'function') {
+            showToast(item.active ? '✅ അൺബ്ലോക്ക് ചെയ്തു: ' + item.name : '🚫 ബ്ലോക്ക് ചെയ്തു: ' + item.name);
+          }
+        }
+      },
+      onDelete: function(u) {
+        const list = getDemoUsers();
+        const item = list.find(function(x) { return x.uid === u.uid; });
+        if (item) {
+          item.active = false;
+          item.deleted = true;
+                    item.isNew = false;
+          saveDemoUsers(list);
+          if (firebaseDb && isFirebaseLive) {
+            firebaseDb.collection('kv_users').doc(item.uid).update({ active: false, deleted: true, isNew: false }).catch(function(){});
+          }
+          refreshDemoAdminList();
+          renderQuickUserPills();
+          showAdminStatus('🗑️ "' + item.name + '" നീക്കം ചെയ്തു. ആവശ്യമെങ്കിൽ താഴെ റീസൈക്കിൾ ബിന്നിൽ നിന്ന് തിരികെ എടുക്കാം.', false);
+          if (typeof showToast === 'function') {
+            showToast('🗑️ നീക്കം ചെയ്തു: ' + item.name);
+          }
+        }
+      },
+      onRestore: function(u) {
+        const list = getDemoUsers();
+        const item = list.find(function(x) { return x.uid === u.uid; });
+        if (item) {
+          item.deleted = false;
+                    item.active = true;
+          saveDemoUsers(list);
+          if (firebaseDb && isFirebaseLive) {
+            firebaseDb.collection('kv_users').doc(item.uid).update({ active: true, deleted: false }).catch(function(){});
+          }
+          refreshDemoAdminList();
+          renderQuickUserPills();
+          showAdminStatus('♻️ "' + item.name + '" വിജയകരമായി തിരികെ എടുത്തു!', false);
+          if (typeof showToast === 'function') {
+            showToast('♻️ റീസ്റ്റോർ ചെയ്തു: ' + item.name);
+          }
+        }
+      }
+    });
+  }
+
+  // Core Add User execution function
+  function executeAddUserAction() {
+  try {
+
+    if (!currentProfile || currentProfile.role !== 'admin') {
+      showAdminStatus('⚠️ അഡ്മിന് മാത്രമേ യൂസർമാരെ ചേർക്കാൻ അനുവാദമുള്ളൂ!', true);
+      return;
+    }
+
+    let name = (inpNewName.value || '').trim();
+    let rawUser = (inpNewUser.value || '').trim();
+    let pass = (inpNewPass.value || '').trim();
+    const role = selNewRole ? selNewRole.value : 'user';
+
+    if (!name && !rawUser) {
+      showAdminStatus('⚠️ ദയവായി പേരോ യൂസർനെയിമോ നൽകുക.', true);
+      if (inpNewName) inpNewName.focus();
+      return;
+    }
+    if (!name) name = rawUser;
+    if (!rawUser) {
+      rawUser = name.toLowerCase().replace(/[^a-z0-9_]/g, '');
+      if (!rawUser) rawUser = 'user_' + Math.floor(100 + Math.random() * 900);
+    }
+
+    if (!pass) {
+      showAdminStatus('⚠️ ദയവായി ഒരു പാസ്‌വേഡ് നൽകുക (ഉദാ: 1234).', true);
+      if (inpNewPass) inpNewPass.focus();
+      return;
+    }
+
+    const username = rawUser;
+    const email = normalizeEmail(username);
+
+    const list = getDemoUsers();
+    const existing = list.find(function(u) {
+      return !u.deleted && (
+        (u.username && norm(u.username) === norm(username)) ||
+        (u.name && norm(u.name) === norm(name))
+      );
+    });
+
+    if (existing) {
+      showAdminStatus('❌ "' + (existing.name || existing.username) + '" എന്ന യൂസർ മുൻപേ നിലവിലുണ്ട്! മറ്റൊന്ന് നൽകുക.', true);
+      return;
+    }
+
+    // Reset isNew flag on older users
+    list.forEach(function(u) { u.isNew = false; });
+
+    const newUser = {
+      uid: 'u-' + Date.now(),
+      name: name,
+      username: username,
+      email: email,
+      password: pass,
+      role: role,
+      active: true,
+      deleted: false,
+      isNew: true,
+      createdAt: Date.now()
+    };
+
+    // Prepend new user so they appear AT THE TOP!
+        list.unshift(newUser);
+    saveDemoUsers(list);
+
+    if (firebaseDb && isFirebaseLive) {
+      firebaseDb.collection('kv_users').doc(newUser.uid).set(newUser).catch(function(e) {
+        console.warn('Firestore write failed:', e);
+      });
+    }
+
+    if (inpNewName) inpNewName.value = '';
+    if (inpNewUser) inpNewUser.value = '';
+    if (inpNewPass) inpNewPass.value = '';
+    if (selNewRole) selNewRole.value = 'user';
+
+    refreshDemoAdminList();
+    renderQuickUserPills();
+    showAdminStatus('✅ "' + name + '" (' + username + ') വിജയകരമായി ചേർത്തു! ഇനി ലിസ്റ്റിൽ ഇദ്ദേഹത്തെ കാണാം.', false);
+    if (typeof showToast === 'function') {
+      showToast('✅ പുതിയ യൂസറെ ചേർത്തു: ' + name);
+    }
+  } catch (err) {
+    console.warn('CAUGHT_IN_EXECUTE_ADD_USER: ' + err.message + ' ' + err.stack);
+  }
+}
+
+  // =========================================================================
+  // 5. EVENT LISTENERS & INITIALIZATION
+  // =========================================================================
+  if (demoBanner) demoBanner.classList.remove('kv-hidden');
+  if (adminModeBadge) adminModeBadge.innerHTML = '⚡ <b>യൂസർ കൺട്രോൾ ആക്റ്റീവ് ആണ്</b> — യൂസർമാരെ ചേർക്കാനും ഉടൻ സ്വിച്ച് ചെയ്യാനും സാധിക്കും';
+
+  // 5a. Cloud Database UI Wire-up
+  const btnToggleCloud = document.getElementById('kvBtnToggleCloudConfig');
+  const boxCloudConfig = document.getElementById('kvCloudConfigBox');
+  const txtCloudConfig = document.getElementById('kvTxtFirebaseConfig');
+  const btnSaveCloudConfig = document.getElementById('kvBtnSaveFirebaseConfig');
+  const btnClearCloudConfig = document.getElementById('kvBtnClearFirebaseConfig');
+  const btnSyncDefaults = document.getElementById('kvBtnSyncDefaultsToCloud');
+
+  if (btnToggleCloud && boxCloudConfig) {
+    btnToggleCloud.addEventListener('click', function() {
+      const isHidden = boxCloudConfig.classList.contains('kv-hidden');
+      if (isHidden) {
+        boxCloudConfig.classList.remove('kv-hidden');
+        boxCloudConfig.style.display = 'block';
+        const saved = getSavedFirebaseConfig();
+        if (saved && txtCloudConfig) txtCloudConfig.value = JSON.stringify(saved, null, 2);
+      } else {
+        boxCloudConfig.classList.add('kv-hidden');
+        boxCloudConfig.style.display = 'none';
+      }
+    });
+  }
+
+  if (btnSaveCloudConfig && txtCloudConfig) {
+    btnSaveCloudConfig.addEventListener('click', function() {
+      const parsed = parseFirebaseConfigInput(txtCloudConfig.value);
+      if (!parsed || !parsed.apiKey || !parsed.projectId) {
+        alert('⚠️ നൽകിയ കോഡ് അസാധുവാണ്! കൃത്യമായ apiKey, projectId എന്നിവ അടങ്ങിയ Firebase config നൽകുക.');
+        return;
+      }
+      try {
+        localStorage.setItem(FIREBASE_CONFIG_STORAGE_KEY, JSON.stringify(parsed));
+        if (boxCloudConfig) {
+          boxCloudConfig.classList.add('kv-hidden');
+          boxCloudConfig.style.display = 'none';
+        }
+        initFirebaseDatabase();
+        showAdminStatus('💾 Firebase Config വിജയകരമായി സേവ് ചെയ്തു!', false);
+      } catch (e) {
+        alert('സേവ് ചെയ്യാൻ സാധിച്ചില്ല: ' + e.message);
+      }
+    });
+  }
+
+  if (btnClearCloudConfig) {
+    btnClearCloudConfig.addEventListener('click', function() {
+      if (confirm('Firebase ക്ലൗഡ് ഡാറ്റാബേസ് കോൺഫിഗറേഷൻ നീക്കം ചെയ്ത് ലോക്കൽ മോഡിലേക്ക് മാറണോ?')) {
+        try { localStorage.removeItem(FIREBASE_CONFIG_STORAGE_KEY); } catch (e) {}
+        if (firestoreUnsubscribe) { firestoreUnsubscribe(); firestoreUnsubscribe = null; }
+        firebaseDb = null;
+        isFirebaseLive = false;
+        if (txtCloudConfig) txtCloudConfig.value = '';
+        if (boxCloudConfig) {
+          boxCloudConfig.classList.add('kv-hidden');
+          boxCloudConfig.style.display = 'none';
+        }
+        updateCloudStatusPill('local', 'ലോക്കൽ മോഡ് (Local Only)');
+        showAdminStatus('🗑️ ക്ലൗഡ് കണക്ഷൻ നീക്കം ചെയ്തു, ഇപ്പോൾ ലോക്കൽ മോഡിലാണ്.', false);
+      }
+    });
+  }
+
+  if (btnSyncDefaults) {
+    btnSyncDefaults.addEventListener('click', function() {
+      if (!firebaseDb || !isFirebaseLive) {
+        alert('⚠️ ആദ്യം Firebase Config സേവ് ചെയ്ത് ക്ലൗഡ് കണക്റ്റ് ചെയ്യുക!');
+        if (boxCloudConfig) {
+          boxCloudConfig.classList.remove('kv-hidden');
+          boxCloudConfig.style.display = 'block';
+        }
+        return;
+      }
+      seedDefaultsToFirestore();
+    });
+  }
+
+  // Initialize Firebase Cloud DB on load
+  initFirebaseDatabase();
+
+  // Restore saved session if exists
+  try {
+    const savedUid = sessionStorage.getItem(SESSION_USER_KEY);
+    if (savedUid) {
+      const found = getDemoUsers().find(function(u) { return u.uid === savedUid && u.active !== false && !u.deleted; });
+      if (found) unlockApp(found);
+    }
+  } catch (e) {}
+
+  // Login form submit
+  authForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    showAuthError('');
+    const typed = norm(inpUser.value);
+    const pass = String(inpPass.value || '').trim();
+
+    const users = getDemoUsers();
+    const match = users.find(function(u) {
+      const matchUser = u.username && norm(u.username) === typed;
+      const matchName = u.name && norm(u.name) === typed;
+      const matchEmail = u.email && norm(u.email) === typed;
+      return (matchUser || matchName || matchEmail) && String(u.password || '').trim() === pass;
+    });
+
+    if (!match) {
+      showAuthError('❌ യൂസർനെയിമോ പാസ്‌വേഡോ തെറ്റാണ്.');
+      return;
+    }
+    if (match.deleted || match.active === false) {
+      showAuthError('🚫 നിങ്ങളുടെ അക്കൗണ്ട് അഡ്മിൻ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു.');
+      return;
+    }
+
+    try { sessionStorage.setItem(SESSION_USER_KEY, match.uid); } catch (e) {}
+    unlockApp(match);
+  });
+
+  btnLogout.addEventListener('click', function() {
+    try { sessionStorage.removeItem(SESSION_USER_KEY); } catch (e) {}
+    lockApp();
+  });
+
+  btnOpenAdmin.addEventListener('click', function() {
+    if (!currentProfile || currentProfile.role !== 'admin') return;
+    adminModal.classList.remove('kv-hidden');
+    refreshDemoAdminList();
+    renderQuickUserPills();
+  });
+
+  btnCloseAdmin.addEventListener('click', function() {
+    adminModal.classList.add('kv-hidden');
+  });
+
+  if (btnAddUser) {
+    btnAddUser.addEventListener('click', function(e) {
+      e.preventDefault();
+      executeAddUserAction();
+    });
+  }
+
+  [inpNewName, inpNewUser, inpNewPass].forEach(function(inp) {
+    if (inp) {
+      inp.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          executeAddUserAction();
+        }
+      });
+    }
+  });
+
+    // Dropdown Account Selection Handler
+  const userSelectDropdown = document.getElementById('kvUserSelectDropdown');
+  if (userSelectDropdown) {
+    userSelectDropdown.addEventListener('change', function() {
+      const selectedVal = this.value;
+      if (!selectedVal) return;
+      if (selectedVal === '__manual__') {
+        if (inpUser) { inpUser.value = ''; inpUser.focus(); }
+        if (inpPass) { inpPass.value = ''; }
+        return;
+      }
+      const users = getDemoUsers();
+      const match = users.find(function(u) {
+        return (u.username && norm(u.username) === norm(selectedVal)) || (u.name && norm(u.name) === norm(selectedVal));
+      });
+      if (match) {
+        if (inpUser) inpUser.value = match.username || extractUsername(match.email);
+        if (inpPass) inpPass.value = match.password || '1234';
+        showAuthError('');
+        if (btnLogin) {
+          btnLogin.focus();
+        }
+      }
+    });
+  }
+
+  // Initial render of user pills on page startup
+  renderQuickUserPills();
+
+})();
+</script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('./sw.js').catch(function(){});
+      });
+    }
   </script>
 </body>
 </html>
