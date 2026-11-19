@@ -323,44 +323,28 @@
     /* ========================================================
        LIVE TV STUDIO MONITOR: DESKTOP LEFT DOCK + MOBILE COLLAPSIBLE
        ======================================================== */
-    .kv-side-livetv-dock {
+    .mini-livetv-card {
       background: linear-gradient(145deg, #0d1527, #070b14);
       border: 1px solid rgba(139, 92, 246, 0.45);
-      border-radius: 16px;
+      border-radius: 12px;
       padding: 10px;
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
       box-sizing: border-box;
-      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
-    /* Desktop View: Docked in Left Blank Area */
-    @media (min-width: 900px) {
-      .kv-side-livetv-dock {
-        position: fixed;
-        top: 85px;
-        left: max(16px, calc(50% - 280px - 310px - 20px));
-        width: 310px;
-        z-index: 999;
-        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.75), 0 0 22px rgba(139, 92, 246, 0.25);
-      }
-      .mobile-only-toggle {
-        display: none !important;
-      }
-      .side-livetv-body.collapsed {
-        display: block !important;
-      }
+    .social-link-btn {
+      transition: transform 0.15s ease, filter 0.15s ease;
+      cursor: pointer;
     }
-
-    /* Mobile View: Compact & Collapsible so page doesn't stretch */
-    @media (max-width: 899px) {
-      .kv-side-livetv-dock {
-        width: 100%;
-        margin-top: 10px;
-        margin-bottom: 8px;
-      }
-      .side-livetv-body.collapsed {
-        display: none !important;
-      }
+    .social-link-btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.15);
+    }
+    .social-link-btn:active {
+      transform: translateY(0);
     }
 
     .side-livetv-chassis {
@@ -2171,91 +2155,7 @@
       </div>
     </header>
 
-    <!-- DEDICATED LIVE TV STUDIO MONITOR (Docked in Left Blank Area on Desktop / Compact in Mobile) -->
-    <aside id="videoTabLiveTvWidget" class="kv-side-livetv-dock" style="display:none;">
-      <div class="side-livetv-chassis">
-        <!-- Header with Live badge, Mute, Expand, and Collapse toggle -->
-        <div class="side-livetv-header">
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span class="live-pulse" style="width:8px; height:8px; background:#ef4444; box-shadow:0 0 10px #ef4444;"></span>
-            <span style="font-size:11.5px; font-weight:800; color:#fff; letter-spacing:0.5px;">KOZHIKODE VISION LIVE</span>
-          </div>
-          <div style="display:flex; align-items:center; gap:5px;">
-            <button id="btnMiniToggleRadio" type="button" class="btn-tactile mini-tv-ctrl-btn" title="Toggle TV / Radio Mode">📻 Radio</button>
-            <button id="btnMiniTvMute" type="button" class="btn-tactile mini-tv-ctrl-btn" title="Mute / Unmute">🔇</button>
-            <button id="btnMiniTvExpand" type="button" class="btn-tactile mini-tv-ctrl-btn" title="Full Screen Player">⛶</button>
-            <button id="btnMiniTvCollapse" type="button" class="btn-tactile mini-tv-ctrl-btn mobile-only-toggle" title="Collapse / Expand">▾ Show</button>
-          </div>
-        </div>
-
-        <!-- Screen Container (16:9 Widescreen) -->
-        <div id="sideLivetvBody" class="side-livetv-body collapsed">
-          <div class="side-livetv-screen-box">
-            <video id="kvMiniTvVideo" playsinline muted style="display:none; width:100%; height:100%; object-fit:cover; background:#000;"></video>
-            
-            <!-- Mini Radio Screen in Side Dock -->
-            <div id="kvMiniRadioScreen" class="kv-radio-screen" style="display:none;padding:8px 10px 24px 10px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:4px;">
-                <span style="font-size:10px;font-weight:900;color:#fde68a;">📻 98.6 FM</span>
-                <span class="radio-onair-pill" style="font-size:8.5px;padding:1px 6px;">🔴 LIVE RADIO</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                <img id="kvMiniRadioLogoImg" class="radio-logo-img" style="width:30px;height:30px;" alt="Logo">
-                <div>
-                  <div style="font-size:10.5px;font-weight:900;color:#fff;">KOZHIKODE VISION</div>
-                  <div style="font-size:8.5px;color:#38bdf8;">LIVE RADIO STREAM</div>
-                </div>
-              </div>
-              <!-- Mini Equalizer -->
-              <div id="miniRadioEqBars" class="radio-eq-bars" style="height:24px;width:100%;justify-content:center;">
-                <div class="radio-eq-bar"></div>
-                <div class="radio-eq-bar"></div>
-                <div class="radio-eq-bar"></div>
-                <div class="radio-eq-bar"></div>
-                <div class="radio-eq-bar"></div>
-                <div class="radio-eq-bar"></div>
-                <div class="radio-eq-bar"></div>
-                <div class="radio-eq-bar"></div>
-              </div>
-              <div class="mini-tv-ticker-wrap">
-                <div class="mini-tv-ticker-track">
-                  <span class="mini-tv-ticker-item">📻 KOZHIKODE VISION 24x7 LIVE RADIO STREAM &nbsp;&nbsp;★&nbsp;&nbsp; OFFICIAL BROADCAST &nbsp;&nbsp;★&nbsp;&nbsp; </span>
-                  <span class="mini-tv-ticker-item">📻 KOZHIKODE VISION 24x7 LIVE RADIO STREAM &nbsp;&nbsp;★&nbsp;&nbsp; OFFICIAL BROADCAST &nbsp;&nbsp;★&nbsp;&nbsp; </span>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Standby Screen with Scanning Lines & Scrolling Loop Ticker -->
-            <div id="kvMiniTvStandby" class="mini-tv-standby">
-              <div class="standby-scanlines"></div>
-              <div class="mini-tv-standby-center">
-                <div style="font-size:24px; filter:drop-shadow(0 0 10px rgba(56,189,248,0.7));">📡</div>
-                <div style="font-size:11px; font-weight:900; color:#fff; letter-spacing:0.8px; margin-top:2px;">KOZHIKODE VISION</div>
-                <div style="font-size:9.5px; color:#38bdf8; font-weight:700;">LIVE BROADCAST</div>
-              </div>
-              <!-- Infinite Looping Marquee Ticker -->
-              <div class="mini-tv-ticker-wrap">
-                <div class="mini-tv-ticker-track">
-                  <span class="mini-tv-ticker-item">⚠️ Live Broadcast Starting Soon (Standby Mode) &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION LIVE &nbsp;&nbsp;★&nbsp;&nbsp; </span>
-                  <span class="mini-tv-ticker-item">⚠️ Live Broadcast Starting Soon (Standby Mode) &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION LIVE &nbsp;&nbsp;★&nbsp;&nbsp; </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Footer Bar -->
-          <div class="side-livetv-footer">
-            <span style="font-size:10px; color:#94a3b8; display:flex; align-items:center; gap:5px;">
-              <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#22c55e;"></span>
-              Live Broadcast (24x7)
-            </span>
-            <button id="btnMiniTvOpenModal" type="button" class="btn-tactile mini-tv-expand-link">
-              Full Player ↗
-            </button>
-          </div>
-        </div>
-      </div>
-    </aside>
+    
 
     <!-- 2. FIXED LIVE CARD PREVIEW AREA (Always Stays Here!) -->
     <section class="card-preview-area">
@@ -2417,6 +2317,99 @@
               <button id="btnPhotoRight" type="button" class="btn-tactile dpad-pill">▶</button>
             </div>
 
+          </div>
+
+          <!-- Right Column for Video Mode: Mini Live TV / Radio Screen + Official Social Media Channels -->
+          <div id="videoTabLiveTvWidget" class="col-card mini-livetv-card" style="display:none;">
+            <!-- Mini TV Header -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span class="live-pulse" style="width:7px; height:7px; background:#ef4444; box-shadow:0 0 8px #ef4444;"></span>
+                <span style="font-size:11px; font-weight:800; color:#fff; letter-spacing:0.5px;">KOZHIKODE VISION LIVE</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:4px;">
+                <button id="btnMiniToggleRadio" type="button" class="btn-tactile mini-tv-ctrl-btn" title="Toggle TV / Radio Mode" style="font-size:9.5px; padding:3px 7px;">📻 Radio</button>
+                <button id="btnMiniTvMute" type="button" class="btn-tactile mini-tv-ctrl-btn" title="Mute / Unmute" style="font-size:9.5px; padding:3px 6px;">🔇</button>
+                <button id="btnMiniTvExpand" type="button" class="btn-tactile mini-tv-ctrl-btn" title="Full Screen Player" style="font-size:9.5px; padding:3px 6px;">⛶</button>
+              </div>
+            </div>
+
+            <!-- Screen Container (16:9 Widescreen) -->
+            <div id="sideLivetvBody" class="side-livetv-body" style="display:block;">
+              <div class="side-livetv-screen-box" style="position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:8px; overflow:hidden; border:1.5px solid #334155; box-shadow:0 4px 15px rgba(0,0,0,0.6);">
+                <video id="kvMiniTvVideo" playsinline muted style="display:none; width:100%; height:100%; object-fit:cover; background:#000;"></video>
+                
+                <!-- Mini Radio Screen -->
+                <div id="kvMiniRadioScreen" class="kv-radio-screen" style="display:none; padding:8px 10px 22px 10px; height:100%;">
+                  <div style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:4px;">
+                    <span style="font-size:10px;font-weight:900;color:#fde68a;">📻 98.6 FM</span>
+                    <span class="radio-onair-pill" style="font-size:8.5px;padding:1px 6px;">🔴 LIVE RADIO</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                    <img id="kvMiniRadioLogoImg" class="radio-logo-img" style="width:28px;height:28px;" alt="Logo">
+                    <div>
+                      <div style="font-size:10px;font-weight:900;color:#fff;">KOZHIKODE VISION</div>
+                      <div style="font-size:8px;color:#38bdf8;">LIVE RADIO STREAM</div>
+                    </div>
+                  </div>
+                  <!-- Mini Equalizer -->
+                  <div id="miniRadioEqBars" class="radio-eq-bars" style="height:20px;width:100%;justify-content:center;">
+                    <div class="radio-eq-bar"></div>
+                    <div class="radio-eq-bar"></div>
+                    <div class="radio-eq-bar"></div>
+                    <div class="radio-eq-bar"></div>
+                    <div class="radio-eq-bar"></div>
+                    <div class="radio-eq-bar"></div>
+                    <div class="radio-eq-bar"></div>
+                    <div class="radio-eq-bar"></div>
+                  </div>
+                  <div class="mini-tv-ticker-wrap">
+                    <div class="mini-tv-ticker-track">
+                      <span class="mini-tv-ticker-item">📻 KOZHIKODE VISION 24x7 LIVE RADIO STREAM &nbsp;&nbsp;★&nbsp;&nbsp; OFFICIAL BROADCAST &nbsp;&nbsp;★&nbsp;&nbsp; </span>
+                      <span class="mini-tv-ticker-item">📻 KOZHIKODE VISION 24x7 LIVE RADIO STREAM &nbsp;&nbsp;★&nbsp;&nbsp; OFFICIAL BROADCAST &nbsp;&nbsp;★&nbsp;&nbsp; </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Standby Screen with Scanning Lines & Scrolling Loop Ticker -->
+                <div id="kvMiniTvStandby" class="mini-tv-standby">
+                  <div class="standby-scanlines"></div>
+                  <div class="mini-tv-standby-center">
+                    <div style="font-size:22px; filter:drop-shadow(0 0 10px rgba(56,189,248,0.7));">📡</div>
+                    <div style="font-size:10.5px; font-weight:900; color:#fff; letter-spacing:0.8px; margin-top:2px;">KOZHIKODE VISION</div>
+                    <div style="font-size:9px; color:#38bdf8; font-weight:700;">LIVE BROADCAST</div>
+                  </div>
+                  <div class="mini-tv-ticker-wrap">
+                    <div class="mini-tv-ticker-track">
+                      <span class="mini-tv-ticker-item">⚠️ Live Broadcast Starting Soon (Standby Mode) &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION LIVE &nbsp;&nbsp;★&nbsp;&nbsp; </span>
+                      <span class="mini-tv-ticker-item">⚠️ Live Broadcast Starting Soon (Standby Mode) &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION LIVE &nbsp;&nbsp;★&nbsp;&nbsp; </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Official Social Media Links Box Directly Below TV (Green Box 'socialmedia') -->
+              <div class="official-social-links-box" style="margin-top:10px; padding-top:8px; border-top:1px dashed rgba(255,255,255,0.14);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <span style="font-size:9.5px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.6px;">🌐 Official Channels</span>
+                  <button id="btnMiniTvOpenModal" type="button" class="btn-tactile mini-tv-expand-link" style="font-size:9.5px; color:#38bdf8; background:none; border:none; padding:0; cursor:pointer;">Full Player ↗</button>
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px;">
+                  <a href="https://www.facebook.com/share/1FfabXkBLB/" target="_blank" rel="noopener noreferrer" class="btn-tactile social-link-btn fb" title="Kozhikode Vision Official Facebook" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:7px 2px; background:linear-gradient(135deg, #1877f2, #0d5bbd); color:#ffffff; border-radius:8px; text-decoration:none; box-shadow:0 2px 8px rgba(24,119,242,0.35); border:1px solid #4599ff;">
+                    <svg style="width:17px;height:17px;fill:currentColor;" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    <span style="font-size:9.5px; font-weight:800; margin-top:1px;">Facebook</span>
+                  </a>
+                  <a href="https://youtube.com/@kozhikodevisiononline?feature=shared" target="_blank" rel="noopener noreferrer" class="btn-tactile social-link-btn yt" title="Kozhikode Vision Official YouTube" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:7px 2px; background:linear-gradient(135deg, #ff0000, #b91c1c); color:#ffffff; border-radius:8px; text-decoration:none; box-shadow:0 2px 8px rgba(255,0,0,0.35); border:1px solid #ff4d4d;">
+                    <svg style="width:17px;height:17px;fill:currentColor;" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    <span style="font-size:9.5px; font-weight:800; margin-top:1px;">YouTube</span>
+                  </a>
+                  <a href="https://www.instagram.com/kozhikodevisiononline?cnvx=MnJmYWowZnI2cXpu" target="_blank" rel="noopener noreferrer" class="btn-tactile social-link-btn ig" title="Kozhikode Vision Official Instagram" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:7px 2px; background:linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); color:#ffffff; border-radius:8px; text-decoration:none; box-shadow:0 2px 8px rgba(225,48,108,0.35); border:1px solid #ff7777;">
+                    <svg style="width:17px;height:17px;fill:currentColor;" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    <span style="font-size:9.5px; font-weight:800; margin-top:1px;">Instagram</span>
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
 
         </div>
@@ -6643,8 +6636,9 @@
     }
     if (miniRadioScreen) miniRadioScreen.style.display = 'none';
 
-    if (window.innerWidth >= 900 && sideLivetvBody) {
+    if (sideLivetvBody) {
       sideLivetvBody.classList.remove('collapsed');
+      sideLivetvBody.style.display = 'block';
     }
     const streamUrl = getSavedLiveStreamUrl();
 
@@ -6677,8 +6671,9 @@
     const miniEq = document.getElementById('miniRadioEqBars');
     const sideLivetvBody = document.getElementById('sideLivetvBody');
 
-    if (window.innerWidth >= 900 && sideLivetvBody) {
+    if (sideLivetvBody) {
       sideLivetvBody.classList.remove('collapsed');
+      sideLivetvBody.style.display = 'block';
     }
     if (miniLogo && typeof OFFICIAL_LOGO_B64 !== 'undefined') miniLogo.src = OFFICIAL_LOGO_B64;
     if (btnMiniToggleRadio) {
