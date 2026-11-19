@@ -484,6 +484,191 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
       transition: all 0.2s ease;
     }
+
+    /* ========================================================
+       LIVE RADIO MODE & BRANDED RADIO SCREEN STYLES
+       ======================================================== */
+    .kv-stream-mode-switcher {
+      display: flex;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 4px;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .stream-mode-tab {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .stream-mode-tab:hover {
+      color: #ffffff;
+    }
+    .stream-mode-tab.active {
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(220, 38, 38, 0.45);
+    }
+    .stream-mode-tab.radio-tab.active {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      box-shadow: 0 2px 10px rgba(217, 119, 6, 0.45);
+    }
+
+    /* Radio Screen Visualizer Overlay */
+    .kv-radio-screen {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 25%, #1e1b4b 0%, #030712 100%);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px 36px 16px;
+      box-sizing: border-box;
+      overflow: hidden;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      z-index: 8;
+    }
+    .radio-top-bar {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .radio-onair-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 9px;
+      border-radius: 20px;
+    }
+    .radio-console-body {
+      width: 100%;
+      max-width: 440px;
+      background: linear-gradient(180deg, #18181b 0%, #09090b 100%);
+      border: 2px solid #3f3f46;
+      border-radius: 16px;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+    .radio-tuner-dial {
+      width: 100%;
+      background: #020617;
+      border: 1.5px solid #27272a;
+      border-radius: 8px;
+      padding: 6px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.9);
+    }
+    .radio-dial-scale {
+      display: flex;
+      justify-content: space-between;
+      font-size: 9.5px;
+      font-family: monospace;
+      color: #38bdf8;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .radio-dial-needle-wrap {
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      position: relative;
+    }
+    .radio-dial-needle {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 64%;
+      width: 4px;
+      background: #ef4444;
+      box-shadow: 0 0 8px #ef4444;
+      border-radius: 2px;
+    }
+    .radio-speaker-section {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .radio-brand-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .radio-logo-img {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: #ffffff;
+      padding: 2px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      object-fit: contain;
+    }
+    .radio-eq-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 3.5px;
+      height: 34px;
+      padding: 4px 8px;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .radio-eq-bar {
+      width: 3.5px;
+      background: linear-gradient(180deg, #f59e0b, #ef4444 60%, #38bdf8);
+      border-radius: 2px;
+      height: 20%;
+      animation: kvEqPulse 1.2s ease-in-out infinite alternate;
+    }
+    .radio-eq-bar:nth-child(2) { animation-delay: 0.15s; }
+    .radio-eq-bar:nth-child(3) { animation-delay: 0.35s; }
+    .radio-eq-bar:nth-child(4) { animation-delay: 0.05s; }
+    .radio-eq-bar:nth-child(5) { animation-delay: 0.45s; }
+    .radio-eq-bar:nth-child(6) { animation-delay: 0.25s; }
+    .radio-eq-bar:nth-child(7) { animation-delay: 0.55s; }
+    .radio-eq-bar:nth-child(8) { animation-delay: 0.1s; }
+    .radio-eq-bar:nth-child(9) { animation-delay: 0.4s; }
+    .radio-eq-bar:nth-child(10) { animation-delay: 0.2s; }
+    @keyframes kvEqPulse {
+      0% { height: 15%; }
+      50% { height: 90%; }
+      100% { height: 35%; }
+    }
+    .radio-eq-bars.paused .radio-eq-bar {
+      animation: none !important;
+      height: 15% !important;
+      opacity: 0.4;
+    }
     .kv-live-tv-actions {
       display: flex;
       align-items: center;
@@ -1804,6 +1989,12 @@
             <input id="kvInpLiveStreamUrl" type="url" class="kv-admin-input" placeholder="https://example.com/live/kozhikodevision.m3u8" style="background:#0b1329;border:1px solid #334155;color:#38bdf8;">
           </div>
 
+          <div class="form-group" style="margin-bottom:12px;">
+            <label style="font-size:11px;color:#fbbf24;display:block;margin-bottom:4px;">📻 റേഡിയോ സ്ട്രീം URL (Optional Audio Link - MP3/AAC/.m3u8):</label>
+            <input id="kvInpRadioStreamUrl" type="url" class="kv-admin-input" placeholder="നൽകിയിട്ടില്ലെങ്കിൽ ലൈവ് ടിവിയുടെ ഓഡിയോ പ്ലേ ആകും (Auto TV Fallback)" style="background:#0b1329;border:1px solid #334155;color:#fbbf24;">
+            <span style="font-size:9.5px;color:#64748b;display:block;margin-top:2px;">💡 ഇവിടെ റേഡിയോ ലിങ്ക് നൽകിയിട്ടില്ലെങ്കിൽ ലൈവ് ടിവിയുടെ ഓഡിയോ തന്നെയാണ് റേഡിയോ മോഡിൽ പ്ലേ ആവുക.</span>
+          </div>
+
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
             <button id="kvBtnSaveLiveStreamUrl" type="button" class="btn-tactile" style="font-size:11px;font-weight:700;padding:6px 14px;background:#10b981;color:#fff;border-radius:6px;border:none;cursor:pointer;">
               💾 ലൈവ് ലിങ്ക് സേവ് ചെയ്യുക (Save Link)
@@ -1990,6 +2181,7 @@
             <span style="font-size:11.5px; font-weight:800; color:#fff; letter-spacing:0.5px;">KOZHIKODE VISION LIVE</span>
           </div>
           <div style="display:flex; align-items:center; gap:5px;">
+            <button id="btnMiniToggleRadio" type="button" class="btn-tactile mini-tv-ctrl-btn" title="ടിവി / റേഡിയോ മോഡ് മാറ്റുക">📻 റേഡിയോ</button>
             <button id="btnMiniTvMute" type="button" class="btn-tactile mini-tv-ctrl-btn" title="ശബ്ദം ഓൺ/ഓഫ്">🔇</button>
             <button id="btnMiniTvExpand" type="button" class="btn-tactile mini-tv-ctrl-btn" title="വലിയ സ്ക്രീനിൽ കാണുക">⛶</button>
             <button id="btnMiniTvCollapse" type="button" class="btn-tactile mini-tv-ctrl-btn mobile-only-toggle" title="ചുരുക്കുക / കാണിക്കുക">▾ കാണിക്കുക</button>
@@ -2000,6 +2192,38 @@
         <div id="sideLivetvBody" class="side-livetv-body collapsed">
           <div class="side-livetv-screen-box">
             <video id="kvMiniTvVideo" playsinline muted style="display:none; width:100%; height:100%; object-fit:cover; background:#000;"></video>
+            
+            <!-- Mini Radio Screen in Side Dock -->
+            <div id="kvMiniRadioScreen" class="kv-radio-screen" style="display:none;padding:8px 10px 24px 10px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:4px;">
+                <span style="font-size:10px;font-weight:900;color:#fde68a;">📻 98.6 FM</span>
+                <span class="radio-onair-pill" style="font-size:8.5px;padding:1px 6px;">🔴 LIVE RADIO</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                <img id="kvMiniRadioLogoImg" class="radio-logo-img" style="width:30px;height:30px;" alt="Logo">
+                <div>
+                  <div style="font-size:10.5px;font-weight:900;color:#fff;">KOZHIKODE VISION</div>
+                  <div style="font-size:8.5px;color:#38bdf8;">LIVE RADIO STREAM</div>
+                </div>
+              </div>
+              <!-- Mini Equalizer -->
+              <div id="miniRadioEqBars" class="radio-eq-bars" style="height:24px;width:100%;justify-content:center;">
+                <div class="radio-eq-bar"></div>
+                <div class="radio-eq-bar"></div>
+                <div class="radio-eq-bar"></div>
+                <div class="radio-eq-bar"></div>
+                <div class="radio-eq-bar"></div>
+                <div class="radio-eq-bar"></div>
+                <div class="radio-eq-bar"></div>
+                <div class="radio-eq-bar"></div>
+              </div>
+              <div class="mini-tv-ticker-wrap">
+                <div class="mini-tv-ticker-track">
+                  <span class="mini-tv-ticker-item">📻 കോഴിക്കോട് വിഷൻ തത്സമയ റേഡിയോ &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION LIVE RADIO &nbsp;&nbsp;★&nbsp;&nbsp; </span>
+                  <span class="mini-tv-ticker-item">📻 കോഴിക്കോട് വിഷൻ തത്സമയ റേഡിയോ &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION LIVE RADIO &nbsp;&nbsp;★&nbsp;&nbsp; </span>
+                </div>
+              </div>
+            </div>
             
             <!-- Standby Screen with Scanning Lines & Scrolling Loop Ticker -->
             <div id="kvMiniTvStandby" class="mini-tv-standby">
@@ -2826,10 +3050,98 @@
         <button id="btnCloseLiveTv" type="button" class="btn-close-modal">✕ ക്ലോസ്</button>
       </div>
 
+      <!-- Stream Mode Selector: TV Mode vs Live Radio Mode -->
+      <div class="kv-stream-mode-switcher">
+        <button id="btnModalModeTv" type="button" class="stream-mode-tab active">
+          <span>📺 ലൈവ് ടിവി (TV Mode)</span>
+        </button>
+        <button id="btnModalModeRadio" type="button" class="stream-mode-tab radio-tab">
+          <span>📻 ലൈവ് റേഡിയോ (Live Radio)</span>
+        </button>
+      </div>
+
       <!-- Video Player Container (16:9 Widescreen) -->
       <div class="kv-live-tv-player-wrap">
         <!-- Live Video Element -->
         <video id="kvLiveTvVideo" playsinline controls style="display:none;width:100%;height:100%;border-radius:12px;background:#000;"></video>
+
+        <!-- Live Radio Screen (Kozhikode Vision Radio Chassis & Visualizer) -->
+        <div id="kvLiveRadioScreen" class="kv-radio-screen" style="display:none;">
+          <div class="radio-top-bar">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="live-pulse" style="width:7px;height:7px;background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></span>
+              <span style="font-size:11px;font-weight:800;color:#fde68a;letter-spacing:0.5px;">KOZHIKODE VISION FM</span>
+            </div>
+            <div class="radio-onair-pill">
+              <span class="live-pulse" style="width:6px;height:6px;background:#ef4444;"></span>
+              <span>🔴 ON AIR • LIVE RADIO</span>
+            </div>
+          </div>
+
+          <!-- Radio Console Body -->
+          <div class="radio-console-body">
+            <!-- Tuner Dial -->
+            <div class="radio-tuner-dial">
+              <div class="radio-dial-scale">
+                <span>88</span>
+                <span>92</span>
+                <span style="color:#f59e0b;font-weight:900;">98.6 FM</span>
+                <span>104</span>
+                <span>108 MHz</span>
+              </div>
+              <div class="radio-dial-needle-wrap">
+                <div class="radio-dial-needle"></div>
+              </div>
+            </div>
+
+            <!-- Speaker Grille with Brand Logo & Equalizer Waves -->
+            <div class="radio-speaker-section">
+              <div class="radio-brand-badge">
+                <img id="kvRadioLogoImg" class="radio-logo-img" alt="Kozhikode Vision">
+                <div>
+                  <div style="font-size:13px;font-weight:900;color:#ffffff;letter-spacing:0.5px;">KOZHIKODE VISION</div>
+                  <div style="font-size:10px;color:#38bdf8;font-weight:700;">OFFICIAL BROADCAST RADIO</div>
+                </div>
+              </div>
+
+              <!-- Animated Equalizer Bars -->
+              <div id="radioEqBars" class="radio-eq-bars">
+                <div class="radio-eq-bar"></div>
+                <div class="radio-eq-bar"></div>
+                <div class="radio-eq-bar"></div>
+                <div class="radio-eq-bar"></div>
+                <div class="radio-eq-bar"></div>
+                <div class="radio-eq-bar"></div>
+                <div class="radio-eq-bar"></div>
+                <div class="radio-eq-bar"></div>
+                <div class="radio-eq-bar"></div>
+                <div class="radio-eq-bar"></div>
+              </div>
+            </div>
+
+            <div style="font-size:11px;color:#cbd5e1;text-align:center;line-height:1.4;">
+              🎧 <b>ഓഡിയോ തത്സമയം കേൾക്കാം</b> (Battery & Data Saver)
+            </div>
+
+            <!-- Radio Audio Controls -->
+            <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:2px;">
+              <button id="btnRadioPlayPause" type="button" class="btn-tactile" style="background:#1e293b;border:1px solid #475569;color:#fbbf24;padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:5px;cursor:pointer;">
+                <span id="lblRadioPlayIcon">⏸️</span> <span id="lblRadioPlayText">Pause</span>
+              </button>
+              <button id="btnRadioMute" type="button" class="btn-tactile" style="background:#1e293b;border:1px solid #475569;color:#cbd5e1;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;">
+                <span id="lblRadioMuteIcon">🔊</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Radio Looping Standby/Broadcast Ticker -->
+          <div class="standby-marquee-ticker" style="background:linear-gradient(90deg,#78350f,#d97706 30%,#b45309 70%,#78350f);border-top:1.5px solid #fde68a;">
+            <div class="standby-ticker-track">
+              <span class="standby-ticker-item">📻 കോഴിക്കോട് വിഷൻ തത്സമയ റേഡിയോ &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION 24x7 LIVE RADIO STREAM &nbsp;&nbsp;★&nbsp;&nbsp; </span>
+              <span class="standby-ticker-item">📻 കോഴിക്കോട് വിഷൻ തത്സമയ റേഡിയോ &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION 24x7 LIVE RADIO STREAM &nbsp;&nbsp;★&nbsp;&nbsp; </span>
+            </div>
+          </div>
+        </div>
 
         <!-- Under Construction / Standby Test Screen (Shown when no stream URL or offline) -->
         <div id="kvLiveTvStandbyScreen" class="kv-live-tv-standby">
@@ -5413,6 +5725,24 @@
         updateCloudStatusPill('error', 'കണക്ഷൻ തടസ്സപ്പെട്ടു (ലോക്കൽ മോഡ്)');
       });
 
+      // Realtime listener for Live TV & Live Radio stream settings from Firestore
+      firebaseDb.collection('kv_settings').doc('live_stream').onSnapshot(function(doc) {
+        if (doc && doc.exists) {
+          const d = doc.data();
+          if (d && d.url !== undefined) {
+            try { localStorage.setItem('kv_live_tv_stream_url', d.url); } catch(e){}
+            if (typeof updateLiveStreamBadge === 'function') updateLiveStreamBadge(d.url);
+            const inp = document.getElementById('kvInpLiveStreamUrl');
+            if (inp) inp.value = d.url;
+          }
+          if (d && d.radioUrl !== undefined) {
+            try { localStorage.setItem('kv_liveradio_stream_url', d.radioUrl); } catch(e){}
+            const rinp = document.getElementById('kvInpRadioStreamUrl');
+            if (rinp) rinp.value = d.radioUrl;
+          }
+        }
+      }, function(){});
+
     } catch (err) {
       console.warn('Firebase init error:', err);
       updateCloudStatusPill('error', 'Config തെറ്റാണ് / പരാജയപ്പെട്ടു');
@@ -6112,16 +6442,29 @@
   initFirebaseDatabase();
 
     // =========================================================================
-  // LIVE TV STREAM PLAYER & HLS CONFIGURATION LOGIC
+  // LIVE TV STREAM & LIVE RADIO CONFIGURATION LOGIC
   // =========================================================================
   let liveHlsInstance = null;
   const LIVE_STREAM_STORAGE_KEY = 'kv_live_tv_stream_url';
+  const LIVE_RADIO_STORAGE_KEY = 'kv_liveradio_stream_url';
+  let activeModalStreamMode = 'tv';
+  let miniStreamMode = 'tv';
 
   function getSavedLiveStreamUrl() {
     try {
       return localStorage.getItem(LIVE_STREAM_STORAGE_KEY) || '';
     } catch (e) {
       return '';
+    }
+  }
+
+  function getSavedRadioStreamUrl() {
+    try {
+      const r = localStorage.getItem(LIVE_RADIO_STORAGE_KEY);
+      if (r && r.trim()) return r.trim();
+      return getSavedLiveStreamUrl(); // Fallback to Live TV audio stream
+    } catch (e) {
+      return getSavedLiveStreamUrl();
     }
   }
 
@@ -6140,36 +6483,87 @@
     }
   }
 
-  function openLiveTvPlayer() {
-    const modal = document.getElementById('kvLiveTvModal');
+  function setModalStreamMode(mode) {
+    activeModalStreamMode = mode;
+    const btnTv = document.getElementById('btnModalModeTv');
+    const btnRadio = document.getElementById('btnModalModeRadio');
     const video = document.getElementById('kvLiveTvVideo');
+    const radioScreen = document.getElementById('kvLiveRadioScreen');
     const standby = document.getElementById('kvLiveTvStandbyScreen');
+    const radioLogo = document.getElementById('kvRadioLogoImg');
+    const radioEq = document.getElementById('radioEqBars');
+    const lblPlayIcon = document.getElementById('lblRadioPlayIcon');
+    const lblPlayText = document.getElementById('lblRadioPlayText');
+
+    if (radioLogo && typeof OFFICIAL_LOGO_B64 !== 'undefined') radioLogo.src = OFFICIAL_LOGO_B64;
+
+    if (mode === 'radio') {
+      if (btnTv) btnTv.classList.remove('active');
+      if (btnRadio) btnRadio.classList.add('active');
+      if (standby) standby.style.display = 'none';
+      if (radioScreen) radioScreen.style.display = 'flex';
+
+      const radioUrl = getSavedRadioStreamUrl();
+      if (radioUrl && radioUrl.trim()) {
+        if (radioEq) radioEq.classList.remove('paused');
+        if (video) {
+          video.style.display = 'none'; // Audio only in radio mode
+          playHlsStream(video, radioUrl.trim());
+        }
+        if (lblPlayIcon) lblPlayIcon.textContent = '⏸️';
+        if (lblPlayText) lblPlayText.textContent = 'Pause';
+      } else {
+        if (video) {
+          video.pause();
+          video.style.display = 'none';
+        }
+        if (radioEq) radioEq.classList.add('paused');
+        if (lblPlayIcon) lblPlayIcon.textContent = '▶️';
+        if (lblPlayText) lblPlayText.textContent = 'Play';
+      }
+    } else {
+      // TV Mode
+      if (btnRadio) btnRadio.classList.remove('active');
+      if (btnTv) btnTv.classList.add('active');
+      if (radioScreen) radioScreen.style.display = 'none';
+
+      const streamUrl = getSavedLiveStreamUrl();
+      if (streamUrl && streamUrl.trim()) {
+        if (standby) standby.style.display = 'none';
+        if (video) {
+          video.style.display = 'block';
+          playHlsStream(video, streamUrl.trim());
+        }
+      } else {
+        if (video) {
+          video.style.display = 'none';
+          video.pause();
+        }
+        if (standby) standby.style.display = 'flex';
+      }
+    }
+  }
+
+  function openLiveTvPlayer(targetMode) {
+    const modal = document.getElementById('kvLiveTvModal');
     const adminHelper = document.getElementById('kvLiveTvAdminHelper');
     const logo = document.getElementById('kvLiveTvLogoImg');
+    const radioLogo = document.getElementById('kvRadioLogoImg');
     if (logo && typeof OFFICIAL_LOGO_B64 !== 'undefined') logo.src = OFFICIAL_LOGO_B64;
+    if (radioLogo && typeof OFFICIAL_LOGO_B64 !== 'undefined') radioLogo.src = OFFICIAL_LOGO_B64;
 
     // Pause mini TV while big player is active
     stopMiniLiveTv();
 
     if (modal) modal.classList.remove('kv-hidden');
 
-    const streamUrl = getSavedLiveStreamUrl();
     const isAdmin = window.KV_ACTIVE_USER && window.KV_ACTIVE_USER.role === 'admin';
     if (adminHelper) adminHelper.style.display = isAdmin ? 'block' : 'none';
 
-    if (streamUrl && streamUrl.trim()) {
-      if (standby) standby.style.display = 'none';
-      if (video) {
-        video.style.display = 'block';
-        playHlsStream(video, streamUrl.trim());
-      }
-    } else {
-      if (video) {
-        video.style.display = 'none';
-        video.pause();
-      }
-      if (standby) standby.style.display = 'flex';
+    if (targetMode && (targetMode === 'tv' || targetMode === 'radio')) {
+      activeModalStreamMode = targetMode;
     }
+    setModalStreamMode(activeModalStreamMode || 'tv');
   }
 
   function closeLiveTvPlayer() {
@@ -6185,9 +6579,13 @@
       liveHlsInstance.destroy();
       liveHlsInstance = null;
     }
-    // Resume Mini TV if still on video mode
+    // Resume Mini TV / Radio if on video mode
     if (cardType === 'video') {
-      initMiniLiveTv();
+      if (miniStreamMode === 'radio') {
+        showMiniRadio();
+      } else {
+        initMiniLiveTv();
+      }
     }
   }
 
@@ -6220,7 +6618,7 @@
   }
 
   // ==============================================
-  // MINI LIVE TV SCREEN IN VIDEO TAB
+  // MINI LIVE TV & MINI LIVE RADIO SCREEN IN VIDEO TAB
   // ==============================================
   let miniLiveHlsInstance = null;
 
@@ -6228,9 +6626,23 @@
     const miniWidget = document.getElementById('videoTabLiveTvWidget');
     if (!miniWidget || miniWidget.style.display === 'none') return;
 
+    if (miniStreamMode === 'radio') {
+      showMiniRadio();
+      return;
+    }
+
     const miniVideo = document.getElementById('kvMiniTvVideo');
     const miniStandby = document.getElementById('kvMiniTvStandby');
+    const miniRadioScreen = document.getElementById('kvMiniRadioScreen');
     const sideLivetvBody = document.getElementById('sideLivetvBody');
+    const btnMiniToggleRadio = document.getElementById('btnMiniToggleRadio');
+
+    if (btnMiniToggleRadio) {
+      btnMiniToggleRadio.textContent = '📻 റേഡിയോ';
+      btnMiniToggleRadio.title = 'ലൈവ് റേഡിയോ മോഡിലേക്ക് മാറ്റുക';
+    }
+    if (miniRadioScreen) miniRadioScreen.style.display = 'none';
+
     if (window.innerWidth >= 900 && sideLivetvBody) {
       sideLivetvBody.classList.remove('collapsed');
     }
@@ -6253,6 +6665,48 @@
         miniLiveHlsInstance = null;
       }
     }
+  }
+
+  function showMiniRadio() {
+    miniStreamMode = 'radio';
+    const miniVideo = document.getElementById('kvMiniTvVideo');
+    const miniStandby = document.getElementById('kvMiniTvStandby');
+    const miniRadioScreen = document.getElementById('kvMiniRadioScreen');
+    const btnMiniToggleRadio = document.getElementById('btnMiniToggleRadio');
+    const miniLogo = document.getElementById('kvMiniRadioLogoImg');
+    const miniEq = document.getElementById('miniRadioEqBars');
+    const sideLivetvBody = document.getElementById('sideLivetvBody');
+
+    if (window.innerWidth >= 900 && sideLivetvBody) {
+      sideLivetvBody.classList.remove('collapsed');
+    }
+    if (miniLogo && typeof OFFICIAL_LOGO_B64 !== 'undefined') miniLogo.src = OFFICIAL_LOGO_B64;
+    if (btnMiniToggleRadio) {
+      btnMiniToggleRadio.textContent = '📺 ടിവി';
+      btnMiniToggleRadio.title = 'ലൈവ് ടിവി സ്ക്രീനിലേക്ക് മാറ്റുക';
+    }
+    if (miniStandby) miniStandby.style.display = 'none';
+    if (miniRadioScreen) miniRadioScreen.style.display = 'block';
+
+    const radioUrl = getSavedRadioStreamUrl();
+    if (radioUrl && radioUrl.trim()) {
+      if (miniEq) miniEq.classList.remove('paused');
+      if (miniVideo) {
+        miniVideo.style.display = 'none'; // Audio only
+        playMiniHlsStream(miniVideo, radioUrl.trim());
+      }
+    } else {
+      if (miniVideo) {
+        miniVideo.pause();
+        miniVideo.style.display = 'none';
+      }
+      if (miniEq) miniEq.classList.add('paused');
+    }
+  }
+
+  function showMiniTv() {
+    miniStreamMode = 'tv';
+    initMiniLiveTv();
   }
 
   function playMiniHlsStream(videoEl, url) {
@@ -6290,12 +6744,31 @@
     }
   }
 
-  // Mini TV Button Listeners
+  // Mini TV / Radio Button Listeners
+  const btnMiniToggleRadio = document.getElementById('btnMiniToggleRadio');
   const btnMiniTvMute = document.getElementById('btnMiniTvMute');
   const btnMiniTvExpand = document.getElementById('btnMiniTvExpand');
   const btnMiniTvOpenModal = document.getElementById('btnMiniTvOpenModal');
   const btnMiniTvCollapse = document.getElementById('btnMiniTvCollapse');
   const sideLivetvBody = document.getElementById('sideLivetvBody');
+  const kvMiniRadioScreen = document.getElementById('kvMiniRadioScreen');
+
+  if (btnMiniToggleRadio) {
+    btnMiniToggleRadio.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (miniStreamMode === 'radio') {
+        showMiniTv();
+      } else {
+        showMiniRadio();
+      }
+    });
+  }
+
+  if (kvMiniRadioScreen) {
+    kvMiniRadioScreen.addEventListener('click', function() {
+      openLiveTvPlayer('radio');
+    });
+  }
 
   if (btnMiniTvCollapse && sideLivetvBody) {
     btnMiniTvCollapse.addEventListener('click', function() {
@@ -6316,10 +6789,64 @@
     });
   }
   if (btnMiniTvExpand) {
-    btnMiniTvExpand.addEventListener('click', openLiveTvPlayer);
+    btnMiniTvExpand.addEventListener('click', function() {
+      openLiveTvPlayer(miniStreamMode);
+    });
   }
   if (btnMiniTvOpenModal) {
-    btnMiniTvOpenModal.addEventListener('click', openLiveTvPlayer);
+    btnMiniTvOpenModal.addEventListener('click', function() {
+      openLiveTvPlayer(miniStreamMode);
+    });
+  }
+
+  // Modal Mode Switchers: TV vs Radio
+  const btnModalModeTv = document.getElementById('btnModalModeTv');
+  const btnModalModeRadio = document.getElementById('btnModalModeRadio');
+  if (btnModalModeTv) {
+    btnModalModeTv.addEventListener('click', function() {
+      setModalStreamMode('tv');
+    });
+  }
+  if (btnModalModeRadio) {
+    btnModalModeRadio.addEventListener('click', function() {
+      setModalStreamMode('radio');
+    });
+  }
+
+  // Radio Controls inside Modal
+  const btnRadioPlayPause = document.getElementById('btnRadioPlayPause');
+  const btnRadioMute = document.getElementById('btnRadioMute');
+  const lblRadioPlayIcon = document.getElementById('lblRadioPlayIcon');
+  const lblRadioPlayText = document.getElementById('lblRadioPlayText');
+  const lblRadioMuteIcon = document.getElementById('lblRadioMuteIcon');
+  const radioEqBars = document.getElementById('radioEqBars');
+
+  if (btnRadioPlayPause) {
+    btnRadioPlayPause.addEventListener('click', function() {
+      const video = document.getElementById('kvLiveTvVideo');
+      if (!video) return;
+      if (video.paused) {
+        video.play().then(function() {
+          if (lblRadioPlayIcon) lblRadioPlayIcon.textContent = '⏸️';
+          if (lblRadioPlayText) lblRadioPlayText.textContent = 'Pause';
+          if (radioEqBars) radioEqBars.classList.remove('paused');
+        }).catch(function(){});
+      } else {
+        video.pause();
+        if (lblRadioPlayIcon) lblRadioPlayIcon.textContent = '▶️';
+        if (lblRadioPlayText) lblRadioPlayText.textContent = 'Play';
+        if (radioEqBars) radioEqBars.classList.add('paused');
+      }
+    });
+  }
+
+  if (btnRadioMute) {
+    btnRadioMute.addEventListener('click', function() {
+      const video = document.getElementById('kvLiveTvVideo');
+      if (!video) return;
+      video.muted = !video.muted;
+      if (lblRadioMuteIcon) lblRadioMuteIcon.textContent = video.muted ? '🔇' : '🔊';
+    });
   }
 
   // Button Listeners for Live TV Modal
@@ -6327,7 +6854,11 @@
   const btnCloseLiveTv = document.getElementById('btnCloseLiveTv');
   const btnOpenAdminFromLive = document.getElementById('btnOpenAdminFromLiveTv');
 
-  if (btnOpenLiveTv) btnOpenLiveTv.addEventListener('click', openLiveTvPlayer);
+  if (btnOpenLiveTv) {
+    btnOpenLiveTv.addEventListener('click', function() {
+      openLiveTvPlayer('tv');
+    });
+  }
   if (btnCloseLiveTv) btnCloseLiveTv.addEventListener('click', closeLiveTvPlayer);
   if (btnOpenAdminFromLive) {
     btnOpenAdminFromLive.addEventListener('click', function() {
@@ -6338,31 +6869,51 @@
 
   // Admin Live Stream URL inputs & buttons
   const inpLiveStreamUrl = document.getElementById('kvInpLiveStreamUrl');
+  const inpRadioStreamUrl = document.getElementById('kvInpRadioStreamUrl');
   const btnSaveLiveStream = document.getElementById('kvBtnSaveLiveStreamUrl');
   const btnClearLiveStream = document.getElementById('kvBtnClearLiveStreamUrl');
   const btnPreviewLiveTv = document.getElementById('kvBtnPreviewLiveTv');
 
   const curSavedStream = getSavedLiveStreamUrl();
   if (inpLiveStreamUrl) inpLiveStreamUrl.value = curSavedStream;
+  if (inpRadioStreamUrl) {
+    try {
+      inpRadioStreamUrl.value = localStorage.getItem(LIVE_RADIO_STORAGE_KEY) || '';
+    } catch(e) {}
+  }
   updateLiveStreamBadge(curSavedStream);
 
   if (btnSaveLiveStream && inpLiveStreamUrl) {
     btnSaveLiveStream.addEventListener('click', function() {
       const url = inpLiveStreamUrl.value.trim();
-      if (!url) {
-        alert('⚠️ ദയവായി സാധുവായ ഒരു .m3u8 സ്ട്രീം URL നൽകുക.');
+      const radioUrl = inpRadioStreamUrl ? inpRadioStreamUrl.value.trim() : '';
+      if (!url && !radioUrl) {
+        alert('⚠️ ദയവായി സാധുവായ ഒരു .m3u8 അല്ലെങ്കിൽ റേഡിയോ സ്ട്രീം URL നൽകുക.');
         return;
       }
       try {
-        localStorage.setItem(LIVE_STREAM_STORAGE_KEY, url);
-        updateLiveStreamBadge(url);
+        if (url) {
+          localStorage.setItem(LIVE_STREAM_STORAGE_KEY, url);
+        } else {
+          localStorage.removeItem(LIVE_STREAM_STORAGE_KEY);
+        }
+        if (radioUrl) {
+          localStorage.setItem(LIVE_RADIO_STORAGE_KEY, radioUrl);
+        } else {
+          localStorage.removeItem(LIVE_RADIO_STORAGE_KEY);
+        }
+        updateLiveStreamBadge(url || radioUrl);
         // Sync to Firestore if live
         if (firebaseDb && isFirebaseLive) {
-          firebaseDb.collection('kv_settings').doc('live_stream').set({ url: url, updatedAt: new Date().toISOString() }, { merge: true }).catch(function(){});
+          firebaseDb.collection('kv_settings').doc('live_stream').set({
+            url: url || '',
+            radioUrl: radioUrl || '',
+            updatedAt: new Date().toISOString()
+          }, { merge: true }).catch(function(){});
         }
-        showAdminStatus('✅ ലൈവ് ടിവി സ്ട്രീം URL സേവ് ചെയ്തു! ഇപ്പോൾ ലൈവ് ടിവിയിൽ പ്ലേ ചെയ്യാം.', false);
+        showAdminStatus('✅ ലൈവ് സ്ട്രീം വിവരങ്ങൾ സേവ് ചെയ്തു! ഇപ്പോൾ ലൈവ് ടിവിയും റേഡിയോയും ആസ്വദിക്കാം.', false);
         if (typeof showToast === 'function') {
-          showToast('✅ ലൈവ് സ്ട്രീം ലിങ്ക് സേവ് ചെയ്തു!');
+          showToast('✅ ലൈവ് സ്ട്രീം ലിങ്കുകൾ സേവ് ചെയ്തു!');
         }
         if (typeof initMiniLiveTv === 'function') {
           initMiniLiveTv();
@@ -6375,15 +6926,21 @@
 
   if (btnClearLiveStream && inpLiveStreamUrl) {
     btnClearLiveStream.addEventListener('click', function() {
-      if (confirm('ലൈവ് സ്ട്രീം ലിങ്ക് നീക്കം ചെയ്ത് Standby / Under Construction മോഡിലേക്ക് മാറ്റണോ?')) {
+      if (confirm('ലൈവ് ടിവി & റേഡിയോ സ്ട്രീം ലിങ്കുകൾ നീക്കം ചെയ്ത് Standby മോഡിലേക്ക് മാറ്റണോ?')) {
         try {
           localStorage.removeItem(LIVE_STREAM_STORAGE_KEY);
+          localStorage.removeItem(LIVE_RADIO_STORAGE_KEY);
           inpLiveStreamUrl.value = '';
+          if (inpRadioStreamUrl) inpRadioStreamUrl.value = '';
           updateLiveStreamBadge('');
           if (firebaseDb && isFirebaseLive) {
-            firebaseDb.collection('kv_settings').doc('live_stream').set({ url: '', updatedAt: new Date().toISOString() }, { merge: true }).catch(function(){});
+            firebaseDb.collection('kv_settings').doc('live_stream').set({
+              url: '',
+              radioUrl: '',
+              updatedAt: new Date().toISOString()
+            }, { merge: true }).catch(function(){});
           }
-          showAdminStatus('🗑️ ലൈവ് ലിങ്ക് നീക്കം ചെയ്തു (Standby Mode).', false);
+          showAdminStatus('🗑️ ലൈവ് ലിങ്കുകൾ നീക്കം ചെയ്തു (Standby Mode).', false);
           if (typeof initMiniLiveTv === 'function') {
             initMiniLiveTv();
           }
@@ -6395,7 +6952,7 @@
   if (btnPreviewLiveTv) {
     btnPreviewLiveTv.addEventListener('click', function() {
       if (adminModal) adminModal.classList.add('kv-hidden');
-      openLiveTvPlayer();
+      openLiveTvPlayer('tv');
     });
   }
 
