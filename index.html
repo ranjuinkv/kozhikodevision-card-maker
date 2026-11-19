@@ -40,26 +40,130 @@
       align-items: center;
     }
 
-    /* TOP HEADER: White Rounded Box */
+    /* TOP HEADER: Ultra-Modern Broadcast Studio Header */
     .app-header {
       width: 100%;
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 10px 14px;
+      background: linear-gradient(135deg, #090e1a 0%, #172554 45%, #0b1329 100%);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-top: 3px solid #ef4444;
+      border-bottom: 2px solid #b91c1c;
+      border-radius: 18px;
+      padding: 12px 16px;
       display: flex;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(239, 68, 68, 0.15);
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .header-main-brand {
+      display: flex;
+      align-items: center;
       gap: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
-      margin-bottom: 10px;
     }
     .header-logo-box {
-      width: 46px;
-      height: 50px;
+      width: 52px;
+      height: 52px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
+      background: radial-gradient(circle, #ffffff 70%, #f1f5f9 100%);
+      border-radius: 14px;
+      padding: 4px;
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.45);
+      border: 2px solid rgba(255, 255, 255, 0.9);
+    }
+    .brand-title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .kv-live-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 12px;
+      letter-spacing: 0.5px;
+    }
+    .kv-live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #ef4444;
+      box-shadow: 0 0 8px #ef4444;
+      animation: kvPulse 1.4s infinite;
+    }
+    @keyframes kvPulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.3); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .brand-title-top {
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      color: #ffffff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    }
+    .brand-sub-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #38bdf8;
+      display: block;
+      margin-top: 1px;
+    }
+    .brand-main-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #94a3b8;
+      display: block;
+    }
+    .kv-user-chip {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 4px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #f8fafc;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .kv-hdr-admin-btn {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      color: #fff;
+      font-weight: 700;
+      border-radius: 8px;
+      padding: 6px 12px;
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+      transition: all 0.2s ease;
+    }
+    .kv-hdr-admin-btn:hover {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      transform: translateY(-1px);
+    }
+    .kv-hdr-logout-btn {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 6px 10px;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      transition: all 0.2s ease;
+    }
+    .kv-hdr-logout-btn:hover {
+      background: rgba(239, 68, 68, 0.3);
+      color: #fff;
     }
     .header-logo-img {
       max-width: 100%;
@@ -71,24 +175,28 @@
       flex-direction: column;
     }
     .brand-title-top {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 900;
-      color: #0f172a;
+      color: #ffffff;
       letter-spacing: 0.8px;
-      line-height: 1.1;
+      line-height: 1.2;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
     }
     .brand-sub-title {
-      font-size: 11px;
-      color: #64748b;
-      font-weight: 600;
-      margin-top: 1px;
+      font-size: 11.5px;
+      color: #38bdf8;
+      font-weight: 700;
+      margin-top: 2px;
+      letter-spacing: 0.2px;
     }
     .brand-main-title {
-      font-size: 23px;
-      font-weight: 900;
-      color: #0f172a;
+      font-size: 10px;
+      font-weight: 700;
+      color: #94a3b8;
       line-height: 1.1;
-      letter-spacing: -0.5px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-top: 1px;
     }
 
     /* MIDDLE: FIXED LIVE CARD PREVIEW AREA */
@@ -1419,17 +1527,23 @@
   <div class="app-wrapper">
 
     <!-- 1. TOP APP HEADER: White Box Matching Wireframe -->
-    <header class="app-header">
-      <div class="header-logo-box">
-        <img id="hdrLogoImg" alt="Kozhikode Vision" class="header-logo-img">
+        <header class="app-header">
+      <div class="header-main-brand">
+        <div class="header-logo-box">
+          <img id="hdrLogoImg" alt="Kozhikode Vision" class="header-logo-img">
+        </div>
+        <div class="brand-text">
+          <div class="brand-title-row">
+            <span class="brand-title-top">KOZHIKODE VISION NEWS</span>
+            <span class="kv-live-tag"><span class="kv-live-dot"></span>LIVE STUDIO</span>
+          </div>
+          <span class="brand-sub-title">ഔദ്യോഗിക ന്യൂസ്, കാർഡ് &amp; വീഡിയോ സ്റ്റുഡിയോ</span>
+          <span class="brand-main-title">Card &amp; Video Maker</span>
+        </div>
       </div>
-      <div class="brand-text">
-        <span class="brand-title-top">KOZHIKODE VISION NEWS</span>
-        <span class="brand-sub-title">Official News &amp; Obituary</span>
-        <span class="brand-main-title">Card Maker</span>
-      </div>
-          <div id="kvHeaderAuthBar" class="kv-header-auth-bar kv-hidden">
+      <div id="kvHeaderAuthBar" class="kv-header-auth-bar kv-hidden">
         <div class="kv-user-chip">
+          <span style="font-size:14px;">👤</span>
           <span id="kvCurrentUserName">User</span>
           <span id="kvCurrentUserRole" class="kv-role-tag">STAFF</span>
         </div>
@@ -1492,12 +1606,15 @@
           <!-- Left Column: Type & Size -->
           <div class="col-card">
             <span class="col-title">Select card type</span>
-            <div class="type-radio-grid">
+            <div class="type-radio-grid" style="grid-template-columns: repeat(3, 1fr); gap: 6px;">
               <button id="optTypeNews" type="button" class="btn-tactile type-pill active">
-                <span>News (വാർത്ത)</span>
+                <span>📰 News</span>
               </button>
               <button id="optTypeObit" type="button" class="btn-tactile type-pill">
-                <span>Obituary (ആദരാഞ്ജലി)</span>
+                <span>🕯️ Obituary</span>
+              </button>
+              <button id="optTypeVideo" type="button" class="btn-tactile type-pill" style="border:1px solid #8b5cf6;">
+                <span>🎥 Video</span>
               </button>
             </div>
 
@@ -1522,8 +1639,8 @@
             </div>
           </div>
 
-          <!-- Right Column: Photo Upload & Adjustments -->
-          <div class="col-card">
+          <!-- Right Column: Photo Upload (For News/Obit) -->
+          <div id="photoUploadCol" class="col-card">
             <div class="col-title">
               <span>📷 ഫോട്ടോ ചേർക്കുക &amp; അഡ്ജസ്റ്റ്</span>
               <button id="btnRemovePhoto" type="button" class="btn-tactile" style="font-size:9px; font-weight:800; color:#f87171; background:#450a0a; border:1px solid #7f1d1d; padding:2px 7px; border-radius:6px;">
@@ -1585,7 +1702,44 @@
 
         </div>
 
-        <!-- Step 1 Navigation -->
+                  <!-- Right Column: Video Upload & Controls (For Video Mode) -->
+          <div id="videoUploadCol" class="col-card" style="display:none;">
+            <div class="col-title">
+              <span>🎥 വീഡിയോ ചേർക്കുക &amp; കൺട്രോൾ</span>
+              <button id="btnRemoveVideo" type="button" class="btn-tactile" style="font-size:9px; font-weight:800; color:#f87171; background:#450a0a; border:1px solid #7f1d1d; padding:2px 7px; border-radius:6px; cursor:pointer;">
+                ✕ മാറ്റുക
+              </button>
+            </div>
+
+            <!-- Hidden HTML5 Video element -->
+            <video id="kvSourceVideo" playsinline preload="auto" style="display:none;"></video>
+
+            <!-- Video Upload Button -->
+            <input id="videoFileInput" type="file" accept="video/mp4,video/webm,video/quicktime,video/*" style="display:none;">
+            <button id="btnUploadVideo" type="button" class="btn-tactile upload-action-btn" style="background:linear-gradient(135deg, #7c3aed, #4f46e5);width:100%;padding:14px;border-radius:12px;margin-bottom:10px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;border:1px solid #a78bfa;box-shadow:0 4px 14px rgba(124,58,237,0.35);">
+              <span style="font-size:24px;">🎬</span>
+              <span style="font-size:13px;font-weight:700;color:#fff;">വീഡിയോ അപ്‌ലോഡ് ചെയ്യുക</span>
+              <span class="sub" style="font-size:10px;color:#ddd6fe;">MP4, WebM അല്ലെങ്കിൽ മൊബൈൽ വീഡിയോ</span>
+            </button>
+
+            <!-- Video Playback & Scrub Bar -->
+            <div id="videoControlsRow" style="background:rgba(255,255,255,0.06);padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;gap:6px;">
+                  <button id="btnVideoPlayPause" type="button" class="btn-tactile pill-btn active" style="font-size:11px;padding:5px 12px;background:#3b82f6;color:#fff;border-radius:6px;border:none;cursor:pointer;">▶ പ്ലേ (Play)</button>
+                  <button id="btnVideoMute" type="button" class="btn-tactile pill-btn" style="font-size:11px;padding:5px 10px;background:#475569;color:#fff;border-radius:6px;border:none;cursor:pointer;">🔊 ശബ്ദം</button>
+                </div>
+                <span id="videoTimeDisplay" style="font-size:11px;font-family:monospace;color:#38bdf8;font-weight:700;">00:00 / 00:00</span>
+              </div>
+              <input id="videoSeekRange" type="range" min="0" max="100" value="0" step="0.1" style="width:100%;accent-color:#38bdf8;cursor:pointer;">
+            </div>
+
+            <div style="font-size:10px;color:#94a3b8;margin-top:8px;line-height:1.4;">
+              💡 <b>ടിപ്പ്:</b> വീഡിയോ പ്രിവ്യൂവിൽ തത്സമയം ചാനൽ ലോഗോയും വാട്ടർമാർക്കും സൂപ്പർഇമ്പോസ് ചെയ്യപ്പെടും. അടുത്ത സ്റ്റെപ്പിൽ വാർത്താ തലക്കെട്ടും ബാനറും മാറ്റാം.
+            </div>
+          </div>
+
+          <!-- Step 1 Navigation -->
         <div class="step-nav-footer">
           <button id="btnToStep2" type="button" class="btn-tactile btn-next-step">
             <span>Click to next Setting</span>
@@ -2017,7 +2171,39 @@
 
             <!-- OFFICIAL DOWNLOAD BUTTON (ON LAST PAGE AS REQUESTED!) -->
             <div style="margin-top:8px;">
-              <button id="btnDownloadHD" type="button" class="btn-tactile download-hd-btn">
+                          <!-- BRANDED VIDEO EXPORT BOX (Active in Video Mode) -->
+            <div id="videoExportWrap" style="display:none;width:100%;margin-bottom:12px;padding:12px;background:linear-gradient(135deg, rgba(139,92,246,0.18), rgba(79,70,229,0.18));border:1px solid #8b5cf6;border-radius:12px;box-shadow:0 4px 15px rgba(124,58,237,0.25);">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                <span style="font-size:22px;">🎬</span>
+                <div>
+                  <div style="font-size:13px;font-weight:800;color:#f3e8ff;">ബ്രാൻഡഡ് വീഡിയോ എക്സ്പോർട്ട്</div>
+                  <div style="font-size:10px;color:#c4b5fd;">ചാനൽ ലോഗോ, വാർത്താ സ്ട്രാപ്പ് &amp; ക്രീയേറ്റർ വാട്ടർമാർക്കോടെ</div>
+                </div>
+              </div>
+
+              <!-- Export Button -->
+              <button id="btnExportBrandedVideo" type="button" class="btn-tactile download-hd-btn" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);border:1px solid #a78bfa;box-shadow:0 4px 14px rgba(124,58,237,0.4);margin-bottom:0;">
+                <span style="font-size:18px;">🎥</span>
+                <span>ബ്രാൻഡഡ് വീഡിയോ ഡൗൺലോഡ് (MP4 / WebM)</span>
+              </button>
+
+              <!-- Progress bar during recording -->
+              <div id="videoExportProgressBox" style="display:none;margin-top:10px;background:rgba(15,23,42,0.95);border-radius:10px;padding:10px;border:1px solid #8b5cf6;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                  <span id="videoExportStatusLabel" style="font-size:11px;font-weight:700;color:#e9d5ff;">🔴 വീഡിയോ റെക്കോർഡിംഗ് നടക്കുന്നു...</span>
+                  <span id="videoExportPercentLabel" style="font-size:11px;font-weight:800;color:#38bdf8;">0%</span>
+                </div>
+                <div style="width:100%;height:8px;background:#334155;border-radius:4px;overflow:hidden;">
+                  <div id="videoExportProgressBar" style="width:0%;height:100%;background:linear-gradient(90deg,#8b5cf6,#06b6d4);transition:width 0.1s linear;"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                  <span style="font-size:10px;color:#94a3b8;">തത്സമയം എൻകോഡ് ചെയ്യുന്നു...</span>
+                  <button id="btnCancelVideoExport" type="button" class="btn-tactile" style="font-size:10px;background:rgba(239,68,68,0.25);color:#fca5a5;border:1px solid #ef4444;padding:3px 10px;border-radius:5px;cursor:pointer;">✕ റദ്ദാക്കുക (Cancel)</button>
+                </div>
+              </div>
+            </div>
+
+            <button id="btnDownloadHD" type="button" class="btn-tactile download-hd-btn">
                 <span style="font-size:18px;">⬇️</span>
                 <span>HD കാർഡ് ഡൗൺലോഡ് ചെയ്യുക (1080P)</span>
               </button>
@@ -2093,7 +2279,14 @@
 
     // STATE VARIABLES
     let currentStep = 1;
-    let cardType = 'news'; // 'news' or 'obituary'
+    let cardType = 'news'; // 'news', 'obituary', or 'video'
+    let kvSourceVideo = null;
+    let isVideoPlaying = false;
+    let isVideoMuted = false;
+    let videoRafId = null;
+    let videoMediaRecorder = null;
+    let videoRecordedChunks = [];
+    let isExportingVideo = false;
     let currentRatio = '1:1';
 
     // Drag Target mode: 'auto', 'photo', 'logo', 'text'
@@ -2472,6 +2665,269 @@
       obitShapeAdjustWrap.style.display = 'flex';
       renderCard();
     });
+
+    // VIDEO STUDIO EVENT HANDLERS
+    const optTypeVideo = document.getElementById('optTypeVideo');
+    const photoUploadCol = document.getElementById('photoUploadCol');
+    const videoUploadCol = document.getElementById('videoUploadCol');
+    const videoUploadWrap = document.getElementById('videoExportWrap');
+    kvSourceVideo = document.getElementById('kvSourceVideo');
+    const videoFileInput = document.getElementById('videoFileInput');
+    const btnUploadVideo = document.getElementById('btnUploadVideo');
+    const btnRemoveVideo = document.getElementById('btnRemoveVideo');
+    const btnVideoPlayPause = document.getElementById('btnVideoPlayPause');
+    const btnVideoMute = document.getElementById('btnVideoMute');
+    const videoSeekRange = document.getElementById('videoSeekRange');
+    const btnExportVideo = document.getElementById('btnExportBrandedVideo');
+    const videoProgressBox = document.getElementById('videoExportProgressBox');
+    const videoProgressBar = document.getElementById('videoExportProgressBar');
+    const videoPercentLabel = document.getElementById('videoExportPercentLabel');
+    const btnCancelVideoExport = document.getElementById('btnCancelVideoExport');
+
+    if (optTypeVideo) {
+      optTypeVideo.addEventListener('click', () => {
+        cardType = 'video';
+        [optTypeNews, optTypeObit, optTypeVideo].forEach(b => { if (b) b.classList.remove('active'); });
+        optTypeVideo.classList.add('active');
+
+        // Toggle UI Panels
+        if (photoUploadCol) photoUploadCol.style.display = 'none';
+        if (videoUploadCol) videoUploadCol.style.display = 'flex';
+        if (videoUploadWrap) videoUploadWrap.style.display = 'block';
+
+        if (newsDetailsWrap) newsDetailsWrap.style.display = 'flex';
+        if (obitDetailsWrap) obitDetailsWrap.style.display = 'none';
+        if (newsTextAdjustWrap) newsTextAdjustWrap.style.display = 'flex';
+        if (obitShapeAdjustWrap) obitShapeAdjustWrap.style.display = 'none';
+
+        // Switch default to 9:16 for Reels/Shorts
+        const btn9x16 = document.getElementById('btnRatio3');
+        if (btn9x16) btn9x16.click();
+
+        renderCard();
+      });
+    }
+
+    // Update optTypeNews and optTypeObit to hide video panel
+    if (optTypeNews) {
+      const origNewsClick = optTypeNews.onclick;
+      optTypeNews.addEventListener('click', () => {
+        if (optTypeVideo) optTypeVideo.classList.remove('active');
+        if (photoUploadCol) photoUploadCol.style.display = 'flex';
+        if (videoUploadCol) videoUploadCol.style.display = 'none';
+        if (videoUploadWrap) videoUploadWrap.style.display = 'none';
+        if (kvSourceVideo) { kvSourceVideo.pause(); }
+      });
+    }
+    if (optTypeObit) {
+      optTypeObit.addEventListener('click', () => {
+        if (optTypeVideo) optTypeVideo.classList.remove('active');
+        if (photoUploadCol) photoUploadCol.style.display = 'flex';
+        if (videoUploadCol) videoUploadCol.style.display = 'none';
+        if (videoUploadWrap) videoUploadWrap.style.display = 'none';
+        if (kvSourceVideo) { kvSourceVideo.pause(); }
+      });
+    }
+
+    // Video Upload
+    if (btnUploadVideo && videoFileInput) {
+      btnUploadVideo.addEventListener('click', () => videoFileInput.click());
+    }
+    if (videoFileInput) {
+      videoFileInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        if (kvSourceVideo) {
+          kvSourceVideo.src = url;
+          kvSourceVideo.load();
+          kvSourceVideo.onloadedmetadata = () => {
+            renderCard();
+            updateVideoTimeUI();
+            if (btnVideoPlayPause) btnVideoPlayPause.textContent = '⏸ പോസ് (Pause)';
+            kvSourceVideo.play().then(() => {
+              stepVideoLoop();
+            }).catch(() => {});
+          };
+        }
+      });
+    }
+
+    // Remove video
+    if (btnRemoveVideo) {
+      btnRemoveVideo.addEventListener('click', () => {
+        if (kvSourceVideo) {
+          kvSourceVideo.pause();
+          kvSourceVideo.removeAttribute('src');
+          kvSourceVideo.load();
+        }
+        if (videoFileInput) videoFileInput.value = '';
+        renderCard();
+        updateVideoTimeUI();
+      });
+    }
+
+    // Play / Pause
+    if (btnVideoPlayPause) {
+      btnVideoPlayPause.addEventListener('click', () => {
+        if (!kvSourceVideo || !kvSourceVideo.duration) return;
+        if (kvSourceVideo.paused) {
+          kvSourceVideo.play().then(() => {
+            btnVideoPlayPause.textContent = '⏸ പോസ് (Pause)';
+            stepVideoLoop();
+          }).catch(() => {});
+        } else {
+          kvSourceVideo.pause();
+          btnVideoPlayPause.textContent = '▶ പ്ലേ (Play)';
+        }
+      });
+    }
+
+    // Mute / Unmute
+    if (btnVideoMute) {
+      btnVideoMute.addEventListener('click', () => {
+        if (!kvSourceVideo) return;
+        kvSourceVideo.muted = !kvSourceVideo.muted;
+        btnVideoMute.textContent = kvSourceVideo.muted ? '🔇 മ്യൂട്ട്' : '🔊 ശബ്ദം';
+      });
+    }
+
+    // Scrubber Range
+    if (videoSeekRange) {
+      videoSeekRange.addEventListener('input', (e) => {
+        if (!kvSourceVideo || !kvSourceVideo.duration) return;
+        const targetTime = (e.target.value / 100) * kvSourceVideo.duration;
+        kvSourceVideo.currentTime = targetTime;
+        renderCard();
+        updateVideoTimeUI();
+      });
+    }
+
+    // VIDEO EXPORT (Canvas CaptureStream + Audio + MediaRecorder)
+    if (btnExportVideo) {
+      btnExportVideo.addEventListener('click', async () => {
+        if (!kvSourceVideo || !kvSourceVideo.duration) {
+          alert('⚠️ ദയവായി ആദ്യം ഒരു വീഡിയോ തിരഞ്ഞെടുക്കുക!');
+          return;
+        }
+
+        if (typeof MediaRecorder === 'undefined') {
+          alert('⚠️ ഈ ബ്രൗസറിൽ വീഡിയോ റെക്കോർഡിംഗ് ലഭ്യമല്ല. Chrome അല്ലെങ്കിൽ Edge ഉപയോഗിക്കുക.');
+          return;
+        }
+
+        try {
+          isExportingVideo = true;
+          if (videoProgressBox) videoProgressBox.style.display = 'block';
+          btnExportVideo.disabled = true;
+
+          // Seek to beginning
+          kvSourceVideo.currentTime = 0;
+          await new Promise(r => setTimeout(r, 150));
+
+          // Capture 30fps canvas stream
+          const canvasStream = canvas.captureStream(30);
+
+          // Attempt to extract audio track from video
+          let audioTrack = null;
+          try {
+            if (kvSourceVideo.captureStream) {
+              const aTracks = kvSourceVideo.captureStream().getAudioTracks();
+              if (aTracks.length > 0) audioTrack = aTracks[0];
+            } else if (kvSourceVideo.mozCaptureStream) {
+              const aTracks = kvSourceVideo.mozCaptureStream().getAudioTracks();
+              if (aTracks.length > 0) audioTrack = aTracks[0];
+            }
+          } catch (e) {}
+
+          const tracks = [...canvasStream.getVideoTracks()];
+          if (audioTrack) tracks.push(audioTrack);
+          const combinedStream = new MediaStream(tracks);
+
+          // Select supported MIME type
+          let mime = 'video/webm';
+          const candidates = [
+            'video/mp4;codecs=avc1',
+            'video/mp4',
+            'video/webm;codecs=vp9,opus',
+            'video/webm;codecs=vp8,opus',
+            'video/webm'
+          ];
+          for (const c of candidates) {
+            if (MediaRecorder.isTypeSupported(c)) { mime = c; break; }
+          }
+
+          videoRecordedChunks = [];
+          videoMediaRecorder = new MediaRecorder(combinedStream, { mimeType: mime });
+
+          videoMediaRecorder.ondataavailable = (e) => {
+            if (e.data && e.data.size > 0) videoRecordedChunks.push(e.data);
+          };
+
+          videoMediaRecorder.onstop = () => {
+            const ext = mime.includes('mp4') ? 'mp4' : 'webm';
+            const blob = new Blob(videoRecordedChunks, { type: mime });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const slug = (txtHeadline.value || 'Kozhikode-Vision-Video').trim().replace(/[^a-zA-Z0-9_\u0D00-\u0D7F]/g, '-').slice(0, 30);
+            a.download = slug + '-watermarked.' + ext;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            if (videoProgressBox) videoProgressBox.style.display = 'none';
+            btnExportVideo.disabled = false;
+            isExportingVideo = false;
+
+            if (typeof showToast === 'function') {
+              showToast('✅ വീഡിയോ വിജയകരമായി എക്സ്പോർട്ട് ചെയ്തു!');
+            }
+          };
+
+          videoMediaRecorder.start(100);
+
+          // Play video and track progress
+          kvSourceVideo.play();
+          stepVideoLoop();
+
+          const progressInterval = setInterval(() => {
+            if (!isExportingVideo) { clearInterval(progressInterval); return; }
+            const dur = kvSourceVideo.duration || 1;
+            const cur = kvSourceVideo.currentTime || 0;
+            const pct = Math.min(100, Math.floor((cur / dur) * 100));
+
+            if (videoProgressBar) videoProgressBar.style.width = pct + '%';
+            if (videoPercentLabel) videoPercentLabel.textContent = pct + '%';
+
+            if (kvSourceVideo.ended || cur >= dur) {
+              clearInterval(progressInterval);
+              if (videoMediaRecorder && videoMediaRecorder.state !== 'inactive') {
+                videoMediaRecorder.stop();
+              }
+            }
+          }, 150);
+
+        } catch (err) {
+          alert('എക്സ്പോർട്ട് പരാജയപ്പെട്ടു: ' + err.message);
+          if (videoProgressBox) videoProgressBox.style.display = 'none';
+          btnExportVideo.disabled = false;
+          isExportingVideo = false;
+        }
+      });
+    }
+
+    if (btnCancelVideoExport) {
+      btnCancelVideoExport.addEventListener('click', () => {
+        if (videoMediaRecorder && videoMediaRecorder.state !== 'inactive') {
+          videoMediaRecorder.stop();
+        }
+        if (kvSourceVideo) kvSourceVideo.pause();
+        isExportingVideo = false;
+        if (videoProgressBox) videoProgressBox.style.display = 'none';
+        if (btnExportVideo) btnExportVideo.disabled = false;
+      });
+    }
 
     const btnRatio1 = document.getElementById('btnRatio1');
     const btnRatio2 = document.getElementById('btnRatio2');
@@ -3398,12 +3854,175 @@
       return new Blob([u8arr], { type: mime });
     }
 
+    function renderVideoStudioCard(W, H) {
+      // 1. Draw Video Frame (or sleek placeholder)
+      if (kvSourceVideo && kvSourceVideo.readyState >= 2 && kvSourceVideo.videoWidth) {
+        const vw = kvSourceVideo.videoWidth;
+        const vh = kvSourceVideo.videoHeight;
+        const scale = Math.max(W / vw, H / vh);
+        const sw = vw * scale;
+        const sh = vh * scale;
+        const sx = (W - sw) / 2;
+        const sy = (H - sh) / 2;
+        ctx.drawImage(kvSourceVideo, sx, sy, sw, sh);
+      } else {
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+        bgGrad.addColorStop(0, '#0a1128');
+        bgGrad.addColorStop(0.5, '#050a18');
+        bgGrad.addColorStop(1, '#02040a');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Tech grid
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.05)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < W; x += 80) {
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+        }
+        for (let y = 0; y < H; y += 80) {
+          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+        }
+
+        ctx.fillStyle = '#8b5cf6';
+        ctx.font = 'bold ' + Math.floor(W * 0.045) + 'px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🎥 ഒരു വീഡിയോ തിരഞ്ഞെടുക്കുക (Upload Video)', W / 2, H / 2 - 20);
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = Math.floor(W * 0.026) + 'px sans-serif';
+        ctx.fillText('MP4, WebM അല്ലെങ്കിൽ മൊബൈൽ ക്യാമറ വീഡിയോ', W / 2, H / 2 + 25);
+      }
+
+      // 2. Broadcast Lower-Third News Strap
+      const strapH = H * 0.32;
+      const strapY = H - strapH;
+      const lowerGrad = ctx.createLinearGradient(0, strapY - 80, 0, H);
+      lowerGrad.addColorStop(0, 'rgba(0,0,0,0)');
+      if (overlayStyle === 'custom') {
+        const rgb = hexToRgb(customNewsColor || '#1e3a8a');
+        lowerGrad.addColorStop(0.35, 'rgba(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ', 0.85)');
+        lowerGrad.addColorStop(1, 'rgba(4, 7, 18, 0.98)');
+      } else if (overlayStyle === 'red') {
+        lowerGrad.addColorStop(0.35, 'rgba(127, 29, 29, 0.88)');
+        lowerGrad.addColorStop(1, 'rgba(15, 23, 42, 0.98)');
+      } else {
+        lowerGrad.addColorStop(0.35, 'rgba(5, 10, 24, 0.82)');
+        lowerGrad.addColorStop(1, 'rgba(2, 4, 10, 0.98)');
+      }
+      ctx.fillStyle = lowerGrad;
+      ctx.fillRect(0, strapY - 80, W, strapH + 80);
+
+      // Date & Location Badges
+      const badgeY = strapY + 15;
+      const displayDate = '📅 ' + (cardDateText || '17 NOV 2026');
+      ctx.font = 'bold 22px "Anek Malayalam", sans-serif';
+      const dateMetrics = ctx.measureText(displayDate);
+      const dateBadgeW = dateMetrics.width + 26;
+      const dateBadgeH = 38;
+      const dateBadgeX = 50 + headlineOffsetX;
+
+      const themeColor = (overlayStyle === 'custom') ? (customNewsColor || '#dc2626') : '#dc2626';
+
+      // Date Badge background
+      ctx.fillStyle = themeColor;
+      ctx.beginPath();
+      ctx.roundRect(dateBadgeX, badgeY, dateBadgeW, dateBadgeH, 8);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'left';
+      ctx.fillText(displayDate, dateBadgeX + 13, badgeY + 26);
+
+      // Location Tag next to Date
+      if (locationText) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.beginPath();
+        const locStr = '📍 ' + locationText;
+        const locMetrics = ctx.measureText(locStr);
+        const locW = locMetrics.width + 24;
+        ctx.roundRect(dateBadgeX + dateBadgeW + 10, badgeY, locW, dateBadgeH, 8);
+        ctx.fill();
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillText(locStr, dateBadgeX + dateBadgeW + 22, badgeY + 26);
+      }
+
+      // Accent Vertical Bar
+      ctx.fillStyle = themeColor;
+      ctx.fillRect(dateBadgeX, badgeY + 48, 6, strapH * 0.65);
+
+      // Main Headline in Malayalam
+      ctx.font = '800 ' + headlineFontSize + 'px "Anek Malayalam", sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = 'rgba(0,0,0,0.85)';
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 3;
+
+      const textStartX = 72 + headlineOffsetX;
+      const maxTextWidth = W - 120;
+      const headlineY = badgeY + 54 + headlineFontSize;
+      const nextY = wrapText(ctx, headlineText || 'കോഴിക്കോട് വിഷൻ വാർത്ത', textStartX, headlineY, maxTextWidth, headlineFontSize * 1.25, 3);
+      ctx.shadowColor = 'transparent';
+
+      // Summary / Ticker text
+      if (summaryText) {
+        ctx.font = '500 ' + summaryFontSize + 'px "Anek Malayalam", sans-serif';
+        ctx.fillStyle = '#e2e8f0';
+        const summaryX = textStartX + summaryOffsetX;
+        const summaryY = nextY + 14 + summaryOffsetY;
+        const summaryLineHeight = summaryFontSize * summaryLineHeightMult;
+        wrapMultilineText(ctx, summaryText, summaryX, summaryY, maxTextWidth, summaryLineHeight, summaryMaxLines);
+      }
+
+      // Reporter Byline
+      if (reporterText) {
+        ctx.font = '600 20px "Anek Malayalam", sans-serif';
+        ctx.fillStyle = '#f87171';
+        ctx.fillText('റിപ്പോർട്ട്: ' + reporterText, textStartX, H - 65);
+      }
+    }
+
+    function stepVideoLoop() {
+      if (cardType === 'video' && kvSourceVideo && !kvSourceVideo.paused && !kvSourceVideo.ended) {
+        renderCard();
+        updateVideoTimeUI();
+        videoRafId = requestAnimationFrame(stepVideoLoop);
+      }
+    }
+
+    function updateVideoTimeUI() {
+      if (!kvSourceVideo) return;
+      const cur = kvSourceVideo.currentTime || 0;
+      const dur = kvSourceVideo.duration || 0;
+      const fmt = function(sec) {
+        const m = Math.floor(sec / 60);
+        const s = Math.floor(sec % 60);
+        return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+      };
+      const timeLbl = document.getElementById('videoTimeDisplay');
+      if (timeLbl) timeLbl.textContent = fmt(cur) + ' / ' + fmt(dur);
+
+      const seek = document.getElementById('videoSeekRange');
+      if (seek && dur > 0 && !seek.matches(':active')) {
+        seek.value = (cur / dur) * 100;
+      }
+    }
+
     function renderCard() {
       const W = canvas.width;
       const H = canvas.height;
 
       // 1. CLEAR CANVAS
       ctx.clearRect(0, 0, W, H);
+
+      // =====================================
+      // =====================================
+      // 0. VIDEO STUDIO MODE
+      // =====================================
+      if (cardType === 'video') {
+        renderVideoStudioCard(W, H);
+      }
 
       // =====================================
       // 2. NEWS CARD MODE
@@ -3770,9 +4389,10 @@
         // Right: Permanent Uneditable Creator Stamp (So Admin Instantly Knows Who Made This Card)
         const uName = activeUsr.name ? String(activeUsr.name).trim() : '';
         const uId = activeUsr.username ? String(activeUsr.username).trim() : '';
+        const byPrefix = (cardType === 'video') ? 'Video by: ' : 'Card by: ';
         const creatorLabel = (uName && uId && uName.toLowerCase() !== uId.toLowerCase())
-          ? ('Card by: ' + uName + ' (@' + uId + ')')
-          : ('Card by: ' + (uName || uId));
+          ? (byPrefix + uName + ' (@' + uId + ')')
+          : (byPrefix + (uName || uId));
 
         ctx.font = '600 17px "Anek Malayalam", -apple-system, sans-serif';
         ctx.fillStyle = '#38bdf8';
