@@ -1918,8 +1918,11 @@
               <!-- Date & Location in place of Category -->
               <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:6px;">
                 <div class="form-group">
-                  <label class="form-label">📅 തീയതി (Date Badge):</label>
-                  <input id="txtCardDate" type="text" class="form-input" value="17 NOV 2026">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+                    <label class="form-label" style="margin-bottom:0;">📅 തീയതി (Date Badge):</label>
+                    <button id="btnSetTodayDate" type="button" class="btn-tactile" style="font-size:9.5px; font-weight:800; background:rgba(56,189,248,0.18); border:1px solid #0284c7; color:#38bdf8; padding:2px 7px; border-radius:5px; cursor:pointer;" title="ഇന്നത്തെ തീയതി ഓട്ടോമാറ്റിക്കായി സെറ്റ് ചെയ്യുക">⚡ ഇന്ന് (Today)</button>
+                  </div>
+                  <input id="txtCardDate" type="text" class="form-input" value="">
                 </div>
                 <div class="form-group">
                   <label class="form-label">📍 സ്ഥലം (Location):</label>
@@ -2001,8 +2004,11 @@
 
               <!-- OBITUARY DATE -->
               <div class="form-group">
-                <label class="form-label">📅 തീയതി (Date):</label>
-                <input id="txtObitDate" type="text" class="form-input" value="17 NOV 2026">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+                  <label class="form-label" style="margin-bottom:0;">📅 തീയതി (Date):</label>
+                  <button id="btnSetTodayObit" type="button" class="btn-tactile" style="font-size:9.5px; font-weight:800; background:rgba(56,189,248,0.18); border:1px solid #0284c7; color:#38bdf8; padding:2px 7px; border-radius:5px; cursor:pointer;" title="ഇന്നത്തെ തീയതി ഓട്ടോമാറ്റിക്കായി സെറ്റ് ചെയ്യുക">⚡ ഇന്ന് (Today)</button>
+                </div>
+                <input id="txtObitDate" type="text" class="form-input" value="">
               </div>
 
               <div class="form-group">
@@ -2477,8 +2483,19 @@
     let photoPosX = 0;
     let photoPosY = 0;
 
+    function getSystemFormattedDate() {
+      const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+      const now = new Date();
+      const d = String(now.getDate()).padStart(2, '0');
+      const m = months[now.getMonth()];
+      const y = now.getFullYear();
+      return d + ' ' + m + ' ' + y;
+    }
+
+    const todaySystemDate = getSystemFormattedDate();
+
     // News text state
-    let cardDateText = '17 NOV 2026';
+    let cardDateText = todaySystemDate;
     let headlineText = 'കോഴിക്കോട് ബീച്ചിൽ പുതിയ ടൂറിസം പദ്ധതിക്ക് തുടക്കമായി';
     let summaryText = 'മന്ത്രി മുഹമ്മദ് റിയാസ് ഉദ്ഘാടനം ചെയ്തു; ആദ്യഘട്ടത്തിൽ 10 കോടിയുടെ സമഗ്ര വികസനം നടപ്പാക്കും.';
     let locationText = 'കോഴിക്കോട്';
@@ -2507,7 +2524,7 @@
     let obitName = 'പി. കെ. മാധവൻ നായർ';
     let obitAge = '74 വയസ്സ്';
     let obitPlace = 'കോഴിക്കോട്';
-    let obitDateText = '17 NOV 2026';
+    let obitDateText = todaySystemDate;
     let obitDetails = 'സംസ്കാരം നാളെ രാവിലെ 10 മണിക്ക് വെസ്റ്റ്ഹിൽ ശ്മശാനത്തിൽ';
     let obitMessage = 'നിത്യശാന്തി നേരുന്നു...';
 
@@ -3427,6 +3444,41 @@
     const summaryYRange = document.getElementById('summaryYRange');
     const summaryYVal = document.getElementById('summaryYVal');
 
+    // Initialize input values with today's PC/Mobile current date
+    const elCardDate = document.getElementById('txtCardDate');
+    const elObitDate = document.getElementById('txtObitDate');
+    if (elCardDate) elCardDate.value = todaySystemDate;
+    if (elObitDate) elObitDate.value = todaySystemDate;
+
+    // Quick "Today" date reset buttons
+    const btnSetTodayDate = document.getElementById('btnSetTodayDate');
+    if (btnSetTodayDate) {
+      btnSetTodayDate.addEventListener('click', () => {
+        const today = getSystemFormattedDate();
+        cardDateText = today;
+        const el = document.getElementById('txtCardDate');
+        if (el) el.value = today;
+        renderCard();
+        if (typeof showToast === 'function') {
+          showToast('📅 ഇന്നത്തെ തീയതി വെച്ചു: ' + today);
+        }
+      });
+    }
+
+    const btnSetTodayObit = document.getElementById('btnSetTodayObit');
+    if (btnSetTodayObit) {
+      btnSetTodayObit.addEventListener('click', () => {
+        const today = getSystemFormattedDate();
+        obitDateText = today;
+        const el = document.getElementById('txtObitDate');
+        if (el) el.value = today;
+        renderCard();
+        if (typeof showToast === 'function') {
+          showToast('📅 ഇന്നത്തെ തീയതി വെച്ചു: ' + today);
+        }
+      });
+    }
+
     txtCardDate.addEventListener('input', (e) => { cardDateText = e.target.value; renderCard(); });
     txtHeadline.addEventListener('input', (e) => { headlineText = e.target.value; renderCard(); });
     txtSummary.addEventListener('input', (e) => { summaryText = e.target.value; renderCard(); });
@@ -4186,7 +4238,7 @@
 
       // Date & Location Badges
       const badgeY = strapY + 15;
-      const displayDate = '📅 ' + (cardDateText || '17 NOV 2026');
+      const displayDate = '📅 ' + (cardDateText || getSystemFormattedDate());
       ctx.font = 'bold 22px "Anek Malayalam", sans-serif';
       const dateMetrics = ctx.measureText(displayDate);
       const dateBadgeW = dateMetrics.width + 26;
@@ -4358,7 +4410,7 @@
         // DATE BADGE IN PLACE OF CATEGORY
         const badgeY = H * 0.58 + headlineOffsetY;
         ctx.font = 'bold 24px "Anek Malayalam", sans-serif';
-        const displayDate = '📅 ' + (cardDateText || '17 NOV 2026');
+        const displayDate = '📅 ' + (cardDateText || getSystemFormattedDate());
         const badgeMetrics = ctx.measureText(displayDate);
         const badgeW = badgeMetrics.width + 30;
         const badgeH = 42;
