@@ -320,23 +320,59 @@
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.85);
     }
 
-    /* MINI TV SCREEN WIDGET IN VIDEO TAB */
-    .mini-tv-container {
+    /* ========================================================
+       LIVE TV STUDIO MONITOR: DESKTOP LEFT DOCK + MOBILE COLLAPSIBLE
+       ======================================================== */
+    .kv-side-livetv-dock {
       background: linear-gradient(145deg, #0d1527, #070b14);
-      border: 1px solid rgba(139, 92, 246, 0.4);
-      border-radius: 14px;
+      border: 1px solid rgba(139, 92, 246, 0.45);
+      border-radius: 16px;
       padding: 10px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      box-sizing: border-box;
+      transition: all 0.3s ease;
     }
-    .mini-tv-frame {
+
+    /* Desktop View: Docked in Left Blank Area */
+    @media (min-width: 900px) {
+      .kv-side-livetv-dock {
+        position: fixed;
+        top: 85px;
+        left: max(16px, calc(50% - 280px - 310px - 20px));
+        width: 310px;
+        z-index: 999;
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.75), 0 0 22px rgba(139, 92, 246, 0.25);
+      }
+      .mobile-only-toggle {
+        display: none !important;
+      }
+      .side-livetv-body.collapsed {
+        display: block !important;
+      }
+    }
+
+    /* Mobile View: Compact & Collapsible so page doesn't stretch */
+    @media (max-width: 899px) {
+      .kv-side-livetv-dock {
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 8px;
+      }
+      .side-livetv-body.collapsed {
+        display: none !important;
+      }
+    }
+
+    .side-livetv-chassis {
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
-    .mini-tv-header {
+    .side-livetv-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      user-select: none;
     }
     .mini-tv-ctrl-btn {
       background: rgba(255, 255, 255, 0.08);
@@ -352,7 +388,7 @@
       background: rgba(255, 255, 255, 0.2);
       color: #38bdf8;
     }
-    .mini-tv-screen-box {
+    .side-livetv-screen-box {
       width: 100%;
       aspect-ratio: 16 / 9;
       border-radius: 10px;
@@ -408,11 +444,11 @@
       padding: 0 10px;
       text-shadow: 0 1px 3px rgba(0,0,0,0.8);
     }
-    .mini-tv-footer {
+    .side-livetv-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-top: 2px;
+      padding-top: 6px;
     }
     .mini-tv-expand-link {
       background: linear-gradient(135deg, #7c3aed, #4f46e5);
@@ -424,6 +460,29 @@
       border-radius: 6px;
       cursor: pointer;
       box-shadow: 0 2px 6px rgba(124, 58, 237, 0.3);
+    }
+
+    /* SAFE DRAG LOCK CONTROLS FOR MOBILE */
+    .drag-pill-btn.lock.active {
+      background: linear-gradient(135deg, #059669, #047857) !important;
+      color: #ffffff !important;
+      border: 1px solid #34d399 !important;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.5) !important;
+    }
+    .canvas-quick-lock-btn {
+      font-size: 10px;
+      font-weight: 800;
+      background: #059669;
+      color: #ffffff;
+      border: 1px solid #34d399;
+      padding: 3px 9px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
     }
     .kv-live-tv-actions {
       display: flex;
@@ -1921,6 +1980,59 @@
       </div>
     </header>
 
+    <!-- DEDICATED LIVE TV STUDIO MONITOR (Docked in Left Blank Area on Desktop / Compact in Mobile) -->
+    <aside id="videoTabLiveTvWidget" class="kv-side-livetv-dock" style="display:none;">
+      <div class="side-livetv-chassis">
+        <!-- Header with Live badge, Mute, Expand, and Collapse toggle -->
+        <div class="side-livetv-header">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span class="live-pulse" style="width:8px; height:8px; background:#ef4444; box-shadow:0 0 10px #ef4444;"></span>
+            <span style="font-size:11.5px; font-weight:800; color:#fff; letter-spacing:0.5px;">KOZHIKODE VISION LIVE</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:5px;">
+            <button id="btnMiniTvMute" type="button" class="btn-tactile mini-tv-ctrl-btn" title="ശബ്ദം ഓൺ/ഓഫ്">🔇</button>
+            <button id="btnMiniTvExpand" type="button" class="btn-tactile mini-tv-ctrl-btn" title="വലിയ സ്ക്രീനിൽ കാണുക">⛶</button>
+            <button id="btnMiniTvCollapse" type="button" class="btn-tactile mini-tv-ctrl-btn mobile-only-toggle" title="ചുരുക്കുക / കാണിക്കുക">▾ കാണിക്കുക</button>
+          </div>
+        </div>
+
+        <!-- Screen Container (16:9 Widescreen) -->
+        <div id="sideLivetvBody" class="side-livetv-body collapsed">
+          <div class="side-livetv-screen-box">
+            <video id="kvMiniTvVideo" playsinline muted style="display:none; width:100%; height:100%; object-fit:cover; background:#000;"></video>
+            
+            <!-- Standby Screen with Scanning Lines & Scrolling Loop Ticker -->
+            <div id="kvMiniTvStandby" class="mini-tv-standby">
+              <div class="standby-scanlines"></div>
+              <div class="mini-tv-standby-center">
+                <div style="font-size:24px; filter:drop-shadow(0 0 10px rgba(56,189,248,0.7));">📡</div>
+                <div style="font-size:11px; font-weight:900; color:#fff; letter-spacing:0.8px; margin-top:2px;">KOZHIKODE VISION</div>
+                <div style="font-size:9.5px; color:#38bdf8; font-weight:700;">LIVE BROADCAST</div>
+              </div>
+              <!-- Infinite Looping Marquee Ticker -->
+              <div class="mini-tv-ticker-wrap">
+                <div class="mini-tv-ticker-track">
+                  <span class="mini-tv-ticker-item">⚠️ തത്സമയ സംപ്രേക്ഷണം ഉടൻ ആരംഭിക്കും (Standby / Under Construction) &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION LIVE &nbsp;&nbsp;★&nbsp;&nbsp; </span>
+                  <span class="mini-tv-ticker-item">⚠️ തത്സമയ സംപ്രേക്ഷണം ഉടൻ ആരംഭിക്കും (Standby / Under Construction) &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION LIVE &nbsp;&nbsp;★&nbsp;&nbsp; </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer Bar -->
+          <div class="side-livetv-footer">
+            <span style="font-size:10px; color:#94a3b8; display:flex; align-items:center; gap:5px;">
+              <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#22c55e;"></span>
+              തത്സമയ സംപ്രേക്ഷണം (24x7)
+            </span>
+            <button id="btnMiniTvOpenModal" type="button" class="btn-tactile mini-tv-expand-link">
+              വലിയ സ്ക്രീൻ ↗
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
     <!-- 2. FIXED LIVE CARD PREVIEW AREA (Always Stays Here!) -->
     <section class="card-preview-area">
       <div class="preview-header-bar">
@@ -1928,17 +2040,31 @@
           <span class="preview-dot"></span>
           <span>ലൈവ് കാർഡ് പ്രിവ്യൂ</span>
         </div>
-        <div id="previewDimBadge" class="preview-res-badge">1:1 POST (1080 × 1080)</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <button id="canvasQuickLockBadge" type="button" class="canvas-quick-lock-btn" title="സ്ക്രീൻ പൊസിഷൻ ലോക്ക് മാറ്റുക">
+            🔒 ലോക്ക്ഡ്
+          </button>
+          <div id="previewDimBadge" class="preview-res-badge">1:1 POST (1080 × 1080)</div>
+        </div>
       </div>
 
       <!-- Quick Interactive Touch / Mouse Drag Mode Selector -->
       <div class="drag-control-toolbar">
         <div class="drag-toolbar-head">
-          <span>👆 സ്ക്രീനിൽ തൊട്ട് ഡ്രാഗ് ചെയ്യാം (Touch &amp; Drag):</span>
-          <span id="dragStatusLabel" style="color:#6ee7b7; font-size:9px;">ഓട്ടോ ഡിറ്റക്റ്റ്</span>
+          <div style="display:flex;align-items:center;gap:5px;">
+            <span id="dragLockStatusIcon">🔒</span>
+            <span style="font-weight:700;">സ്ക്രീൻ കൺട്രോൾ:</span>
+            <span id="dragStatusLabel" style="color:#34d399; font-size:9.5px; font-weight:800;">🔒 ലോക്ക്ഡ് (മൊബൈലിൽ സുരക്ഷിതമായി സ്ക്രോൾ ചെയ്യാം)</span>
+          </div>
+          <span style="font-size:9px;color:#94a3b8;">Accidental Move പ്രൊട്ടക്ഷൻ ഓൺ</span>
         </div>
         <div class="drag-target-pills">
-          <button id="dragPillAuto" type="button" class="btn-tactile drag-pill-btn active">🎯 ഓട്ടോ</button>
+          <button id="dragPillLock" type="button" class="btn-tactile drag-pill-btn lock active" style="font-weight:800;">
+            🔒 ലോക്ക് (Safe Scroll)
+          </button>
+          <button id="dragPillAuto" type="button" class="btn-tactile drag-pill-btn" title="തൊട്ട് മാറ്റാം">
+            🔓 മൂവ് മോഡ് (Move)
+          </button>
           <button id="dragPillPhoto" type="button" class="btn-tactile drag-pill-btn">📷 ഫോട്ടോ</button>
           <button id="dragPillLogo" type="button" class="btn-tactile drag-pill-btn">🏷️ ലോഗോ</button>
           <button id="dragPillText" type="button" class="btn-tactile drag-pill-btn">✍️ ടെക്സ്റ്റ്</button>
@@ -2005,56 +2131,6 @@
                 <span>16:9</span>
                 <span class="ratio-name">WIDE SCREEN</span>
               </button>
-            </div>
-
-            <!-- Embedded Live TV Screen Widget (Visible in Video Mode) -->
-            <div id="videoTabLiveTvWidget" class="mini-tv-container" style="display:none; margin-top:14px;">
-              <div class="mini-tv-frame">
-                <!-- Mini TV Header -->
-                <div class="mini-tv-header">
-                  <div style="display:flex; align-items:center; gap:6px;">
-                    <span class="live-pulse" style="width:7px; height:7px; background:#ef4444; box-shadow:0 0 8px #ef4444;"></span>
-                    <span style="font-size:11px; font-weight:800; color:#fff; letter-spacing:0.5px;">KOZHIKODE VISION LIVE</span>
-                  </div>
-                  <div style="display:flex; align-items:center; gap:6px;">
-                    <button id="btnMiniTvMute" type="button" class="btn-tactile mini-tv-ctrl-btn" title="ശബ്ദം മാറ്റുക">🔇</button>
-                    <button id="btnMiniTvExpand" type="button" class="btn-tactile mini-tv-ctrl-btn" title="വലിയ സ്ക്രീനിൽ കാണുക">⛶</button>
-                  </div>
-                </div>
-
-                <!-- Mini TV Screen Aspect Ratio 16:9 -->
-                <div class="mini-tv-screen-box">
-                  <video id="kvMiniTvVideo" playsinline muted style="display:none; width:100%; height:100%; object-fit:cover; background:#000;"></video>
-                  
-                  <!-- Standby in Mini TV -->
-                  <div id="kvMiniTvStandby" class="mini-tv-standby">
-                    <div class="standby-scanlines"></div>
-                    <div class="mini-tv-standby-center">
-                      <div style="font-size:22px; filter:drop-shadow(0 0 10px rgba(56,189,248,0.7));">📡</div>
-                      <div style="font-size:11px; font-weight:900; color:#fff; letter-spacing:0.8px; margin-top:2px;">KOZHIKODE VISION</div>
-                      <div style="font-size:9px; color:#38bdf8; font-weight:700;">LIVE BROADCAST</div>
-                    </div>
-                    <!-- Infinite Looping Marquee Ticker -->
-                    <div class="mini-tv-ticker-wrap">
-                      <div class="mini-tv-ticker-track">
-                        <span class="mini-tv-ticker-item">⚠️ തത്സമയ സംപ്രേക്ഷണം ഉടൻ ആരംഭിക്കും (Standby / Under Construction) &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION LIVE &nbsp;&nbsp;★&nbsp;&nbsp; </span>
-                        <span class="mini-tv-ticker-item">⚠️ തത്സമയ സംപ്രേക്ഷണം ഉടൻ ആരംഭിക്കും (Standby / Under Construction) &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION LIVE &nbsp;&nbsp;★&nbsp;&nbsp; </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Mini TV Bottom Info Bar -->
-                <div class="mini-tv-footer">
-                  <span style="font-size:9.5px; color:#94a3b8; display:flex; align-items:center; gap:4px;">
-                    <span style="display:inline-block; width:5px; height:5px; border-radius:50%; background:#22c55e;"></span>
-                    തത്സമയ ചാനൽ (Live TV)
-                  </span>
-                  <button id="btnMiniTvOpenModal" type="button" class="btn-tactile mini-tv-expand-link">
-                    വലിയ സ്ക്രീൻ ↗
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -2847,8 +2923,8 @@
     let isExportingVideo = false;
     let currentRatio = '1:1';
 
-    // Drag Target mode: 'auto', 'photo', 'logo', 'text'
-    let dragMode = 'auto';
+    // Drag Target mode: 'lock', 'auto', 'photo', 'logo', 'text'
+    let dragMode = 'lock'; // Default locked for mobile safety!
     let isDragging = false;
     let dragTarget = null;
     let dragStartX = 0;
@@ -2991,25 +3067,70 @@
     document.getElementById('btnBackToStep2').addEventListener('click', () => setStep(2));
 
     // ==========================================
-    // DRAG MODE SELECTOR & STATUS
+    // DRAG MODE SELECTOR & STATUS (SAFE MOBILE LOCK)
     // ==========================================
+    const dragPillLock = document.getElementById('dragPillLock');
     const dragPillAuto = document.getElementById('dragPillAuto');
     const dragPillPhoto = document.getElementById('dragPillPhoto');
     const dragPillLogo = document.getElementById('dragPillLogo');
     const dragPillText = document.getElementById('dragPillText');
     const dragStatusLabel = document.getElementById('dragStatusLabel');
+    const dragLockStatusIcon = document.getElementById('dragLockStatusIcon');
+    const canvasQuickLockBadge = document.getElementById('canvasQuickLockBadge');
 
     function setDragMode(mode, btn, labelText) {
       dragMode = mode;
-      [dragPillAuto, dragPillPhoto, dragPillLogo, dragPillText].forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      dragStatusLabel.textContent = labelText;
-      showToast('ഡ്രാഗ് മോഡ്: ' + labelText);
+      [dragPillLock, dragPillAuto, dragPillPhoto, dragPillLogo, dragPillText].forEach(b => {
+        if (b) b.classList.remove('active');
+      });
+      if (btn) btn.classList.add('active');
+
+      if (mode === 'lock') {
+        canvas.style.touchAction = 'pan-y'; // Mobile safe scrolling!
+        if (dragLockStatusIcon) dragLockStatusIcon.textContent = '🔒';
+        if (dragStatusLabel) {
+          dragStatusLabel.style.color = '#34d399';
+          dragStatusLabel.textContent = '🔒 ലോക്ക്ഡ് (മൊബൈലിൽ സുരക്ഷിതമായി സ്ക്രോൾ ചെയ്യാം)';
+        }
+        if (canvasQuickLockBadge) {
+          canvasQuickLockBadge.textContent = '🔒 ലോക്ക്ഡ്';
+          canvasQuickLockBadge.style.background = '#059669';
+          canvasQuickLockBadge.style.borderColor = '#34d399';
+        }
+      } else {
+        canvas.style.touchAction = 'none'; // Drag mode enabled
+        if (dragLockStatusIcon) dragLockStatusIcon.textContent = '🔓';
+        if (dragStatusLabel) {
+          dragStatusLabel.style.color = '#fbbf24';
+          dragStatusLabel.textContent = labelText;
+        }
+        if (canvasQuickLockBadge) {
+          canvasQuickLockBadge.textContent = '🔓 മൂവ് മോഡ്';
+          canvasQuickLockBadge.style.background = '#d97706';
+          canvasQuickLockBadge.style.borderColor = '#fbbf24';
+        }
+      }
+      if (typeof showToast === 'function') showToast(labelText);
     }
-    dragPillAuto.addEventListener('click', () => setDragMode('auto', dragPillAuto, 'ഓട്ടോ ഡിറ്റക്റ്റ്'));
-    dragPillPhoto.addEventListener('click', () => setDragMode('photo', dragPillPhoto, 'ഫോട്ടോ മൂവ് ചെയ്യാം'));
-    dragPillLogo.addEventListener('click', () => setDragMode('logo', dragPillLogo, 'ലോഗോ മൂവ് ചെയ്യാം'));
-    dragPillText.addEventListener('click', () => setDragMode('text', dragPillText, 'ടെക്സ്റ്റ് മൂവ് ചെയ്യാം'));
+
+    if (dragPillLock) dragPillLock.addEventListener('click', () => setDragMode('lock', dragPillLock, '🔒 ലോക്ക്ഡ് (മൊബൈലിൽ സുരക്ഷിതമായി സ്ക്രോൾ ചെയ്യാം)'));
+    if (dragPillAuto) dragPillAuto.addEventListener('click', () => setDragMode('auto', dragPillAuto, '🔓 ഓട്ടോ മൂവ് (തൊട്ട് മാറ്റാം)'));
+    if (dragPillPhoto) dragPillPhoto.addEventListener('click', () => setDragMode('photo', dragPillPhoto, '📷 ഫോട്ടോ മൂവ് ചെയ്യാം'));
+    if (dragPillLogo) dragPillLogo.addEventListener('click', () => setDragMode('logo', dragPillLogo, '🏷️ ലോഗോ മൂവ് ചെയ്യാം'));
+    if (dragPillText) dragPillText.addEventListener('click', () => setDragMode('text', dragPillText, '✍️ ടെക്സ്റ്റ് മൂവ് ചെയ്യാം'));
+
+    if (canvasQuickLockBadge) {
+      canvasQuickLockBadge.addEventListener('click', () => {
+        if (dragMode === 'lock') {
+          setDragMode('auto', dragPillAuto, '🔓 ഓട്ടോ മൂവ് (തൊട്ട് മാറ്റാം)');
+        } else {
+          setDragMode('lock', dragPillLock, '🔒 ലോക്ക്ഡ് (മൊബൈലിൽ സുരക്ഷിതമായി സ്ക്രോൾ ചെയ്യാം)');
+        }
+      });
+    }
+
+    // Initialize in Safe Lock Mode on load
+    if (canvas) canvas.style.touchAction = 'pan-y';
 
     // ==========================================
     // INTERACTIVE TOUCH & MOUSE DRAGGING ON CANVAS
@@ -3032,9 +3153,14 @@
       };
     }
 
-
-
     function onPointerDown(e) {
+      // SAFE MOBILE LOCK: If locked, NEVER move elements and do NOT prevent default scroll!
+      if (dragMode === 'lock') {
+        isDragging = false;
+        dragTarget = null;
+        return;
+      }
+
       const pos = getCanvasCoordinates(e);
       dragStartX = pos.x;
       dragStartY = pos.y;
@@ -3129,7 +3255,7 @@
     }
 
     function onPointerMove(e) {
-      if (!isDragging || !dragTarget) return;
+      if (dragMode === 'lock' || !isDragging || !dragTarget) return;
       const pos = getCanvasCoordinates(e);
       const deltaX = pos.x - dragStartX;
       const deltaY = pos.y - dragStartY;
@@ -6104,6 +6230,10 @@
 
     const miniVideo = document.getElementById('kvMiniTvVideo');
     const miniStandby = document.getElementById('kvMiniTvStandby');
+    const sideLivetvBody = document.getElementById('sideLivetvBody');
+    if (window.innerWidth >= 900 && sideLivetvBody) {
+      sideLivetvBody.classList.remove('collapsed');
+    }
     const streamUrl = getSavedLiveStreamUrl();
 
     if (streamUrl && streamUrl.trim()) {
@@ -6164,6 +6294,16 @@
   const btnMiniTvMute = document.getElementById('btnMiniTvMute');
   const btnMiniTvExpand = document.getElementById('btnMiniTvExpand');
   const btnMiniTvOpenModal = document.getElementById('btnMiniTvOpenModal');
+  const btnMiniTvCollapse = document.getElementById('btnMiniTvCollapse');
+  const sideLivetvBody = document.getElementById('sideLivetvBody');
+
+  if (btnMiniTvCollapse && sideLivetvBody) {
+    btnMiniTvCollapse.addEventListener('click', function() {
+      const isCollapsed = sideLivetvBody.classList.toggle('collapsed');
+      btnMiniTvCollapse.textContent = isCollapsed ? '▾ കാണിക്കുക' : '▴ ചുരുക്കുക';
+      btnMiniTvCollapse.title = isCollapsed ? 'ലൈവ് ടിവി കാണുക' : 'ചുരുക്കുക';
+    });
+  }
 
   if (btnMiniTvMute) {
     btnMiniTvMute.addEventListener('click', function() {
