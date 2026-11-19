@@ -198,6 +198,124 @@
       color: #ffffff;
     }
 
+        /* LIVE TV MODAL & BROADCAST STANDBY SCREEN */
+    .kv-live-tv-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      box-sizing: border-box;
+      animation: kvFadeIn 0.25s ease;
+    }
+    .kv-live-tv-overlay.kv-hidden {
+      display: none !important;
+    }
+    .kv-live-tv-card {
+      width: 100%;
+      max-width: 820px;
+      background: linear-gradient(135deg, #090e1a 0%, #0f172a 100%);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-top: 3px solid #ef4444;
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(239, 68, 68, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+    .kv-live-tv-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 12px;
+    }
+    .kv-live-tv-player-wrap {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #02040a;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9);
+      position: relative;
+    }
+    .kv-live-tv-standby {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, #0a1128 0%, #030712 100%);
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .standby-scanlines {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px);
+      pointer-events: none;
+    }
+    .standby-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 520px;
+    }
+    .standby-icon-badge {
+      font-size: 38px;
+      margin-bottom: 8px;
+      filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.6));
+    }
+    .standby-title {
+      font-size: 16px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 1px;
+      margin: 0 0 8px 0;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    }
+    .standby-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(245, 158, 11, 0.18);
+      border: 1px solid #f59e0b;
+      color: #fde68a;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+    }
+    .standby-desc {
+      font-size: 11.5px;
+      color: #94a3b8;
+      line-height: 1.5;
+      margin: 0;
+    }
+    .kv-live-tv-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 10px;
+    }
+
     /* PAGE FOOTER CREDITS (DEVELOPED BY RANJU) */
     .app-page-footer {
       width: 100%;
@@ -1422,6 +1540,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body class="kv-locked">
   <!-- === SECURE LOGIN OVERLAY === -->
@@ -1489,7 +1608,38 @@
         <div id="kvAdminModeBadge" style="font-size:11px; color:#94a3b8; text-align:center;"></div>
 
         <!-- Add New User Form -->
-                <!-- Online Cloud Database (Google Firebase Firestore) Section -->
+                        <!-- Live TV Stream Configuration Section -->
+        <div class="kv-admin-section" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:12px;margin-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div style="font-weight:700;color:#fca5a5;font-size:12px;display:flex;align-items:center;gap:6px;">
+              <span>📺 ലൈവ് ടിവി സ്ട്രീം ക്രമീകരണം (Live TV HLS Stream)</span>
+            </div>
+            <span id="kvLiveStreamStatusBadge" class="kv-status-pill" style="background:#7f1d1d;color:#fca5a5;font-size:10px;padding:3px 8px;">🔴 സ്ട്രീം നൽകിയിട്ടില്ല (Standby)</span>
+          </div>
+
+          <div style="font-size:11px;color:#cbd5e1;line-height:1.4;margin-bottom:8px;">
+            നിങ്ങളുടെ ചാനലിന്റെ ഒഫീഷ്യൽ <b>.m3u8</b> ലൈവ് സ്ട്രീം ലിങ്ക് ഇവിടെ നൽകുക. ലിങ്ക് നൽകുമ്പോൾ ആപ്പിൽ ലൈവ് ചാനൽ തത്സമയം പ്ലേ ആകും. ലിങ്ക് നൽകിയിട്ടില്ലെങ്കിൽ "Under Construction / Standby" സ്ക്രീൻ കാണിക്കും.
+          </div>
+
+          <div class="form-group" style="margin-bottom:8px;">
+            <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px;">🔗 ലൈവ് സ്ട്രീം URL (.m3u8 HLS Link):</label>
+            <input id="kvInpLiveStreamUrl" type="url" class="kv-admin-input" placeholder="https://example.com/live/kozhikodevision.m3u8" style="background:#0b1329;border:1px solid #334155;color:#38bdf8;">
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <button id="kvBtnSaveLiveStreamUrl" type="button" class="btn-tactile" style="font-size:11px;font-weight:700;padding:6px 14px;background:#10b981;color:#fff;border-radius:6px;border:none;cursor:pointer;">
+              💾 ലൈവ് ലിങ്ക് സേവ് ചെയ്യുക (Save Link)
+            </button>
+            <button id="kvBtnClearLiveStreamUrl" type="button" class="btn-tactile" style="font-size:11px;padding:6px 12px;background:#ef4444;color:#fff;border-radius:6px;border:none;cursor:pointer;">
+              ✕ ലിങ്ക് മാറ്റുക (Reset to Standby)
+            </button>
+            <button id="kvBtnPreviewLiveTv" type="button" class="btn-tactile" style="font-size:11px;padding:6px 12px;background:#3b82f6;color:#fff;border-radius:6px;border:none;cursor:pointer;">
+              ▶ ലൈവ് ടിവി തുറക്കുക (Open Player)
+            </button>
+          </div>
+        </div>
+
+        <!-- Online Cloud Database (Google Firebase Firestore) Section -->
         <div class="kv-admin-section" style="background:rgba(2,132,199,0.08);border:1px solid rgba(56,189,248,0.3);border-radius:10px;padding:12px;margin-bottom:14px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
             <div style="font-weight:700;color:#38bdf8;font-size:12px;display:flex;align-items:center;gap:6px;">
@@ -1637,7 +1787,11 @@
         </div>
       </div>
 
-      <div id="kvHeaderAuthBar" class="header-right kv-hidden">
+            <div id="kvHeaderAuthBar" class="header-right kv-hidden">
+        <button id="kvBtnOpenLiveTv" type="button" class="header-btn" style="background:linear-gradient(135deg, #dc2626, #991b1b);color:#ffffff;box-shadow:0 0 12px rgba(239,68,68,0.45);border:1px solid #f87171;font-weight:800;">
+          <span style="font-size:13px;">📺</span>
+          <span>LIVE TV</span>
+        </button>
         <div class="user-pill">
           <span class="user-icon">👤</span>
           <span id="kvCurrentUserName" class="user-name">User</span>
@@ -2406,6 +2560,68 @@
   </div>
 
   <!-- SAVE / DOWNLOAD CONFIRMATION MODAL POPUP -->
+    <!-- ==============================================
+       LIVE TV MODAL POPUP & HLS STREAM PLAYER
+       ============================================== -->
+  <div id="kvLiveTvModal" class="kv-live-tv-overlay kv-hidden">
+    <div class="kv-live-tv-card">
+      <div class="kv-live-tv-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:38px;height:38px;background:#fff;border-radius:8px;padding:2px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.4);">
+            <img id="kvLiveTvLogoImg" class="header-logo-img" alt="Kozhikode Vision">
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:15px;font-weight:900;color:#fff;letter-spacing:0.5px;">KOZHIKODE VISION LIVE TV</span>
+              <span class="live-pill" style="font-size:10px;background:rgba(239,68,68,0.25);"><span class="live-pulse"></span>24x7 STREAM</span>
+            </div>
+            <span style="font-size:11px;color:#38bdf8;">ഔദ്യോഗിക തത്സമയ ചാനൽ സംപ്രേക്ഷണം</span>
+          </div>
+        </div>
+        <button id="btnCloseLiveTv" type="button" class="btn-close-modal">✕ ക്ലോസ്</button>
+      </div>
+
+      <!-- Video Player Container (16:9 Widescreen) -->
+      <div class="kv-live-tv-player-wrap">
+        <!-- Live Video Element -->
+        <video id="kvLiveTvVideo" playsinline controls style="display:none;width:100%;height:100%;border-radius:12px;background:#000;"></video>
+
+        <!-- Under Construction / Standby Test Screen (Shown when no stream URL or offline) -->
+        <div id="kvLiveTvStandbyScreen" class="kv-live-tv-standby">
+          <div class="standby-scanlines"></div>
+          <div class="standby-content">
+            <div class="standby-icon-badge">📡</div>
+            <h3 class="standby-title">KOZHIKODE VISION LIVE STREAM</h3>
+            <div class="standby-status-pill">
+              <span class="live-pulse" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></span>
+              <span>⚠️ തത്സമയ സംപ്രേക്ഷണം ഉടൻ ആരംഭിക്കും (Standby / Under Construction)</span>
+            </div>
+            <p class="standby-desc">
+              ചാനലിന്റെ ലൈവ് സ്ട്രീം ലിങ്ക് (.m3u8) അഡ്മിൻ കൺസോളിൽ നൽകിയാൽ തത്സമയം ഇവിടെ ചാനൽ കാണാം.
+            </p>
+            <div id="kvLiveTvAdminHelper" style="display:none;margin-top:14px;">
+              <button id="btnOpenAdminFromLiveTv" type="button" class="btn-tactile" style="background:linear-gradient(135deg,#d97706,#b45309);color:#fff;border:1px solid #fbbf24;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(217,119,6,0.3);">
+                ⚙️ അഡ്മിൻ കൺസോളിൽ m3u8 ലിങ്ക് ചേർക്കുക
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Footer (Instant Breaking News Snapshot & Controls) -->
+      <div class="kv-live-tv-actions">
+        <button id="btnCaptureLiveTvFrame" type="button" class="btn-tactile" style="background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;border:1px solid #fca5a5;padding:10px 18px;border-radius:10px;font-size:12px;font-weight:800;display:flex;align-items:center;gap:8px;cursor:pointer;box-shadow:0 4px 15px rgba(239,68,68,0.4);">
+          <span style="font-size:16px;">📸</span>
+          <span>ലൈവ് ഫ്രെയിം കാർഡിലേക്ക് ക്യാപ്‌ചർ (Instant Breaking News)</span>
+        </button>
+
+        <div style="font-size:11px;color:#94a3b8;display:flex;align-items:center;gap:6px;">
+          <span>🌐 HLS / m3u8 Broadcast Ready</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="saveModalOverlay" class="save-modal-overlay">
     <div class="save-modal-card">
       <div class="save-modal-title">
@@ -5586,6 +5802,215 @@
 
   // Initialize Firebase Cloud DB on load
   initFirebaseDatabase();
+
+    // =========================================================================
+  // LIVE TV STREAM PLAYER & HLS CONFIGURATION LOGIC
+  // =========================================================================
+  let liveHlsInstance = null;
+  const LIVE_STREAM_STORAGE_KEY = 'kv_live_tv_stream_url';
+
+  function getSavedLiveStreamUrl() {
+    try {
+      return localStorage.getItem(LIVE_STREAM_STORAGE_KEY) || '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  function updateLiveStreamBadge(url) {
+    const badge = document.getElementById('kvLiveStreamStatusBadge');
+    if (badge) {
+      if (url && url.trim()) {
+        badge.textContent = '🟢 ലൈവ് സ്ട്രീം ആക്റ്റീവ് (Active)';
+        badge.style.background = '#065f46';
+        badge.style.color = '#6ee7b7';
+      } else {
+        badge.textContent = '🔴 സ്ട്രീം നൽകിയിട്ടില്ല (Standby)';
+        badge.style.background = '#7f1d1d';
+        badge.style.color = '#fca5a5';
+      }
+    }
+  }
+
+  function openLiveTvPlayer() {
+    const modal = document.getElementById('kvLiveTvModal');
+    const video = document.getElementById('kvLiveTvVideo');
+    const standby = document.getElementById('kvLiveTvStandbyScreen');
+    const adminHelper = document.getElementById('kvLiveTvAdminHelper');
+    const logo = document.getElementById('kvLiveTvLogoImg');
+    if (logo && typeof OFFICIAL_LOGO_B64 !== 'undefined') logo.src = OFFICIAL_LOGO_B64;
+
+    if (modal) modal.classList.remove('kv-hidden');
+
+    const streamUrl = getSavedLiveStreamUrl();
+    const isAdmin = window.KV_ACTIVE_USER && window.KV_ACTIVE_USER.role === 'admin';
+    if (adminHelper) adminHelper.style.display = isAdmin ? 'block' : 'none';
+
+    if (streamUrl && streamUrl.trim()) {
+      if (standby) standby.style.display = 'none';
+      if (video) {
+        video.style.display = 'block';
+        playHlsStream(video, streamUrl.trim());
+      }
+    } else {
+      if (video) {
+        video.style.display = 'none';
+        video.pause();
+      }
+      if (standby) standby.style.display = 'flex';
+    }
+  }
+
+  function closeLiveTvPlayer() {
+    const modal = document.getElementById('kvLiveTvModal');
+    const video = document.getElementById('kvLiveTvVideo');
+    if (modal) modal.classList.add('kv-hidden');
+    if (video) {
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+    }
+    if (liveHlsInstance) {
+      liveHlsInstance.destroy();
+      liveHlsInstance = null;
+    }
+  }
+
+  function playHlsStream(videoElement, url) {
+    if (liveHlsInstance) {
+      liveHlsInstance.destroy();
+      liveHlsInstance = null;
+    }
+
+    if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+      liveHlsInstance = new Hls({ enableWorker: true });
+      liveHlsInstance.loadSource(url);
+      liveHlsInstance.attachMedia(videoElement);
+      liveHlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
+        videoElement.play().catch(function() {});
+      });
+      liveHlsInstance.on(Hls.Events.ERROR, function(event, data) {
+        if (data && data.fatal) {
+          console.warn('HLS stream fatal error:', data);
+        }
+      });
+    } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+      videoElement.src = url;
+      videoElement.addEventListener('loadedmetadata', function() {
+        videoElement.play().catch(function() {});
+      });
+    } else {
+      videoElement.src = url;
+    }
+  }
+
+  // Button Listeners for Live TV
+  const btnOpenLiveTv = document.getElementById('kvBtnOpenLiveTv');
+  const btnCloseLiveTv = document.getElementById('btnCloseLiveTv');
+  const btnOpenAdminFromLive = document.getElementById('btnOpenAdminFromLiveTv');
+  const btnCaptureLive = document.getElementById('btnCaptureLiveTvFrame');
+
+  if (btnOpenLiveTv) btnOpenLiveTv.addEventListener('click', openLiveTvPlayer);
+  if (btnCloseLiveTv) btnCloseLiveTv.addEventListener('click', closeLiveTvPlayer);
+  if (btnOpenAdminFromLive) {
+    btnOpenAdminFromLive.addEventListener('click', function() {
+      closeLiveTvPlayer();
+      if (btnOpenAdmin) btnOpenAdmin.click();
+    });
+  }
+
+  // Live TV Snapshot into Card Maker
+  if (btnCaptureLive) {
+    btnCaptureLive.addEventListener('click', function() {
+      const video = document.getElementById('kvLiveTvVideo');
+      if (!video || video.style.display === 'none' || !video.videoWidth) {
+        alert('⚠️ ലൈവ് വീഡിയോ പ്ലേ ചെയ്യുമ്പോൾ മാത്രമേ ഫ്രെയിം ക്യാപ്‌ചർ ചെയ്യാൻ സാധിക്കൂ!');
+        return;
+      }
+      try {
+        const snapCanvas = document.createElement('canvas');
+        snapCanvas.width = video.videoWidth;
+        snapCanvas.height = video.videoHeight;
+        const sCtx = snapCanvas.getContext('2d');
+        sCtx.drawImage(video, 0, 0, snapCanvas.width, snapCanvas.height);
+        const dataUrl = snapCanvas.toDataURL('image/jpeg', 0.95);
+
+        const capturedImg = new Image();
+        capturedImg.onload = function() {
+          userImg = capturedImg;
+          photoZoom = 1.0;
+          photoPosX = 0;
+          photoPosY = 0;
+          cardType = 'news';
+          renderCard();
+          closeLiveTvPlayer();
+          if (typeof showToast === 'function') {
+            showToast('📸 ലൈവ് ടിവി ഫ്രെയിം വിജയകരമായി കാർഡിലേക്ക് എടുത്തു!');
+          }
+        };
+        capturedImg.src = dataUrl;
+      } catch (err) {
+        alert('ഫ്രെയിം ക്യാപ്‌ചർ ചെയ്യാൻ സാധിച്ചില്ല: ' + err.message);
+      }
+    });
+  }
+
+  // Admin Live Stream URL inputs & buttons
+  const inpLiveStreamUrl = document.getElementById('kvInpLiveStreamUrl');
+  const btnSaveLiveStream = document.getElementById('kvBtnSaveLiveStreamUrl');
+  const btnClearLiveStream = document.getElementById('kvBtnClearLiveStreamUrl');
+  const btnPreviewLiveTv = document.getElementById('kvBtnPreviewLiveTv');
+
+  const curSavedStream = getSavedLiveStreamUrl();
+  if (inpLiveStreamUrl) inpLiveStreamUrl.value = curSavedStream;
+  updateLiveStreamBadge(curSavedStream);
+
+  if (btnSaveLiveStream && inpLiveStreamUrl) {
+    btnSaveLiveStream.addEventListener('click', function() {
+      const url = inpLiveStreamUrl.value.trim();
+      if (!url) {
+        alert('⚠️ ദയവായി സാധുവായ ഒരു .m3u8 സ്ട്രീം URL നൽകുക.');
+        return;
+      }
+      try {
+        localStorage.setItem(LIVE_STREAM_STORAGE_KEY, url);
+        updateLiveStreamBadge(url);
+        // Sync to Firestore if live
+        if (firebaseDb && isFirebaseLive) {
+          firebaseDb.collection('kv_settings').doc('live_stream').set({ url: url, updatedAt: new Date().toISOString() }, { merge: true }).catch(function(){});
+        }
+        showAdminStatus('✅ ലൈവ് ടിവി സ്ട്രീം URL സേവ് ചെയ്തു! ഇപ്പോൾ ലൈവ് ടിവിയിൽ പ്ലേ ചെയ്യാം.', false);
+        if (typeof showToast === 'function') {
+          showToast('✅ ലൈവ് സ്ട്രീം ലിങ്ക് സേവ് ചെയ്തു!');
+        }
+      } catch (e) {
+        alert('സേവ് പരാജയപ്പെട്ടു: ' + e.message);
+      }
+    });
+  }
+
+  if (btnClearLiveStream && inpLiveStreamUrl) {
+    btnClearLiveStream.addEventListener('click', function() {
+      if (confirm('ലൈവ് സ്ട്രീം ലിങ്ക് നീക്കം ചെയ്ത് Standby / Under Construction മോഡിലേക്ക് മാറ്റണോ?')) {
+        try {
+          localStorage.removeItem(LIVE_STREAM_STORAGE_KEY);
+          inpLiveStreamUrl.value = '';
+          updateLiveStreamBadge('');
+          if (firebaseDb && isFirebaseLive) {
+            firebaseDb.collection('kv_settings').doc('live_stream').set({ url: '', updatedAt: new Date().toISOString() }, { merge: true }).catch(function(){});
+          }
+          showAdminStatus('🗑️ ലൈവ് ലിങ്ക് നീക്കം ചെയ്തു (Standby Mode).', false);
+        } catch (e) {}
+      }
+    });
+  }
+
+  if (btnPreviewLiveTv) {
+    btnPreviewLiveTv.addEventListener('click', function() {
+      if (adminModal) adminModal.classList.add('kv-hidden');
+      openLiveTvPlayer();
+    });
+  }
 
   // Restore saved session if exists (checks both localStorage and sessionStorage!)
   try {
