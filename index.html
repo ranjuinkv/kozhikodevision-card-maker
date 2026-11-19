@@ -40,60 +40,81 @@
       align-items: center;
     }
 
-    /* TOP HEADER: Ultra-Modern Broadcast Studio Header */
+        /* TOP HEADER: Ultra-Modern Broadcast Studio Header (Clean & Neat) */
     .app-header {
       width: 100%;
-      background: linear-gradient(135deg, #090e1a 0%, #172554 45%, #0b1329 100%);
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.96) 0%, rgba(23, 37, 84, 0.92) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(56, 189, 248, 0.25);
-      border-top: 3px solid #ef4444;
-      border-bottom: 2px solid #b91c1c;
-      border-radius: 18px;
-      padding: 12px 16px;
+      border-left: 4px solid #ef4444;
+      border-radius: 16px;
+      padding: 10px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 14px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(239, 68, 68, 0.15);
+      gap: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
       margin-bottom: 12px;
+      box-sizing: border-box;
       position: relative;
     }
-    .header-main-brand {
+    .header-left {
       display: flex;
       align-items: center;
       gap: 12px;
-    }
-    .header-logo-box {
-      width: 52px;
-      height: 52px;
       flex-shrink: 0;
+    }
+    .header-logo-badge {
+      width: 46px;
+      height: 46px;
+      background: radial-gradient(circle, #ffffff 70%, #f1f5f9 100%);
+      border-radius: 12px;
+      padding: 3px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle, #ffffff 70%, #f1f5f9 100%);
-      border-radius: 14px;
-      padding: 4px;
-      box-shadow: 0 0 16px rgba(239, 68, 68, 0.45);
-      border: 2px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+      border: 1.5px solid rgba(255, 255, 255, 0.9);
+      flex-shrink: 0;
     }
-    .brand-title-row {
+    .header-logo-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .header-titles {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .title-line {
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .kv-live-tag {
+    .brand-name {
+      font-size: 16px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      line-height: 1.1;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    }
+    .live-pill {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      background: rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.22);
       border: 1px solid #ef4444;
       color: #fca5a5;
-      font-size: 9px;
+      font-size: 9.5px;
       font-weight: 800;
       padding: 2px 7px;
-      border-radius: 12px;
+      border-radius: 10px;
       letter-spacing: 0.5px;
     }
-    .kv-live-dot {
+    .live-pulse {
       width: 6px;
       height: 6px;
       border-radius: 50%;
@@ -103,34 +124,26 @@
     }
     @keyframes kvPulse {
       0% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(1.3); }
+      50% { opacity: 0.35; transform: scale(1.3); }
       100% { opacity: 1; transform: scale(1); }
     }
-    .brand-title-top {
-      font-size: 14px;
-      font-weight: 900;
-      letter-spacing: 0.8px;
-      color: #ffffff;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-    }
-    .brand-sub-title {
+    .subtitle-line {
       font-size: 11px;
       font-weight: 600;
       color: #38bdf8;
-      display: block;
-      margin-top: 1px;
+      letter-spacing: 0.3px;
     }
-    .brand-main-title {
-      font-size: 10px;
-      font-weight: 700;
-      color: #94a3b8;
-      display: block;
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
     }
-    .kv-user-chip {
+    .user-pill {
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 20px;
-      padding: 4px 10px;
+      padding: 5px 12px;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -138,32 +151,101 @@
       color: #f8fafc;
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
     }
-    .kv-hdr-admin-btn {
-      background: linear-gradient(135deg, #d97706, #b45309);
-      color: #fff;
+    .user-name {
       font-weight: 700;
+    }
+    .role-badge {
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #3b82f6;
+      color: #ffffff;
+    }
+    .role-badge.admin {
+      background: #f59e0b;
+      color: #0f172a;
+    }
+    .header-btn {
+      border: none;
       border-radius: 8px;
       padding: 6px 12px;
-      border: 1px solid rgba(251, 191, 36, 0.4);
-      box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
       transition: all 0.2s ease;
     }
-    .kv-hdr-admin-btn:hover {
+    .btn-admin {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      color: #ffffff;
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+    }
+    .btn-admin:hover {
       background: linear-gradient(135deg, #f59e0b, #d97706);
       transform: translateY(-1px);
     }
-    .kv-hdr-logout-btn {
+    .btn-logout {
       background: rgba(239, 68, 68, 0.15);
       color: #fca5a5;
-      font-weight: 600;
-      border-radius: 8px;
-      padding: 6px 10px;
       border: 1px solid rgba(239, 68, 68, 0.3);
-      transition: all 0.2s ease;
     }
-    .kv-hdr-logout-btn:hover {
+    .btn-logout:hover {
       background: rgba(239, 68, 68, 0.3);
-      color: #fff;
+      color: #ffffff;
+    }
+
+    /* PAGE FOOTER CREDITS (DEVELOPED BY RANJU) */
+    .app-page-footer {
+      width: 100%;
+      margin-top: 18px;
+      margin-bottom: 26px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .developer-credit-box {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.85));
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 14px rgba(56, 189, 248, 0.2);
+      border-radius: 20px;
+      padding: 7px 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+    .dev-badge-icon {
+      font-size: 14px;
+      color: #fbbf24;
+    }
+    .dev-title {
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+    .dev-name {
+      color: #38bdf8;
+      font-weight: 800;
+      font-size: 13.5px;
+      letter-spacing: 0.6px;
+      text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+    }
+    .dev-sep {
+      color: #475569;
+    }
+    .dev-studio-tag {
+      font-size: 10.5px;
+      color: #94a3b8;
+    }
+    .dev-copyright-text {
+      font-size: 10.5px;
+      color: #64748b;
+      letter-spacing: 0.3px;
     }
     .header-logo-img {
       max-width: 100%;
@@ -1148,15 +1230,16 @@
         grid-template-columns: 1fr;
       }
       .app-header {
-        flex-wrap: wrap;
-        gap: 8px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 10px 12px;
       }
-      .kv-header-auth-bar {
-        width: 100%;
+      .header-right {
         justify-content: space-between;
-        border-top: 1px solid #e2e8f0;
+        width: 100%;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
         padding-top: 8px;
-        margin-top: 4px;
       }
     }
     .kv-admin-input {
@@ -1387,7 +1470,10 @@
       </form>
 
       <div class="kv-auth-footer">
-        🔒 കോഴിക്കോട് വിഷൻ അഡ്മിൻ അംഗീകരിച്ച സ്റ്റാഫുകൾക്ക് മാത്രം പ്രവേശനം
+        <div>🔒 കോഴിക്കോട് വിഷൻ അഡ്മിൻ അംഗീകരിച്ച സ്റ്റാഫുകൾക്ക് മാത്രം പ്രവേശനം</div>
+        <div style="margin-top:8px;font-size:12px;font-weight:800;color:#38bdf8;">
+          ⚡ Developed by <span style="color:#ffffff;text-shadow:0 0 8px #38bdf8;">Ranju</span>
+        </div>
       </div>
     </div>
   </div>
@@ -1537,28 +1623,28 @@
   <div class="app-wrapper">
 
     <!-- 1. TOP APP HEADER: White Box Matching Wireframe -->
-        <header class="app-header">
-      <div class="header-main-brand">
-        <div class="header-logo-box">
+            <header class="app-header">
+      <div class="header-left">
+        <div class="header-logo-badge">
           <img id="hdrLogoImg" alt="Kozhikode Vision" class="header-logo-img">
         </div>
-        <div class="brand-text">
-          <div class="brand-title-row">
-            <span class="brand-title-top">KOZHIKODE VISION NEWS</span>
-            <span class="kv-live-tag"><span class="kv-live-dot"></span>LIVE STUDIO</span>
+        <div class="header-titles">
+          <div class="title-line">
+            <span class="brand-name">KOZHIKODE VISION</span>
+            <span class="live-pill"><span class="live-pulse"></span>LIVE</span>
           </div>
-          <span class="brand-sub-title">ഔദ്യോഗിക ന്യൂസ്, കാർഡ് &amp; വീഡിയോ സ്റ്റുഡിയോ</span>
-          <span class="brand-main-title">Card &amp; Video Maker</span>
+          <div class="subtitle-line">Official News &amp; Video Studio</div>
         </div>
       </div>
-      <div id="kvHeaderAuthBar" class="kv-header-auth-bar kv-hidden">
-        <div class="kv-user-chip">
-          <span style="font-size:14px;">👤</span>
-          <span id="kvCurrentUserName">User</span>
-          <span id="kvCurrentUserRole" class="kv-role-tag">STAFF</span>
+
+      <div id="kvHeaderAuthBar" class="header-right kv-hidden">
+        <div class="user-pill">
+          <span class="user-icon">👤</span>
+          <span id="kvCurrentUserName" class="user-name">User</span>
+          <span id="kvCurrentUserRole" class="role-badge">STAFF</span>
         </div>
-        <button id="kvBtnOpenAdmin" type="button" class="kv-hdr-btn kv-hdr-admin-btn kv-hidden">👑 അഡ്മിൻ</button>
-        <button id="kvBtnLogout" type="button" class="kv-hdr-btn kv-hdr-logout-btn">🚪 ലോഗൗട്ട്</button>
+        <button id="kvBtnOpenAdmin" type="button" class="header-btn btn-admin kv-hidden">👑 അഡ്മിൻ</button>
+        <button id="kvBtnLogout" type="button" class="header-btn btn-logout">🚪 ലോഗൗട്ട്</button>
       </div>
     </header>
 
@@ -1733,6 +1819,7 @@
             </button>
 
             <!-- Video Playback & Scrub Bar -->
+                        <!-- Video Playback & Scrub Bar -->
             <div id="videoControlsRow" style="background:rgba(255,255,255,0.06);padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);display:flex;flex-direction:column;gap:8px;">
               <div style="display:flex;align-items:center;justify-content:space-between;">
                 <div style="display:flex;gap:6px;">
@@ -1742,6 +1829,57 @@
                 <span id="videoTimeDisplay" style="font-size:11px;font-family:monospace;color:#38bdf8;font-weight:700;">00:00 / 00:00</span>
               </div>
               <input id="videoSeekRange" type="range" min="0" max="100" value="0" step="0.1" style="width:100%;accent-color:#38bdf8;cursor:pointer;">
+            </div>
+
+            <!-- Video Position & Zoom Adjustments (Matching Photo Adjustments!) -->
+            <div class="video-adjust-box" style="margin-top:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(139,92,246,0.3);border-radius:12px;padding:12px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-size:11.5px;font-weight:800;color:#c4b5fd;">📐 വീഡിയോ പൊസിഷൻ &amp; ഫ്രെയിം അഡ്ജസ്റ്റ്</span>
+                <div style="display:flex;gap:4px;">
+                  <button id="btnVideoFit" type="button" class="btn-tactile pill-btn active" style="font-size:9.5px;padding:2px 8px;background:#3b82f6;color:#fff;border-radius:5px;border:none;cursor:pointer;">Fit</button>
+                  <button id="btnVideoFill" type="button" class="btn-tactile pill-btn" style="font-size:9.5px;padding:2px 8px;background:#475569;color:#fff;border-radius:5px;border:none;cursor:pointer;">Fill</button>
+                </div>
+              </div>
+
+              <!-- Zoom Slider -->
+              <div class="slider-item">
+                <div class="slider-head">
+                  <span style="font-size:11px;color:#e2e8f0;">🔍 വീഡിയോ സൂം (Scale):</span>
+                  <span id="videoZoomVal" class="val" style="color:#38bdf8;font-weight:700;">1.0×</span>
+                </div>
+                <input id="videoZoomRange" type="range" min="0.5" max="3" step="0.05" value="1" style="width:100%;accent-color:#8b5cf6;cursor:pointer;">
+              </div>
+
+              <!-- Vertical Position (Y) -->
+              <div class="slider-item">
+                <div class="slider-head">
+                  <span style="font-size:11px;color:#e2e8f0;">↕ മുകളിലോട്ട് / താഴോട്ട് (Y):</span>
+                  <span id="videoPosYVal" class="val" style="color:#38bdf8;font-weight:700;">0px</span>
+                </div>
+                <input id="videoPosYRange" type="range" min="-600" max="600" step="5" value="0" style="width:100%;accent-color:#8b5cf6;cursor:pointer;">
+              </div>
+
+              <!-- Horizontal Position (X) -->
+              <div class="slider-item">
+                <div class="slider-head">
+                  <span style="font-size:11px;color:#e2e8f0;">↔ ഇടത്തോട്ട് / വലത്തോട്ട് (X):</span>
+                  <span id="videoPosXVal" class="val" style="color:#38bdf8;font-weight:700;">0px</span>
+                </div>
+                <input id="videoPosXRange" type="range" min="-600" max="600" step="5" value="0" style="width:100%;accent-color:#8b5cf6;cursor:pointer;">
+              </div>
+
+              <!-- D-Pad Directional Controls -->
+              <div class="dpad-container" style="margin-top:8px;">
+                <button id="btnVideoLeft" type="button" class="btn-tactile dpad-pill" title="Move Left">◀</button>
+                <button id="btnVideoDown" type="button" class="btn-tactile dpad-pill" title="Move Down">▼</button>
+                <button id="btnVideoCenter" type="button" class="btn-tactile dpad-pill center" title="Center Video">🎯 സെന്റർ</button>
+                <button id="btnVideoUp" type="button" class="btn-tactile dpad-pill" title="Move Up">▲</button>
+                <button id="btnVideoRight" type="button" class="btn-tactile dpad-pill" title="Move Right">▶</button>
+              </div>
+
+              <div style="font-size:9.5px;color:#94a3b8;margin-top:8px;line-height:1.3;">
+                👆 <b>ടിപ്പ്:</b> മുകളിലെ പ്രിവ്യൂ സ്ക്രീനിൽ വിരൽ/മൗസ് തൊട്ട് ഡ്രാഗ് ചെയ്തും വീഡിയോ ഇഷ്ടമുള്ള ഭാഗത്തേക്ക് നീക്കാം.
+              </div>
             </div>
 
             <div style="font-size:10px;color:#94a3b8;margin-top:8px;line-height:1.4;">
@@ -2244,7 +2382,20 @@
         </div>
       </div>
 
-    </section>
+        </section>
+
+    <!-- OFFICIAL PAGE FOOTER WITH DEVELOPER CREDITS -->
+    <footer class="app-page-footer">
+      <div class="developer-credit-box">
+        <span class="dev-badge-icon">⚡</span>
+        <span class="dev-title">Developed by <span class="dev-name">Ranju</span></span>
+        <span class="dev-sep">•</span>
+        <span class="dev-studio-tag">Kozhikode Vision Official Media Studio v7.0</span>
+      </div>
+      <div class="dev-copyright-text">
+        &copy; 2026 Kozhikode Vision News &amp; Entertainment. All Rights Reserved.
+      </div>
+    </footer>
 
   </div>
 
@@ -2291,6 +2442,12 @@
     let currentStep = 1;
     let cardType = 'news'; // 'news', 'obituary', or 'video'
     let kvSourceVideo = null;
+    let videoZoom = 1.0;
+    let videoPosX = 0;
+    let videoPosY = 0;
+    let videoScaleMode = 'fit'; // 'fit' or 'fill'
+    let initVideoX = 0;
+    let initVideoY = 0;
     let isVideoPlaying = false;
     let isVideoMuted = false;
     let videoRafId = null;
@@ -2493,6 +2650,8 @@
       initObitTextY = obitDetailsOffsetY;
       initFrameX = obitFramePosX;
       initFrameY = obitFramePosY;
+      initVideoX = videoPosX;
+      initVideoY = videoPosY;
 
       if (dragMode === 'auto') {
         const lb = logoCalculatedBounds;
@@ -2519,6 +2678,17 @@
           else {
             dragTarget = 'photo';
             dragStatusLabel.textContent = '📷 ഫോട്ടോ മൂവ് ചെയ്യുന്നു';
+          }
+        }
+        // 2b. Video Mode Hit Test
+        else if (cardType === 'video') {
+          const textTop = (canvas.height * 0.55 + headlineOffsetY);
+          if (pos.y >= textTop) {
+            dragTarget = 'text';
+            dragStatusLabel.textContent = '✍️ വാർത്ത ടെക്സ്റ്റ് മൂവ് ചെയ്യുന്നു';
+          } else {
+            dragTarget = 'video';
+            dragStatusLabel.textContent = '🎥 വീഡിയോ ഫ്രെയിം മൂവ് ചെയ്യുന്നു';
           }
         }
         // 3. News Mode Hit Test
@@ -2561,6 +2731,21 @@
       const pos = getCanvasCoordinates(e);
       const deltaX = pos.x - dragStartX;
       const deltaY = pos.y - dragStartY;
+
+      if (dragTarget === 'video' || (dragTarget === 'photo' && cardType === 'video')) {
+        videoPosX = Math.round(initVideoX + deltaX);
+        videoPosY = Math.round(initVideoY + deltaY);
+        const posXRange = document.getElementById('videoPosXRange');
+        const posYRange = document.getElementById('videoPosYRange');
+        const posXVal = document.getElementById('videoPosXVal');
+        const posYVal = document.getElementById('videoPosYVal');
+        if (posXRange) posXRange.value = videoPosX;
+        if (posYRange) posYRange.value = videoPosY;
+        if (posXVal) posXVal.textContent = videoPosX + 'px';
+        if (posYVal) posYVal.textContent = videoPosY + 'px';
+        renderCard();
+        return;
+      }
 
       if (dragTarget === 'photo') {
         photoPosX = Math.round(initPhotoX + deltaX);
@@ -2938,6 +3123,72 @@
         if (btnExportVideo) btnExportVideo.disabled = false;
       });
     }
+
+        // VIDEO ZOOM & PAN EVENT LISTENERS
+    const videoZoomRange = document.getElementById('videoZoomRange');
+    const videoZoomVal = document.getElementById('videoZoomVal');
+    const videoPosXRange = document.getElementById('videoPosXRange');
+    const videoPosXVal = document.getElementById('videoPosXVal');
+    const videoPosYRange = document.getElementById('videoPosYRange');
+    const videoPosYVal = document.getElementById('videoPosYVal');
+
+    const btnVideoLeft = document.getElementById('btnVideoLeft');
+    const btnVideoRight = document.getElementById('btnVideoRight');
+    const btnVideoUp = document.getElementById('btnVideoUp');
+    const btnVideoDown = document.getElementById('btnVideoDown');
+    const btnVideoCenter = document.getElementById('btnVideoCenter');
+    const btnVideoFit = document.getElementById('btnVideoFit');
+    const btnVideoFill = document.getElementById('btnVideoFill');
+
+    if (videoZoomRange) {
+      videoZoomRange.addEventListener('input', (e) => {
+        videoZoom = parseFloat(e.target.value) || 1;
+        if (videoZoomVal) videoZoomVal.textContent = videoZoom.toFixed(2) + '×';
+        renderCard();
+      });
+    }
+    if (videoPosXRange) {
+      videoPosXRange.addEventListener('input', (e) => {
+        videoPosX = parseInt(e.target.value) || 0;
+        if (videoPosXVal) videoPosXVal.textContent = videoPosX + 'px';
+        renderCard();
+      });
+    }
+    if (videoPosYRange) {
+      videoPosYRange.addEventListener('input', (e) => {
+        videoPosY = parseInt(e.target.value) || 0;
+        if (videoPosYVal) videoPosYVal.textContent = videoPosY + 'px';
+        renderCard();
+      });
+    }
+
+    if (btnVideoLeft) btnVideoLeft.addEventListener('click', () => { videoPosX -= 25; if (videoPosXRange) videoPosXRange.value = videoPosX; if (videoPosXVal) videoPosXVal.textContent = videoPosX + 'px'; renderCard(); });
+    if (btnVideoRight) btnVideoRight.addEventListener('click', () => { videoPosX += 25; if (videoPosXRange) videoPosXRange.value = videoPosX; if (videoPosXVal) videoPosXVal.textContent = videoPosX + 'px'; renderCard(); });
+    if (btnVideoUp) btnVideoUp.addEventListener('click', () => { videoPosY -= 25; if (videoPosYRange) videoPosYRange.value = videoPosY; if (videoPosYVal) videoPosYVal.textContent = videoPosY + 'px'; renderCard(); });
+    if (btnVideoDown) btnVideoDown.addEventListener('click', () => { videoPosY += 25; if (videoPosYRange) videoPosYRange.value = videoPosY; if (videoPosYVal) videoPosYVal.textContent = videoPosY + 'px'; renderCard(); });
+    if (btnVideoCenter) btnVideoCenter.addEventListener('click', () => {
+      videoPosX = 0; videoPosY = 0; videoZoom = 1.0;
+      if (videoZoomRange) videoZoomRange.value = 1;
+      if (videoZoomVal) videoZoomVal.textContent = '1.0×';
+      if (videoPosXRange) videoPosXRange.value = 0;
+      if (videoPosXVal) videoPosXVal.textContent = '0px';
+      if (videoPosYRange) videoPosYRange.value = 0;
+      if (videoPosYVal) videoPosYVal.textContent = '0px';
+      renderCard();
+    });
+
+    if (btnVideoFit) btnVideoFit.addEventListener('click', () => {
+      videoScaleMode = 'fit';
+      btnVideoFit.classList.add('active');
+      if (btnVideoFill) btnVideoFill.classList.remove('active');
+      renderCard();
+    });
+    if (btnVideoFill) btnVideoFill.addEventListener('click', () => {
+      videoScaleMode = 'fill';
+      btnVideoFill.classList.add('active');
+      if (btnVideoFit) btnVideoFit.classList.remove('active');
+      renderCard();
+    });
 
     const btnRatio1 = document.getElementById('btnRatio1');
     const btnRatio2 = document.getElementById('btnRatio2');
@@ -3869,12 +4120,23 @@
       if (kvSourceVideo && kvSourceVideo.readyState >= 2 && kvSourceVideo.videoWidth) {
         const vw = kvSourceVideo.videoWidth;
         const vh = kvSourceVideo.videoHeight;
-        const scale = Math.max(W / vw, H / vh);
-        const sw = vw * scale;
-        const sh = vh * scale;
-        const sx = (W - sw) / 2;
-        const sy = (H - sh) / 2;
+        
+        let baseScale;
+        if (videoScaleMode === 'fit') {
+          baseScale = Math.min(W / vw, H / vh);
+        } else {
+          baseScale = Math.max(W / vw, H / vh);
+        }
+        
+        const finalScale = baseScale * videoZoom;
+        const sw = vw * finalScale;
+        const sh = vh * finalScale;
+        const sx = (W - sw) / 2 + videoPosX;
+        const sy = (H - sh) / 2 + videoPosY;
+        
+        ctx.save();
         ctx.drawImage(kvSourceVideo, sx, sy, sw, sh);
+        ctx.restore();
       } else {
         const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
         bgGrad.addColorStop(0, '#0a1128');
