@@ -1,9 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="ml">
 <head>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#070b14">
-  <link rel="apple-touch-icon" href="icon-192.png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>KOZHIKODE VISION NEWS - Card Maker</title>
@@ -287,29 +284,151 @@
       margin: 0 0 8px 0;
       text-shadow: 0 2px 8px rgba(0,0,0,0.8);
     }
-    .standby-status-pill {
+    /* BROADCAST TICKER MARQUEE LOOP */
+    .standby-marquee-ticker {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(90deg, #7f1d1d, #b91c1c 25%, #ef4444 50%, #b91c1c 75%, #7f1d1d);
+      border-top: 1.5px solid #fca5a5;
+      padding: 7px 0;
+      overflow: hidden;
+      box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.7);
+      z-index: 10;
+      display: flex;
+      white-space: nowrap;
+    }
+    .standby-ticker-track {
+      display: inline-flex;
+      white-space: nowrap;
+      animation: kvStandbyTickerAnim 24s linear infinite;
+      will-change: transform;
+    }
+    @keyframes kvStandbyTickerAnim {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+    .standby-ticker-item {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: rgba(245, 158, 11, 0.18);
-      border: 1px solid #f59e0b;
-      color: #fde68a;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 12px;
-      border-radius: 20px;
-      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #ffffff;
+      padding: 0 18px;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.85);
     }
-    .standby-desc {
-      font-size: 11.5px;
-      color: #94a3b8;
-      line-height: 1.5;
-      margin: 0;
+
+    /* MINI TV SCREEN WIDGET IN VIDEO TAB */
+    .mini-tv-container {
+      background: linear-gradient(145deg, #0d1527, #070b14);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      border-radius: 14px;
+      padding: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    .mini-tv-frame {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .mini-tv-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mini-tv-ctrl-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mini-tv-ctrl-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #38bdf8;
+    }
+    .mini-tv-screen-box {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #000;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      position: relative;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.95);
+    }
+    .mini-tv-standby {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, #0c1a3b 0%, #030712 100%);
+      text-align: center;
+      overflow: hidden;
+    }
+    .mini-tv-standby-center {
+      position: relative;
+      z-index: 2;
+      margin-bottom: 22px;
+    }
+    .mini-tv-ticker-wrap {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(90deg, #991b1b, #dc2626, #991b1b);
+      border-top: 1px solid #fca5a5;
+      padding: 4px 0;
+      overflow: hidden;
+      white-space: nowrap;
+      z-index: 5;
+      display: flex;
+    }
+    .mini-tv-ticker-track {
+      display: inline-flex;
+      white-space: nowrap;
+      animation: kvMiniTickerAnim 18s linear infinite;
+      will-change: transform;
+    }
+    @keyframes kvMiniTickerAnim {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+    .mini-tv-ticker-item {
+      font-size: 10px;
+      font-weight: 800;
+      color: #fff;
+      padding: 0 10px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    }
+    .mini-tv-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 2px;
+    }
+    .mini-tv-expand-link {
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      border: 1px solid #a78bfa;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(124, 58, 237, 0.3);
     }
     .kv-live-tv-actions {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-end;
       flex-wrap: wrap;
       gap: 10px;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -1887,6 +2006,56 @@
                 <span class="ratio-name">WIDE SCREEN</span>
               </button>
             </div>
+
+            <!-- Embedded Live TV Screen Widget (Visible in Video Mode) -->
+            <div id="videoTabLiveTvWidget" class="mini-tv-container" style="display:none; margin-top:14px;">
+              <div class="mini-tv-frame">
+                <!-- Mini TV Header -->
+                <div class="mini-tv-header">
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <span class="live-pulse" style="width:7px; height:7px; background:#ef4444; box-shadow:0 0 8px #ef4444;"></span>
+                    <span style="font-size:11px; font-weight:800; color:#fff; letter-spacing:0.5px;">KOZHIKODE VISION LIVE</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <button id="btnMiniTvMute" type="button" class="btn-tactile mini-tv-ctrl-btn" title="ശബ്ദം മാറ്റുക">🔇</button>
+                    <button id="btnMiniTvExpand" type="button" class="btn-tactile mini-tv-ctrl-btn" title="വലിയ സ്ക്രീനിൽ കാണുക">⛶</button>
+                  </div>
+                </div>
+
+                <!-- Mini TV Screen Aspect Ratio 16:9 -->
+                <div class="mini-tv-screen-box">
+                  <video id="kvMiniTvVideo" playsinline muted style="display:none; width:100%; height:100%; object-fit:cover; background:#000;"></video>
+                  
+                  <!-- Standby in Mini TV -->
+                  <div id="kvMiniTvStandby" class="mini-tv-standby">
+                    <div class="standby-scanlines"></div>
+                    <div class="mini-tv-standby-center">
+                      <div style="font-size:22px; filter:drop-shadow(0 0 10px rgba(56,189,248,0.7));">📡</div>
+                      <div style="font-size:11px; font-weight:900; color:#fff; letter-spacing:0.8px; margin-top:2px;">KOZHIKODE VISION</div>
+                      <div style="font-size:9px; color:#38bdf8; font-weight:700;">LIVE BROADCAST</div>
+                    </div>
+                    <!-- Infinite Looping Marquee Ticker -->
+                    <div class="mini-tv-ticker-wrap">
+                      <div class="mini-tv-ticker-track">
+                        <span class="mini-tv-ticker-item">⚠️ തത്സമയ സംപ്രേക്ഷണം ഉടൻ ആരംഭിക്കും (Standby / Under Construction) &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION LIVE &nbsp;&nbsp;★&nbsp;&nbsp; </span>
+                        <span class="mini-tv-ticker-item">⚠️ തത്സമയ സംപ്രേക്ഷണം ഉടൻ ആരംഭിക്കും (Standby / Under Construction) &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION LIVE &nbsp;&nbsp;★&nbsp;&nbsp; </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Mini TV Bottom Info Bar -->
+                <div class="mini-tv-footer">
+                  <span style="font-size:9.5px; color:#94a3b8; display:flex; align-items:center; gap:4px;">
+                    <span style="display:inline-block; width:5px; height:5px; border-radius:50%; background:#22c55e;"></span>
+                    തത്സമയ ചാനൽ (Live TV)
+                  </span>
+                  <button id="btnMiniTvOpenModal" type="button" class="btn-tactile mini-tv-expand-link">
+                    വലിയ സ്ക്രീൻ ↗
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Right Column: Photo Upload (For News/Obit) -->
@@ -2592,30 +2761,30 @@
           <div class="standby-content">
             <div class="standby-icon-badge">📡</div>
             <h3 class="standby-title">KOZHIKODE VISION LIVE STREAM</h3>
-            <div class="standby-status-pill">
-              <span class="live-pulse" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></span>
-              <span>⚠️ തത്സമയ സംപ്രേക്ഷണം ഉടൻ ആരംഭിക്കും (Standby / Under Construction)</span>
+            <div style="font-size:12px; color:#38bdf8; font-weight:700; letter-spacing:1px; margin-bottom:10px;">
+              OFFICIAL 24x7 BROADCAST CHANNEL
             </div>
-            <p class="standby-desc">
-              ചാനലിന്റെ ലൈവ് സ്ട്രീം ലിങ്ക് (.m3u8) അഡ്മിൻ കൺസോളിൽ നൽകിയാൽ തത്സമയം ഇവിടെ ചാനൽ കാണാം.
-            </p>
-            <div id="kvLiveTvAdminHelper" style="display:none;margin-top:14px;">
+            <div id="kvLiveTvAdminHelper" style="display:none;margin-top:10px;">
               <button id="btnOpenAdminFromLiveTv" type="button" class="btn-tactile" style="background:linear-gradient(135deg,#d97706,#b45309);color:#fff;border:1px solid #fbbf24;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(217,119,6,0.3);">
                 ⚙️ അഡ്മിൻ കൺസോളിൽ m3u8 ലിങ്ക് ചേർക്കുക
               </button>
             </div>
           </div>
+
+          <!-- Broadcast Scrolling Loop Marquee Ticker at the bottom of the TV screen -->
+          <div class="standby-marquee-ticker">
+            <div class="standby-ticker-track">
+              <span class="standby-ticker-item">⚠️ തത്സമയ സംപ്രേക്ഷണം ഉടൻ ആരംഭിക്കും (Standby / Under Construction) &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION LIVE TV &nbsp;&nbsp;★&nbsp;&nbsp; </span>
+              <span class="standby-ticker-item">⚠️ തത്സമയ സംപ്രേക്ഷണം ഉടൻ ആരംഭിക്കും (Standby / Under Construction) &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION LIVE TV &nbsp;&nbsp;★&nbsp;&nbsp; </span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Action Footer (Instant Breaking News Snapshot & Controls) -->
-      <div class="kv-live-tv-actions">
-        <button id="btnCaptureLiveTvFrame" type="button" class="btn-tactile" style="background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;border:1px solid #fca5a5;padding:10px 18px;border-radius:10px;font-size:12px;font-weight:800;display:flex;align-items:center;gap:8px;cursor:pointer;box-shadow:0 4px 15px rgba(239,68,68,0.4);">
-          <span style="font-size:16px;">📸</span>
-          <span>ലൈവ് ഫ്രെയിം കാർഡിലേക്ക് ക്യാപ്‌ചർ (Instant Breaking News)</span>
-        </button>
-
+      <!-- Action Footer -->
+      <div class="kv-live-tv-actions" style="justify-content: flex-end;">
         <div style="font-size:11px;color:#94a3b8;display:flex;align-items:center;gap:6px;">
+          <span class="live-pulse" style="width:7px;height:7px;background:#22c55e;"></span>
           <span>🌐 HLS / m3u8 Broadcast Ready</span>
         </div>
       </div>
@@ -3132,11 +3301,18 @@
         const btn9x16 = document.getElementById('btnRatio3');
         if (btn9x16) btn9x16.click();
 
+        // Show Embedded Live TV Widget in Video Tab
+        const videoLiveWidget = document.getElementById('videoTabLiveTvWidget');
+        if (videoLiveWidget) {
+          videoLiveWidget.style.display = 'block';
+          if (typeof initMiniLiveTv === 'function') initMiniLiveTv();
+        }
+
         renderCard();
       });
     }
 
-    // Update optTypeNews and optTypeObit to hide video panel
+    // Update optTypeNews and optTypeObit to hide video panel & stop mini TV
     if (optTypeNews) {
       const origNewsClick = optTypeNews.onclick;
       optTypeNews.addEventListener('click', () => {
@@ -3145,6 +3321,9 @@
         if (videoUploadCol) videoUploadCol.style.display = 'none';
         if (videoUploadWrap) videoUploadWrap.style.display = 'none';
         if (kvSourceVideo) { kvSourceVideo.pause(); }
+        const videoLiveWidget = document.getElementById('videoTabLiveTvWidget');
+        if (videoLiveWidget) videoLiveWidget.style.display = 'none';
+        if (typeof stopMiniLiveTv === 'function') stopMiniLiveTv();
       });
     }
     if (optTypeObit) {
@@ -3154,6 +3333,9 @@
         if (videoUploadCol) videoUploadCol.style.display = 'none';
         if (videoUploadWrap) videoUploadWrap.style.display = 'none';
         if (kvSourceVideo) { kvSourceVideo.pause(); }
+        const videoLiveWidget = document.getElementById('videoTabLiveTvWidget');
+        if (videoLiveWidget) videoLiveWidget.style.display = 'none';
+        if (typeof stopMiniLiveTv === 'function') stopMiniLiveTv();
       });
     }
 
@@ -5840,6 +6022,9 @@
     const logo = document.getElementById('kvLiveTvLogoImg');
     if (logo && typeof OFFICIAL_LOGO_B64 !== 'undefined') logo.src = OFFICIAL_LOGO_B64;
 
+    // Pause mini TV while big player is active
+    stopMiniLiveTv();
+
     if (modal) modal.classList.remove('kv-hidden');
 
     const streamUrl = getSavedLiveStreamUrl();
@@ -5874,6 +6059,10 @@
       liveHlsInstance.destroy();
       liveHlsInstance = null;
     }
+    // Resume Mini TV if still on video mode
+    if (cardType === 'video') {
+      initMiniLiveTv();
+    }
   }
 
   function playHlsStream(videoElement, url) {
@@ -5904,11 +6093,99 @@
     }
   }
 
-  // Button Listeners for Live TV
+  // ==============================================
+  // MINI LIVE TV SCREEN IN VIDEO TAB
+  // ==============================================
+  let miniLiveHlsInstance = null;
+
+  function initMiniLiveTv() {
+    const miniWidget = document.getElementById('videoTabLiveTvWidget');
+    if (!miniWidget || miniWidget.style.display === 'none') return;
+
+    const miniVideo = document.getElementById('kvMiniTvVideo');
+    const miniStandby = document.getElementById('kvMiniTvStandby');
+    const streamUrl = getSavedLiveStreamUrl();
+
+    if (streamUrl && streamUrl.trim()) {
+      if (miniStandby) miniStandby.style.display = 'none';
+      if (miniVideo) {
+        miniVideo.style.display = 'block';
+        playMiniHlsStream(miniVideo, streamUrl.trim());
+      }
+    } else {
+      if (miniVideo) {
+        miniVideo.style.display = 'none';
+        miniVideo.pause();
+      }
+      if (miniStandby) miniStandby.style.display = 'flex';
+      if (miniLiveHlsInstance) {
+        miniLiveHlsInstance.destroy();
+        miniLiveHlsInstance = null;
+      }
+    }
+  }
+
+  function playMiniHlsStream(videoEl, url) {
+    if (miniLiveHlsInstance) {
+      miniLiveHlsInstance.destroy();
+      miniLiveHlsInstance = null;
+    }
+    if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+      miniLiveHlsInstance = new Hls({ enableWorker: true });
+      miniLiveHlsInstance.loadSource(url);
+      miniLiveHlsInstance.attachMedia(videoEl);
+      miniLiveHlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
+        videoEl.play().catch(function() {});
+      });
+    } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
+      videoEl.src = url;
+      videoEl.addEventListener('loadedmetadata', function() {
+        videoEl.play().catch(function() {});
+      });
+    } else {
+      videoEl.src = url;
+    }
+  }
+
+  function stopMiniLiveTv() {
+    const miniVideo = document.getElementById('kvMiniTvVideo');
+    if (miniVideo) {
+      miniVideo.pause();
+      miniVideo.removeAttribute('src');
+      miniVideo.load();
+    }
+    if (miniLiveHlsInstance) {
+      miniLiveHlsInstance.destroy();
+      miniLiveHlsInstance = null;
+    }
+  }
+
+  // Mini TV Button Listeners
+  const btnMiniTvMute = document.getElementById('btnMiniTvMute');
+  const btnMiniTvExpand = document.getElementById('btnMiniTvExpand');
+  const btnMiniTvOpenModal = document.getElementById('btnMiniTvOpenModal');
+
+  if (btnMiniTvMute) {
+    btnMiniTvMute.addEventListener('click', function() {
+      const v = document.getElementById('kvMiniTvVideo');
+      if (v) {
+        v.muted = !v.muted;
+        btnMiniTvMute.textContent = v.muted ? '🔇' : '🔊';
+        btnMiniTvMute.title = v.muted ? 'ശബ്ദം ഓൺ ആക്കുക' : 'ശബ്ദം ഓഫ് ആക്കുക';
+      }
+    });
+  }
+  if (btnMiniTvExpand) {
+    btnMiniTvExpand.addEventListener('click', openLiveTvPlayer);
+  }
+  if (btnMiniTvOpenModal) {
+    btnMiniTvOpenModal.addEventListener('click', openLiveTvPlayer);
+  }
+
+  // Button Listeners for Live TV Modal
   const btnOpenLiveTv = document.getElementById('kvBtnOpenLiveTv');
   const btnCloseLiveTv = document.getElementById('btnCloseLiveTv');
   const btnOpenAdminFromLive = document.getElementById('btnOpenAdminFromLiveTv');
-  const btnCaptureLive = document.getElementById('btnCaptureLiveTvFrame');
 
   if (btnOpenLiveTv) btnOpenLiveTv.addEventListener('click', openLiveTvPlayer);
   if (btnCloseLiveTv) btnCloseLiveTv.addEventListener('click', closeLiveTvPlayer);
@@ -5916,42 +6193,6 @@
     btnOpenAdminFromLive.addEventListener('click', function() {
       closeLiveTvPlayer();
       if (btnOpenAdmin) btnOpenAdmin.click();
-    });
-  }
-
-  // Live TV Snapshot into Card Maker
-  if (btnCaptureLive) {
-    btnCaptureLive.addEventListener('click', function() {
-      const video = document.getElementById('kvLiveTvVideo');
-      if (!video || video.style.display === 'none' || !video.videoWidth) {
-        alert('⚠️ ലൈവ് വീഡിയോ പ്ലേ ചെയ്യുമ്പോൾ മാത്രമേ ഫ്രെയിം ക്യാപ്‌ചർ ചെയ്യാൻ സാധിക്കൂ!');
-        return;
-      }
-      try {
-        const snapCanvas = document.createElement('canvas');
-        snapCanvas.width = video.videoWidth;
-        snapCanvas.height = video.videoHeight;
-        const sCtx = snapCanvas.getContext('2d');
-        sCtx.drawImage(video, 0, 0, snapCanvas.width, snapCanvas.height);
-        const dataUrl = snapCanvas.toDataURL('image/jpeg', 0.95);
-
-        const capturedImg = new Image();
-        capturedImg.onload = function() {
-          userImg = capturedImg;
-          photoZoom = 1.0;
-          photoPosX = 0;
-          photoPosY = 0;
-          cardType = 'news';
-          renderCard();
-          closeLiveTvPlayer();
-          if (typeof showToast === 'function') {
-            showToast('📸 ലൈവ് ടിവി ഫ്രെയിം വിജയകരമായി കാർഡിലേക്ക് എടുത്തു!');
-          }
-        };
-        capturedImg.src = dataUrl;
-      } catch (err) {
-        alert('ഫ്രെയിം ക്യാപ്‌ചർ ചെയ്യാൻ സാധിച്ചില്ല: ' + err.message);
-      }
     });
   }
 
@@ -5983,6 +6224,9 @@
         if (typeof showToast === 'function') {
           showToast('✅ ലൈവ് സ്ട്രീം ലിങ്ക് സേവ് ചെയ്തു!');
         }
+        if (typeof initMiniLiveTv === 'function') {
+          initMiniLiveTv();
+        }
       } catch (e) {
         alert('സേവ് പരാജയപ്പെട്ടു: ' + e.message);
       }
@@ -6000,6 +6244,9 @@
             firebaseDb.collection('kv_settings').doc('live_stream').set({ url: '', updatedAt: new Date().toISOString() }, { merge: true }).catch(function(){});
           }
           showAdminStatus('🗑️ ലൈവ് ലിങ്ക് നീക്കം ചെയ്തു (Standby Mode).', false);
+          if (typeof initMiniLiveTv === 'function') {
+            initMiniLiveTv();
+          }
         } catch (e) {}
       }
     });
@@ -6133,12 +6380,5 @@
 
 })();
 </script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('./sw.js').catch(function(){});
-      });
-    }
-  </script>
 </body>
 </html>
