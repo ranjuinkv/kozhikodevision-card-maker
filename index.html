@@ -1348,8 +1348,13 @@
         <div class="kv-auth-logo-wrap">
           <img id="kvAuthLogoImg" alt="Kozhikode Vision">
         </div>
+        <div style="margin-top:6px;margin-bottom:8px;">
+          <span class="kv-live-tag" style="font-size:10px;padding:3px 10px;border-radius:14px;background:rgba(239,68,68,0.25);border:1px solid #ef4444;color:#fca5a5;display:inline-flex;align-items:center;gap:6px;">
+            <span class="kv-live-dot"></span>🔴 V7.0 LIVE: VIDEO &amp; CARD STUDIO
+          </span>
+        </div>
         <div class="kv-auth-title">KOZHIKODE VISION NEWS</div>
-        <div class="kv-auth-sub">Official Staff &amp; Admin Login • കാർഡ് സ്റ്റുഡിയോ</div>
+        <div class="kv-auth-sub">ഔദ്യോഗിക ന്യൂസ് കാർഡ് &amp; വീഡിയോ സ്റ്റുഡിയോ</div>
       </div>
 
       <div id="kvDemoBanner" class="kv-demo-banner kv-hidden" style="display:none!important;">
@@ -1373,7 +1378,12 @@
           </div>
         </div>
 
-        <button id="kvBtnLogin" type="submit" class="kv-auth-btn">🔐 ലോഗിൻ ചെയ്യുക (Login)</button>
+                <button id="kvBtnLogin" type="submit" class="kv-auth-btn">🔐 ലോഗിൻ ചെയ്യുക (Login)</button>
+
+        <!-- One-Click Instant Login for Quick Access -->
+        <button id="kvBtnQuickAdmin" type="button" class="btn-tactile" style="width:100%;margin-top:10px;padding:10px;background:linear-gradient(135deg, #1e293b, #0f172a);color:#38bdf8;border:1px solid #0284c7;border-radius:10px;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;box-shadow:0 2px 10px rgba(2,132,199,0.25);">
+          <span>👑 അഡ്മിനായി നേരിട്ട് പ്രവേശിക്കുക (1-Click Admin Login)</span>
+        </button>
       </form>
 
       <div class="kv-auth-footer">
@@ -5263,14 +5273,33 @@
   // Initialize Firebase Cloud DB on load
   initFirebaseDatabase();
 
-  // Restore saved session if exists
+  // Restore saved session if exists (checks both localStorage and sessionStorage!)
   try {
-    const savedUid = sessionStorage.getItem(SESSION_USER_KEY);
+    const savedUid = localStorage.getItem('kv_saved_session_uid') || sessionStorage.getItem(SESSION_USER_KEY);
     if (savedUid) {
       const found = getDemoUsers().find(function(u) { return u.uid === savedUid && u.active !== false && !u.deleted; });
-      if (found) unlockApp(found);
+      if (found) {
+        unlockApp(found);
+      }
     }
   } catch (e) {}
+
+  // Wire up 1-Click Quick Admin Button
+  const btnQuickAdmin = document.getElementById('kvBtnQuickAdmin');
+  if (btnQuickAdmin) {
+    btnQuickAdmin.addEventListener('click', function(e) {
+      e.preventDefault();
+      const users = getDemoUsers();
+      const admin = users.find(function(u) { return u.role === 'admin' && !u.deleted; }) || users[0];
+      if (admin) {
+        try {
+          localStorage.setItem('kv_saved_session_uid', admin.uid);
+          sessionStorage.setItem(SESSION_USER_KEY, admin.uid);
+        } catch (e) {}
+        unlockApp(admin);
+      }
+    });
+  }
 
   // Login form submit
   authForm.addEventListener('submit', function(e) {
@@ -5296,12 +5325,12 @@
       return;
     }
 
-    try { sessionStorage.setItem(SESSION_USER_KEY, match.uid); } catch (e) {}
+    try { localStorage.setItem('kv_saved_session_uid', match.uid); sessionStorage.setItem(SESSION_USER_KEY, match.uid); } catch (e) {}
     unlockApp(match);
   });
 
   btnLogout.addEventListener('click', function() {
-    try { sessionStorage.removeItem(SESSION_USER_KEY); } catch (e) {}
+    try { localStorage.removeItem('kv_saved_session_uid'); sessionStorage.removeItem(SESSION_USER_KEY); } catch (e) {}
     lockApp();
   });
 
