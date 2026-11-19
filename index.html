@@ -1334,6 +1334,36 @@
           </div>
         </div>
 
+                <!-- Admin Self-Profile & Password Edit Section -->
+        <div class="kv-admin-section" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:12px;margin-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-weight:700;color:#fbbf24;font-size:12px;display:flex;align-items:center;gap:6px;">
+              <span>🔐 അഡ്മിൻ പേരും പാസ്‌വേഡും മാറ്റുക (Admin Settings)</span>
+            </div>
+            <button id="kvBtnToggleAdminEdit" type="button" class="btn-tactile" style="font-size:11px;padding:5px 12px;background:#d97706;color:#fff;border-radius:6px;border:none;cursor:pointer;">
+              ✏️ എഡിറ്റ് ചെയ്യുക
+            </button>
+          </div>
+
+          <div id="kvAdminEditFormBox" class="kv-hidden" style="margin-top:10px;padding-top:10px;border-top:1px dashed rgba(255,255,255,0.12);">
+            <div class="kv-admin-grid">
+              <div>
+                <label style="font-size:11px;color:#cbd5e1;display:block;margin-bottom:4px;">അഡ്മിൻ പേര് (Display Name):</label>
+                <input id="kvEditAdminName" type="text" class="kv-admin-input" placeholder="ഉദാ: ചാനൽ എഡിറ്റർ">
+              </div>
+              <div>
+                <label style="font-size:11px;color:#cbd5e1;display:block;margin-bottom:4px;">പുതിയ പാസ്‌വേഡ് (New Password):</label>
+                <input id="kvEditAdminPass" type="text" class="kv-admin-input" placeholder="പുതിയ പാസ്‌വേഡ് നൽകുക">
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <button id="kvBtnSaveAdminProfile" type="button" class="btn-tactile" style="font-size:11px;font-weight:700;padding:6px 14px;background:#10b981;color:#fff;border-radius:6px;border:none;cursor:pointer;">
+                💾 അഡ്മിൻ വിവരങ്ങൾ സേവ് ചെയ്യുക
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div class="kv-admin-section">
           <div class="kv-admin-sec-title">➕ പുതിയ യൂസറെ ചേർക്കുക (Add Staff / User)</div>
           <div id="kvAdminAddFormBox">
@@ -4462,6 +4492,77 @@
   // =========================================================================
   if (demoBanner) demoBanner.classList.remove('kv-hidden');
   if (adminModeBadge) adminModeBadge.innerHTML = '⚡ <b>യൂസർ കൺട്രോൾ ആക്റ്റീവ് ആണ്</b> — യൂസർമാരെ ചേർക്കാനും ഉടൻ സ്വിച്ച് ചെയ്യാനും സാധിക്കും';
+
+  // 5a-1. Admin Self Profile Edit Wire-up
+  const btnToggleAdminEdit = document.getElementById('kvBtnToggleAdminEdit');
+  const boxAdminEdit = document.getElementById('kvAdminEditFormBox');
+  const inpEditAdminName = document.getElementById('kvEditAdminName');
+  const inpEditAdminPass = document.getElementById('kvEditAdminPass');
+  const btnSaveAdminProfile = document.getElementById('kvBtnSaveAdminProfile');
+
+  if (btnToggleAdminEdit && boxAdminEdit) {
+    btnToggleAdminEdit.addEventListener('click', function() {
+      const isHidden = boxAdminEdit.classList.contains('kv-hidden');
+      if (isHidden) {
+        boxAdminEdit.classList.remove('kv-hidden');
+        boxAdminEdit.style.display = 'block';
+        if (inpEditAdminName) inpEditAdminName.value = (currentProfile && currentProfile.name) || 'Channel Admin';
+        if (inpEditAdminPass) inpEditAdminPass.value = (currentProfile && currentProfile.password) || '123456';
+      } else {
+        boxAdminEdit.classList.add('kv-hidden');
+        boxAdminEdit.style.display = 'none';
+      }
+    });
+  }
+
+  if (btnSaveAdminProfile) {
+    btnSaveAdminProfile.addEventListener('click', function() {
+      if (!currentProfile || currentProfile.role !== 'admin') {
+        alert('അഡ്മിന് മാത്രമേ ഇത് മാറ്റാൻ അനുവാദമുള്ളൂ!');
+        return;
+      }
+      const newName = (inpEditAdminName.value || '').trim();
+      const newPass = (inpEditAdminPass.value || '').trim();
+
+      if (!newName) {
+        alert('ദയവായി അഡ്മിൻ പേര് നൽകുക.');
+        return;
+      }
+      if (!newPass) {
+        alert('ദയവായി പാസ്‌വേഡ് നൽകുക.');
+        return;
+      }
+
+      currentProfile.name = newName;
+      currentProfile.password = newPass;
+
+      const list = getDemoUsers();
+      const adminItem = list.find(function(u) { return u.uid === currentProfile.uid || u.role === 'admin'; });
+      if (adminItem) {
+        adminItem.name = newName;
+        adminItem.password = newPass;
+      }
+      saveDemoUsers(list);
+
+      // Cloud Firestore Sync
+      if (firebaseDb && isFirebaseLive && adminItem) {
+        firebaseDb.collection('kv_users').doc(adminItem.uid).set(adminItem, { merge: true }).catch(function(){});
+      }
+
+      // Update UI
+      if (lblUserName) lblUserName.textContent = newName;
+      if (boxAdminEdit) {
+        boxAdminEdit.classList.add('kv-hidden');
+        boxAdminEdit.style.display = 'none';
+      }
+      refreshDemoAdminList();
+      window.dispatchEvent(new CustomEvent('kv-auth-changed'));
+      showAdminStatus('✅ അഡ്മിൻ പേരും പാസ്‌വേഡും വിജയകരമായി മാറ്റി!', false);
+      if (typeof showToast === 'function') {
+        showToast('✅ അഡ്മിൻ വിവരങ്ങൾ അപ്ഡേറ്റ് ചെയ്തു!');
+      }
+    });
+  }
 
   // 5a. Cloud Database UI Wire-up
   const btnToggleCloud = document.getElementById('kvBtnToggleCloudConfig');
