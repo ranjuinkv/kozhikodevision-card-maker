@@ -2371,18 +2371,26 @@
                   </div>
                 </div>
 
-                <!-- Standby Screen with Scanning Lines & Scrolling Loop Ticker -->
-                <div id="kvMiniTvStandby" class="mini-tv-standby">
+                <!-- Standby & Live On-Air Screen with Direct Watch Launcher -->
+                <div id="kvMiniTvStandby" class="mini-tv-standby" style="cursor:pointer;" onclick="window.open('http://103.146.174.75/watch', '_blank')">
                   <div class="standby-scanlines"></div>
-                  <div class="mini-tv-standby-center">
-                    <div style="font-size:22px; filter:drop-shadow(0 0 10px rgba(56,189,248,0.7));">📡</div>
-                    <div style="font-size:10.5px; font-weight:900; color:#fff; letter-spacing:0.8px; margin-top:2px;">KOZHIKODE VISION</div>
-                    <div style="font-size:9px; color:#38bdf8; font-weight:700;">LIVE BROADCAST</div>
+                  <div class="mini-tv-standby-center" style="display:flex; flex-direction:column; align-items:center; z-index:2; margin-bottom:14px;">
+                    <div style="display:flex; align-items:center; gap:5px; background:rgba(239,68,68,0.25); border:1px solid #ef4444; border-radius:20px; padding:2px 8px; margin-bottom:5px;">
+                      <span class="live-pulse" style="width:6px; height:6px; background:#ef4444; box-shadow:0 0 8px #ef4444;"></span>
+                      <span style="font-size:9px; font-weight:900; color:#fca5a5; letter-spacing:0.8px;">LIVE ON AIR</span>
+                    </div>
+                    <div style="font-size:12px; font-weight:900; color:#fff; letter-spacing:0.8px;">KOZHIKODE VISION</div>
+                    <div style="font-size:9px; color:#38bdf8; font-weight:700; margin-bottom:6px;">24x7 HD LIVE STREAM</div>
+                    <a href="http://103.146.174.75/watch" target="_blank" rel="noopener noreferrer" class="btn-tactile" style="font-size:10px; font-weight:800; background:linear-gradient(135deg, #ef4444, #b91c1c); color:#ffffff; padding:4px 12px; border-radius:6px; text-decoration:none; display:inline-flex; align-items:center; gap:4px; box-shadow:0 3px 12px rgba(239,68,68,0.5); border:1px solid #ff7777;">
+                      <span>▶ Watch Live TV</span>
+                      <span style="font-size:9px;">↗</span>
+                    </a>
                   </div>
+                  <!-- Infinite Looping Marquee Ticker -->
                   <div class="mini-tv-ticker-wrap">
                     <div class="mini-tv-ticker-track">
-                      <span class="mini-tv-ticker-item">⚠️ Live Broadcast Starting Soon (Standby Mode) &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION LIVE &nbsp;&nbsp;★&nbsp;&nbsp; </span>
-                      <span class="mini-tv-ticker-item">⚠️ Live Broadcast Starting Soon (Standby Mode) &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION LIVE &nbsp;&nbsp;★&nbsp;&nbsp; </span>
+                      <span class="mini-tv-ticker-item">🔴 KOZHIKODE VISION 24x7 LIVE BROADCAST ON AIR &nbsp;&nbsp;★&nbsp;&nbsp; CLICK TO WATCH LIVE &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION ONLINE &nbsp;&nbsp;★&nbsp;&nbsp; </span>
+                      <span class="mini-tv-ticker-item">🔴 KOZHIKODE VISION 24x7 LIVE BROADCAST ON AIR &nbsp;&nbsp;★&nbsp;&nbsp; CLICK TO WATCH LIVE &nbsp;&nbsp;★&nbsp;&nbsp; KOZHIKODE VISION ONLINE &nbsp;&nbsp;★&nbsp;&nbsp; </span>
                     </div>
                   </div>
                 </div>
@@ -6693,24 +6701,14 @@
       sideLivetvBody.classList.remove('collapsed');
       sideLivetvBody.style.display = 'block';
     }
-    const streamUrl = getSavedLiveStreamUrl();
 
-    if (streamUrl && streamUrl.trim()) {
-      if (miniStandby) miniStandby.style.display = 'none';
-      if (miniVideo) {
-        miniVideo.style.display = 'block';
-        playMiniHlsStream(miniVideo, streamUrl.trim());
-      }
-    } else {
-      if (miniVideo) {
-        miniVideo.style.display = 'none';
-        miniVideo.pause();
-      }
-      if (miniStandby) miniStandby.style.display = 'flex';
-      if (miniLiveHlsInstance) {
-        miniLiveHlsInstance.destroy();
-        miniLiveHlsInstance = null;
-      }
+    // Default to clean on-air display, then attempt video stream
+    if (miniStandby) miniStandby.style.display = 'flex';
+    if (miniVideo) miniVideo.style.display = 'none';
+
+    const streamUrl = getSavedLiveStreamUrl();
+    if (streamUrl && streamUrl.trim() && miniVideo) {
+      playMiniHlsStream(miniVideo, streamUrl.trim());
     }
   }
 
@@ -6763,7 +6761,6 @@
       miniLiveHlsInstance = null;
     }
     const miniStandby = document.getElementById('kvMiniTvStandby');
-    hideStreamMixedNotice(true);
 
     if (typeof Hls !== 'undefined' && Hls.isSupported()) {
       miniLiveHlsInstance = new Hls({ enableWorker: true });
@@ -6776,10 +6773,9 @@
       });
       miniLiveHlsInstance.on(Hls.Events.ERROR, function(event, data) {
         if (data && data.fatal) {
-          console.warn('Mini HLS stream fatal error:', data);
-          if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-            showStreamMixedNotice(true);
-          }
+          console.warn('Mini HLS stream fatal error (mixed content or CORS):', data);
+          videoEl.style.display = 'none';
+          if (miniStandby) miniStandby.style.display = 'flex';
         }
       });
     } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
@@ -6790,7 +6786,8 @@
         videoEl.play().catch(function() {});
       });
       videoEl.addEventListener('error', function() {
-        showStreamMixedNotice(true);
+        videoEl.style.display = 'none';
+        if (miniStandby) miniStandby.style.display = 'flex';
       });
     } else {
       videoEl.src = url;
