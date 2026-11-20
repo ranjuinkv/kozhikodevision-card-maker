@@ -2071,6 +2071,120 @@
       -webkit-user-drag: none;
       user-drag: none;
     }
+
+    /* 🎙️ Voice Typing Microphone Button */
+    .btn-voice-mic {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid #10b981;
+      color: #34d399;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-voice-mic:hover {
+      background: rgba(16, 185, 129, 0.28);
+    }
+    .btn-voice-mic.listening {
+      background: rgba(239, 68, 68, 0.3) !important;
+      border-color: #ef4444 !important;
+      color: #fca5a5 !important;
+      animation: kvVoicePulse 1.2s infinite;
+    }
+    @keyframes kvVoicePulse {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+      70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+    /* 📢 Newsroom Broadcast Flash Bar */
+    .kv-newsroom-notice {
+      background: linear-gradient(90deg, #991b1b, #7f1d1d);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 14px;
+      border-bottom: 1.5px solid #ef4444;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.25);
+      font-size: 12px;
+      font-weight: 700;
+      overflow: hidden;
+      position: relative;
+      z-index: 9990;
+    }
+    .kv-newsroom-notice.kv-hidden {
+      display: none !important;
+    }
+    .notice-badge {
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      white-space: nowrap;
+      letter-spacing: 0.5px;
+      font-weight: 800;
+    }
+    .notice-marquee-track {
+      flex: 1;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .notice-text {
+      display: inline-block;
+      padding-left: 100%;
+      animation: kvNoticeMarquee 22s linear infinite;
+      color: #fef08a;
+      font-size: 12.5px;
+    }
+    @keyframes kvNoticeMarquee {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-100%, 0, 0); }
+    }
+    .notice-close-btn {
+      background: rgba(0,0,0,0.3);
+      border: none;
+      color: #cbd5e1;
+      cursor: pointer;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 11px;
+    }
+    .notice-close-btn:hover {
+      background: rgba(239, 68, 68, 0.4);
+      color: #fff;
+    }
+
+    /* ✨ Photo Filter Pills */
+    .filter-pills-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .btn-filter-pill {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-filter-pill.active {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      border-color: #38bdf8;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+    }
 </style>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
@@ -2263,6 +2377,21 @@
           </div>
         </div>
 
+        <!-- 📢 Real-Time Newsroom Broadcast Notice Section -->
+        <div class="kv-admin-section" style="background:rgba(234,88,12,0.1);border:1px solid rgba(251,146,60,0.35);border-radius:10px;padding:12px;margin-bottom:14px;">
+          <div style="font-weight:700;color:#fb923c;font-size:12px;display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+            <span>📢 Newsroom Flash Notice (Broadcast to All Staff)</span>
+          </div>
+          <div style="font-size:11px;color:#cbd5e1;line-height:1.4;margin-bottom:8px;">
+            Type a breaking announcement or newsroom notice here to scroll live across all staff screens in real-time.
+          </div>
+          <div style="display:flex;gap:8px;">
+            <input id="kvInpAdminNotice" type="text" class="kv-admin-input" placeholder="Type breaking notice to broadcast...">
+            <button id="kvBtnPublishNotice" type="button" class="btn-tactile" style="background:#ea580c;color:#fff;font-size:11px;font-weight:700;padding:8px 14px;border-radius:6px;border:none;white-space:nowrap;cursor:pointer;">📢 Post</button>
+            <button id="kvBtnClearNotice" type="button" class="btn-tactile" style="background:#ef4444;color:#fff;font-size:11px;padding:8px 10px;border-radius:6px;border:none;cursor:pointer;">Clear</button>
+          </div>
+        </div>
+
         <div class="kv-admin-section">
           <div class="kv-admin-sec-title">➕ Add Staff / User</div>
           <div id="kvAdminAddFormBox">
@@ -2346,6 +2475,15 @@
         <button id="kvBtnLogout" type="button" class="header-btn btn-logout">🚪 Logout</button>
       </div>
     </header>
+
+      <!-- 📢 REAL-TIME NEWSROOM BROADCAST FLASH TICKER -->
+      <div id="kvNewsroomNoticeBar" class="kv-newsroom-notice kv-hidden">
+        <div class="notice-badge">📢 NEWSROOM ALERT</div>
+        <div class="notice-marquee-track">
+          <span id="kvNoticeMarqueeText" class="notice-text">Welcome to Kozhikode Vision Studio! Ready to craft cards.</span>
+        </div>
+        <button id="btnDismissNotice" type="button" class="notice-close-btn" title="Dismiss Notice">✕</button>
+      </div>
 
     
 
@@ -2507,6 +2645,20 @@
               <button id="btnPhotoCenter" type="button" class="btn-tactile dpad-pill center">🎯 Center</button>
               <button id="btnPhotoUp" type="button" class="btn-tactile dpad-pill">▲</button>
               <button id="btnPhotoRight" type="button" class="btn-tactile dpad-pill">▶</button>
+            </div>
+
+            <!-- ✨ Photo Clarity & Enhancer Filters -->
+            <div class="form-group" style="margin-top:10px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <label class="form-label" style="margin-bottom:0;">✨ Photo Clarity Filter:</label>
+                <span id="lblActiveFilter" style="font-size:10px;color:#10b981;font-weight:700;">Normal</span>
+              </div>
+              <div class="filter-pills-row" id="photoFilterPills">
+                <button type="button" class="btn-tactile btn-filter-pill active" data-filter="normal">Normal</button>
+                <button type="button" class="btn-tactile btn-filter-pill" data-filter="bright">☀️ HD Bright</button>
+                <button type="button" class="btn-tactile btn-filter-pill" data-filter="vivid">🎨 Vivid Color</button>
+                <button type="button" class="btn-tactile btn-filter-pill" data-filter="contrast">🎭 Deep Contrast</button>
+              </div>
             </div>
 
           </div>
@@ -2744,7 +2896,10 @@
 
               <!-- Headline -->
               <div class="form-group">
-                <label class="form-label">Main Headline *:</label>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                  <label class="form-label" style="margin-bottom:0;">Main Headline *:</label>
+                  <button id="btnVoiceHeadline" type="button" class="btn-voice-mic" title="സംസാരിച്ച് മലയാളത്തിൽ ടൈപ്പ് ചെയ്യുക">🎙️ സംസാരിക്കുക</button>
+                </div>
                 <textarea id="txtHeadline" class="form-textarea" rows="2">കോഴിക്കോട് ബീച്ചിൽ പുതിയ ടൂറിസം പദ്ധതിക്ക് തുടക്കമായി</textarea>
               </div>
 
@@ -2769,6 +2924,7 @@
               <div class="form-group">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
                   <label class="form-label" style="margin-bottom:0;">Summary / Subline:</label>
+                  <button id="btnVoiceSummary" type="button" class="btn-voice-mic" title="സംസാരിച്ച് മലയാളത്തിൽ ടൈപ്പ് ചെയ്യുക">🎙️ സംസാരിക്കുക</button>
                   <span style="font-size:10px;color:#38bdf8;font-weight:600;">↵ Enter for Next Line</span>
                 </div>
                 <textarea id="txtSummary" class="form-textarea" rows="4" placeholder="Type news summary here. Press Enter for next line...">മന്ത്രി മുഹമ്മദ് റിയാസ് ഉദ്ഘാടനം ചെയ്തു; ആദ്യഘട്ടത്തിൽ 10 കോടിയുടെ സമഗ്ര വികസനം നടപ്പാക്കും.</textarea>
@@ -2776,7 +2932,10 @@
 
               <!-- Reporter -->
               <div class="form-group">
-                <label class="form-label">Reporter Byline:</label>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                  <label class="form-label" style="margin-bottom:0;">Reporter Byline:</label>
+                  <button id="btnSyncMyByline" type="button" class="btn-tactile" style="font-size:10px;padding:2px 8px;background:rgba(56,189,248,0.18);border:1px solid #38bdf8;color:#38bdf8;border-radius:5px;cursor:pointer;">👤 Use My Name</button>
+                </div>
                 <input id="txtReporter" type="text" class="form-input" value="വിഷൻ ന്യൂസ് കോഴിക്കോട്">
               </div>
 
@@ -5455,6 +5614,23 @@
       }
     }
 
+    // =========================================================================
+    // ✨ ONE-TAP PHOTO CLARITY & FILTER ENGINE
+    // =========================================================================
+    let activePhotoFilter = 'normal';
+
+    function applyPhotoClarityFilter(c) {
+      if (activePhotoFilter === 'bright') {
+        c.filter = 'brightness(1.16) contrast(1.08) saturate(1.06)';
+      } else if (activePhotoFilter === 'vivid') {
+        c.filter = 'saturate(1.32) contrast(1.12) brightness(1.04)';
+      } else if (activePhotoFilter === 'contrast') {
+        c.filter = 'contrast(1.24) brightness(1.02)';
+      } else {
+        c.filter = 'none';
+      }
+    }
+
     function renderCard() {
       const W = canvas.width;
       const H = canvas.height;
@@ -5478,6 +5654,7 @@
         // Background photo or sleek studio background
         if (userImg) {
           ctx.save();
+          applyPhotoClarityFilter(ctx);
           const baseScale = Math.max(W / userImg.width, H / userImg.height);
           const finalScale = baseScale * photoZoom;
           const dw = userImg.width * finalScale;
@@ -5685,6 +5862,7 @@
 
         // Draw photo inside frame
         if (userImg) {
+          applyPhotoClarityFilter(ctx);
           const baseScale = Math.max(frameW / userImg.width, frameH / userImg.height);
           const finalScale = baseScale * photoZoom;
           const dw = userImg.width * finalScale;
@@ -6457,6 +6635,211 @@
     if (overlay) overlay.classList.remove('kv-hidden');
     if (reasonMsg) showAuthError(reasonMsg);
     renderQuickUserPills();
+
+  // =========================================================================
+  // 5b. MALAYALAM VOICE TYPING ENGINE
+  // =========================================================================
+  function initVoiceTyping(btnId, targetInputId, labelName) {
+    const btn = document.getElementById(btnId);
+    const input = document.getElementById(targetInputId);
+    if (!btn || !input) return;
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      btn.title = 'Speech recognition not supported in this browser';
+      btn.addEventListener('click', function() {
+        alert('⚠️ Malayalam Voice Typing requires Google Chrome, Edge, or the Android app.');
+      });
+      return;
+    }
+
+    let recognition = null;
+    let isListening = false;
+
+    btn.addEventListener('click', function() {
+      if (isListening) {
+        if (recognition) recognition.stop();
+        return;
+      }
+
+      try {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'ml-IN'; // Malayalam India
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = function() {
+          isListening = true;
+          btn.classList.add('listening');
+          btn.innerHTML = '🔴 കേൾക്കുന്നു... (Stop)';
+          if (typeof showToast === 'function') showToast('🎙️ സംസാരിക്കൂ... (Listening in Malayalam)');
+        };
+
+        recognition.onresult = function(event) {
+          if (event.results && event.results[0] && event.results[0][0]) {
+            const text = event.results[0][0].transcript;
+            const currentVal = input.value.trim();
+            input.value = currentVal ? currentVal + ' ' + text : text;
+            input.dispatchEvent(new Event('input'));
+            if (typeof renderCard === 'function') renderCard();
+            if (typeof showToast === 'function') showToast('✅ ടൈപ്പ് ചെയ്തു: ' + text);
+          }
+        };
+
+        recognition.onerror = function(err) {
+          console.warn('Speech recognition error:', err);
+          isListening = false;
+          btn.classList.remove('listening');
+          btn.innerHTML = '🎙️ സംസാരിക്കുക';
+          if (err.error === 'not-allowed') {
+            alert('⚠️ Microphone permission required for voice typing.');
+          }
+        };
+
+        recognition.onend = function() {
+          isListening = false;
+          btn.classList.remove('listening');
+          btn.innerHTML = '🎙️ സംസാരിക്കുക';
+        };
+
+        recognition.start();
+      } catch (e) {
+        console.warn('Voice typing start error:', e);
+        isListening = false;
+        btn.classList.remove('listening');
+        btn.innerHTML = '🎙️ സംസാരിക്കുക';
+      }
+    });
+  }
+
+  // Initialize Voice Typing for Headline & Summary
+  initVoiceTyping('btnVoiceHeadline', 'txtHeadline', 'Headline');
+  initVoiceTyping('btnVoiceSummary', 'txtSummary', 'Summary');
+
+  // =========================================================================
+  // 5c. PHOTO CLARITY FILTER PILLS WIRE-UP
+  // =========================================================================
+  const filterPills = document.querySelectorAll('.btn-filter-pill');
+  const lblFilter = document.getElementById('lblActiveFilter');
+  filterPills.forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      filterPills.forEach(function(p) { p.classList.remove('active'); });
+      pill.classList.add('active');
+      activePhotoFilter = pill.getAttribute('data-filter') || 'normal';
+      if (lblFilter) lblFilter.textContent = pill.textContent.trim();
+      if (typeof renderCard === 'function') renderCard();
+      if (typeof showToast === 'function') showToast('✨ Filter: ' + pill.textContent.trim());
+    });
+  });
+
+  // =========================================================================
+  // 5d. REPORTER BYLINE AUTO-SYNC
+  // =========================================================================
+  const btnSyncByline = document.getElementById('btnSyncMyByline');
+  const txtReporterInput = document.getElementById('txtReporter');
+  if (btnSyncByline && txtReporterInput) {
+    btnSyncByline.addEventListener('click', function() {
+      const activeUser = window.KV_ACTIVE_USER || currentProfile;
+      if (activeUser) {
+        const uName = activeUser.name || activeUser.username || 'Reporter';
+        txtReporterInput.value = 'റിപ്പോർട്ട്: ' + uName + ' (കോഴിക്കോട് വിഷൻ)';
+        txtReporterInput.dispatchEvent(new Event('input'));
+        if (typeof renderCard === 'function') renderCard();
+        if (typeof showToast === 'function') showToast('🏷️ Byline updated: ' + txtReporterInput.value);
+      } else {
+        alert('Please log in first to use your reporter name.');
+      }
+    });
+  }
+
+  // =========================================================================
+  // 5e. NEWSROOM BROADCAST FLASH TICKER (REALTIME CLOUD & LOCAL)
+  // =========================================================================
+  const noticeBar = document.getElementById('kvNewsroomNoticeBar');
+  const noticeTextSpan = document.getElementById('kvNoticeMarqueeText');
+  const btnDismissNotice = document.getElementById('btnDismissNotice');
+  const inpAdminNotice = document.getElementById('kvInpAdminNotice');
+  const btnPublishNotice = document.getElementById('kvBtnPublishNotice');
+  const btnClearNotice = document.getElementById('kvBtnClearNotice');
+
+  function updateNewsroomNoticeUI(text) {
+    if (!noticeBar || !noticeTextSpan) return;
+    const clean = (text || '').trim();
+    if (clean) {
+      noticeTextSpan.textContent = clean;
+      noticeBar.classList.remove('kv-hidden');
+    } else {
+      noticeBar.classList.add('kv-hidden');
+    }
+  }
+
+  // Check saved notice on load
+  try {
+    const savedNotice = localStorage.getItem('kv_newsroom_notice');
+    if (savedNotice) updateNewsroomNoticeUI(savedNotice);
+  } catch(e) {}
+
+  if (btnDismissNotice && noticeBar) {
+    btnDismissNotice.addEventListener('click', function() {
+      noticeBar.classList.add('kv-hidden');
+    });
+  }
+
+  if (btnPublishNotice && inpAdminNotice) {
+    btnPublishNotice.addEventListener('click', function() {
+      const val = inpAdminNotice.value.trim();
+      if (!val) {
+        alert('Please enter announcement text to broadcast.');
+        return;
+      }
+      try { localStorage.setItem('kv_newsroom_notice', val); } catch(e){}
+      updateNewsroomNoticeUI(val);
+
+      if (firebaseDb && isFirebaseLive) {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
+          text: val,
+          postedBy: (currentProfile && currentProfile.name) || 'Admin',
+          timestamp: Date.now()
+        }, { merge: true }).catch(function(){});
+      }
+      showAdminStatus('📢 Notice broadcasted to all staff successfully!', false);
+      if (typeof showToast === 'function') showToast('📢 Notice broadcasted live!');
+    });
+  }
+
+  if (btnClearNotice) {
+    btnClearNotice.addEventListener('click', function() {
+      try { localStorage.removeItem('kv_newsroom_notice'); } catch(e){}
+      if (inpAdminNotice) inpAdminNotice.value = '';
+      updateNewsroomNoticeUI('');
+      if (firebaseDb && isFirebaseLive) {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
+          text: '',
+          timestamp: Date.now()
+        }, { merge: true }).catch(function(){});
+      }
+      showAdminStatus('🗑️ Notice cleared.', false);
+      if (typeof showToast === 'function') showToast('🗑️ Notice cleared.');
+    });
+  }
+
+  // Realtime Cloud listener for Newsroom Notice from Firestore
+  window.addEventListener('load', function() {
+    if (firebaseDb && isFirebaseLive) {
+      try {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').onSnapshot(function(doc) {
+          if (doc && doc.exists) {
+            const data = doc.data();
+            if (data && data.text !== undefined) {
+              try { localStorage.setItem('kv_newsroom_notice', data.text); } catch(e){}
+              updateNewsroomNoticeUI(data.text);
+              if (inpAdminNotice) inpAdminNotice.value = data.text;
+            }
+          }
+        }, function(){});
+      } catch(e) {}
+    }
+  });
   }
 
   function renderQuickUserPills() {
@@ -6612,6 +6995,211 @@
   function refreshDemoAdminList() {
     const users = getDemoUsers();
     renderQuickUserPills();
+
+  // =========================================================================
+  // 5b. MALAYALAM VOICE TYPING ENGINE
+  // =========================================================================
+  function initVoiceTyping(btnId, targetInputId, labelName) {
+    const btn = document.getElementById(btnId);
+    const input = document.getElementById(targetInputId);
+    if (!btn || !input) return;
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      btn.title = 'Speech recognition not supported in this browser';
+      btn.addEventListener('click', function() {
+        alert('⚠️ Malayalam Voice Typing requires Google Chrome, Edge, or the Android app.');
+      });
+      return;
+    }
+
+    let recognition = null;
+    let isListening = false;
+
+    btn.addEventListener('click', function() {
+      if (isListening) {
+        if (recognition) recognition.stop();
+        return;
+      }
+
+      try {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'ml-IN'; // Malayalam India
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = function() {
+          isListening = true;
+          btn.classList.add('listening');
+          btn.innerHTML = '🔴 കേൾക്കുന്നു... (Stop)';
+          if (typeof showToast === 'function') showToast('🎙️ സംസാരിക്കൂ... (Listening in Malayalam)');
+        };
+
+        recognition.onresult = function(event) {
+          if (event.results && event.results[0] && event.results[0][0]) {
+            const text = event.results[0][0].transcript;
+            const currentVal = input.value.trim();
+            input.value = currentVal ? currentVal + ' ' + text : text;
+            input.dispatchEvent(new Event('input'));
+            if (typeof renderCard === 'function') renderCard();
+            if (typeof showToast === 'function') showToast('✅ ടൈപ്പ് ചെയ്തു: ' + text);
+          }
+        };
+
+        recognition.onerror = function(err) {
+          console.warn('Speech recognition error:', err);
+          isListening = false;
+          btn.classList.remove('listening');
+          btn.innerHTML = '🎙️ സംസാരിക്കുക';
+          if (err.error === 'not-allowed') {
+            alert('⚠️ Microphone permission required for voice typing.');
+          }
+        };
+
+        recognition.onend = function() {
+          isListening = false;
+          btn.classList.remove('listening');
+          btn.innerHTML = '🎙️ സംസാരിക്കുക';
+        };
+
+        recognition.start();
+      } catch (e) {
+        console.warn('Voice typing start error:', e);
+        isListening = false;
+        btn.classList.remove('listening');
+        btn.innerHTML = '🎙️ സംസാരിക്കുക';
+      }
+    });
+  }
+
+  // Initialize Voice Typing for Headline & Summary
+  initVoiceTyping('btnVoiceHeadline', 'txtHeadline', 'Headline');
+  initVoiceTyping('btnVoiceSummary', 'txtSummary', 'Summary');
+
+  // =========================================================================
+  // 5c. PHOTO CLARITY FILTER PILLS WIRE-UP
+  // =========================================================================
+  const filterPills = document.querySelectorAll('.btn-filter-pill');
+  const lblFilter = document.getElementById('lblActiveFilter');
+  filterPills.forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      filterPills.forEach(function(p) { p.classList.remove('active'); });
+      pill.classList.add('active');
+      activePhotoFilter = pill.getAttribute('data-filter') || 'normal';
+      if (lblFilter) lblFilter.textContent = pill.textContent.trim();
+      if (typeof renderCard === 'function') renderCard();
+      if (typeof showToast === 'function') showToast('✨ Filter: ' + pill.textContent.trim());
+    });
+  });
+
+  // =========================================================================
+  // 5d. REPORTER BYLINE AUTO-SYNC
+  // =========================================================================
+  const btnSyncByline = document.getElementById('btnSyncMyByline');
+  const txtReporterInput = document.getElementById('txtReporter');
+  if (btnSyncByline && txtReporterInput) {
+    btnSyncByline.addEventListener('click', function() {
+      const activeUser = window.KV_ACTIVE_USER || currentProfile;
+      if (activeUser) {
+        const uName = activeUser.name || activeUser.username || 'Reporter';
+        txtReporterInput.value = 'റിപ്പോർട്ട്: ' + uName + ' (കോഴിക്കോട് വിഷൻ)';
+        txtReporterInput.dispatchEvent(new Event('input'));
+        if (typeof renderCard === 'function') renderCard();
+        if (typeof showToast === 'function') showToast('🏷️ Byline updated: ' + txtReporterInput.value);
+      } else {
+        alert('Please log in first to use your reporter name.');
+      }
+    });
+  }
+
+  // =========================================================================
+  // 5e. NEWSROOM BROADCAST FLASH TICKER (REALTIME CLOUD & LOCAL)
+  // =========================================================================
+  const noticeBar = document.getElementById('kvNewsroomNoticeBar');
+  const noticeTextSpan = document.getElementById('kvNoticeMarqueeText');
+  const btnDismissNotice = document.getElementById('btnDismissNotice');
+  const inpAdminNotice = document.getElementById('kvInpAdminNotice');
+  const btnPublishNotice = document.getElementById('kvBtnPublishNotice');
+  const btnClearNotice = document.getElementById('kvBtnClearNotice');
+
+  function updateNewsroomNoticeUI(text) {
+    if (!noticeBar || !noticeTextSpan) return;
+    const clean = (text || '').trim();
+    if (clean) {
+      noticeTextSpan.textContent = clean;
+      noticeBar.classList.remove('kv-hidden');
+    } else {
+      noticeBar.classList.add('kv-hidden');
+    }
+  }
+
+  // Check saved notice on load
+  try {
+    const savedNotice = localStorage.getItem('kv_newsroom_notice');
+    if (savedNotice) updateNewsroomNoticeUI(savedNotice);
+  } catch(e) {}
+
+  if (btnDismissNotice && noticeBar) {
+    btnDismissNotice.addEventListener('click', function() {
+      noticeBar.classList.add('kv-hidden');
+    });
+  }
+
+  if (btnPublishNotice && inpAdminNotice) {
+    btnPublishNotice.addEventListener('click', function() {
+      const val = inpAdminNotice.value.trim();
+      if (!val) {
+        alert('Please enter announcement text to broadcast.');
+        return;
+      }
+      try { localStorage.setItem('kv_newsroom_notice', val); } catch(e){}
+      updateNewsroomNoticeUI(val);
+
+      if (firebaseDb && isFirebaseLive) {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
+          text: val,
+          postedBy: (currentProfile && currentProfile.name) || 'Admin',
+          timestamp: Date.now()
+        }, { merge: true }).catch(function(){});
+      }
+      showAdminStatus('📢 Notice broadcasted to all staff successfully!', false);
+      if (typeof showToast === 'function') showToast('📢 Notice broadcasted live!');
+    });
+  }
+
+  if (btnClearNotice) {
+    btnClearNotice.addEventListener('click', function() {
+      try { localStorage.removeItem('kv_newsroom_notice'); } catch(e){}
+      if (inpAdminNotice) inpAdminNotice.value = '';
+      updateNewsroomNoticeUI('');
+      if (firebaseDb && isFirebaseLive) {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
+          text: '',
+          timestamp: Date.now()
+        }, { merge: true }).catch(function(){});
+      }
+      showAdminStatus('🗑️ Notice cleared.', false);
+      if (typeof showToast === 'function') showToast('🗑️ Notice cleared.');
+    });
+  }
+
+  // Realtime Cloud listener for Newsroom Notice from Firestore
+  window.addEventListener('load', function() {
+    if (firebaseDb && isFirebaseLive) {
+      try {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').onSnapshot(function(doc) {
+          if (doc && doc.exists) {
+            const data = doc.data();
+            if (data && data.text !== undefined) {
+              try { localStorage.setItem('kv_newsroom_notice', data.text); } catch(e){}
+              updateNewsroomNoticeUI(data.text);
+              if (inpAdminNotice) inpAdminNotice.value = data.text;
+            }
+          }
+        }, function(){});
+      } catch(e) {}
+    }
+  });
     renderUsersList(users, {
       onInstantSwitch: function(u) {
         if (u.active === false || u.deleted) {
@@ -6636,6 +7224,211 @@
           }
           refreshDemoAdminList();
           renderQuickUserPills();
+
+  // =========================================================================
+  // 5b. MALAYALAM VOICE TYPING ENGINE
+  // =========================================================================
+  function initVoiceTyping(btnId, targetInputId, labelName) {
+    const btn = document.getElementById(btnId);
+    const input = document.getElementById(targetInputId);
+    if (!btn || !input) return;
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      btn.title = 'Speech recognition not supported in this browser';
+      btn.addEventListener('click', function() {
+        alert('⚠️ Malayalam Voice Typing requires Google Chrome, Edge, or the Android app.');
+      });
+      return;
+    }
+
+    let recognition = null;
+    let isListening = false;
+
+    btn.addEventListener('click', function() {
+      if (isListening) {
+        if (recognition) recognition.stop();
+        return;
+      }
+
+      try {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'ml-IN'; // Malayalam India
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = function() {
+          isListening = true;
+          btn.classList.add('listening');
+          btn.innerHTML = '🔴 കേൾക്കുന്നു... (Stop)';
+          if (typeof showToast === 'function') showToast('🎙️ സംസാരിക്കൂ... (Listening in Malayalam)');
+        };
+
+        recognition.onresult = function(event) {
+          if (event.results && event.results[0] && event.results[0][0]) {
+            const text = event.results[0][0].transcript;
+            const currentVal = input.value.trim();
+            input.value = currentVal ? currentVal + ' ' + text : text;
+            input.dispatchEvent(new Event('input'));
+            if (typeof renderCard === 'function') renderCard();
+            if (typeof showToast === 'function') showToast('✅ ടൈപ്പ് ചെയ്തു: ' + text);
+          }
+        };
+
+        recognition.onerror = function(err) {
+          console.warn('Speech recognition error:', err);
+          isListening = false;
+          btn.classList.remove('listening');
+          btn.innerHTML = '🎙️ സംസാരിക്കുക';
+          if (err.error === 'not-allowed') {
+            alert('⚠️ Microphone permission required for voice typing.');
+          }
+        };
+
+        recognition.onend = function() {
+          isListening = false;
+          btn.classList.remove('listening');
+          btn.innerHTML = '🎙️ സംസാരിക്കുക';
+        };
+
+        recognition.start();
+      } catch (e) {
+        console.warn('Voice typing start error:', e);
+        isListening = false;
+        btn.classList.remove('listening');
+        btn.innerHTML = '🎙️ സംസാരിക്കുക';
+      }
+    });
+  }
+
+  // Initialize Voice Typing for Headline & Summary
+  initVoiceTyping('btnVoiceHeadline', 'txtHeadline', 'Headline');
+  initVoiceTyping('btnVoiceSummary', 'txtSummary', 'Summary');
+
+  // =========================================================================
+  // 5c. PHOTO CLARITY FILTER PILLS WIRE-UP
+  // =========================================================================
+  const filterPills = document.querySelectorAll('.btn-filter-pill');
+  const lblFilter = document.getElementById('lblActiveFilter');
+  filterPills.forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      filterPills.forEach(function(p) { p.classList.remove('active'); });
+      pill.classList.add('active');
+      activePhotoFilter = pill.getAttribute('data-filter') || 'normal';
+      if (lblFilter) lblFilter.textContent = pill.textContent.trim();
+      if (typeof renderCard === 'function') renderCard();
+      if (typeof showToast === 'function') showToast('✨ Filter: ' + pill.textContent.trim());
+    });
+  });
+
+  // =========================================================================
+  // 5d. REPORTER BYLINE AUTO-SYNC
+  // =========================================================================
+  const btnSyncByline = document.getElementById('btnSyncMyByline');
+  const txtReporterInput = document.getElementById('txtReporter');
+  if (btnSyncByline && txtReporterInput) {
+    btnSyncByline.addEventListener('click', function() {
+      const activeUser = window.KV_ACTIVE_USER || currentProfile;
+      if (activeUser) {
+        const uName = activeUser.name || activeUser.username || 'Reporter';
+        txtReporterInput.value = 'റിപ്പോർട്ട്: ' + uName + ' (കോഴിക്കോട് വിഷൻ)';
+        txtReporterInput.dispatchEvent(new Event('input'));
+        if (typeof renderCard === 'function') renderCard();
+        if (typeof showToast === 'function') showToast('🏷️ Byline updated: ' + txtReporterInput.value);
+      } else {
+        alert('Please log in first to use your reporter name.');
+      }
+    });
+  }
+
+  // =========================================================================
+  // 5e. NEWSROOM BROADCAST FLASH TICKER (REALTIME CLOUD & LOCAL)
+  // =========================================================================
+  const noticeBar = document.getElementById('kvNewsroomNoticeBar');
+  const noticeTextSpan = document.getElementById('kvNoticeMarqueeText');
+  const btnDismissNotice = document.getElementById('btnDismissNotice');
+  const inpAdminNotice = document.getElementById('kvInpAdminNotice');
+  const btnPublishNotice = document.getElementById('kvBtnPublishNotice');
+  const btnClearNotice = document.getElementById('kvBtnClearNotice');
+
+  function updateNewsroomNoticeUI(text) {
+    if (!noticeBar || !noticeTextSpan) return;
+    const clean = (text || '').trim();
+    if (clean) {
+      noticeTextSpan.textContent = clean;
+      noticeBar.classList.remove('kv-hidden');
+    } else {
+      noticeBar.classList.add('kv-hidden');
+    }
+  }
+
+  // Check saved notice on load
+  try {
+    const savedNotice = localStorage.getItem('kv_newsroom_notice');
+    if (savedNotice) updateNewsroomNoticeUI(savedNotice);
+  } catch(e) {}
+
+  if (btnDismissNotice && noticeBar) {
+    btnDismissNotice.addEventListener('click', function() {
+      noticeBar.classList.add('kv-hidden');
+    });
+  }
+
+  if (btnPublishNotice && inpAdminNotice) {
+    btnPublishNotice.addEventListener('click', function() {
+      const val = inpAdminNotice.value.trim();
+      if (!val) {
+        alert('Please enter announcement text to broadcast.');
+        return;
+      }
+      try { localStorage.setItem('kv_newsroom_notice', val); } catch(e){}
+      updateNewsroomNoticeUI(val);
+
+      if (firebaseDb && isFirebaseLive) {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
+          text: val,
+          postedBy: (currentProfile && currentProfile.name) || 'Admin',
+          timestamp: Date.now()
+        }, { merge: true }).catch(function(){});
+      }
+      showAdminStatus('📢 Notice broadcasted to all staff successfully!', false);
+      if (typeof showToast === 'function') showToast('📢 Notice broadcasted live!');
+    });
+  }
+
+  if (btnClearNotice) {
+    btnClearNotice.addEventListener('click', function() {
+      try { localStorage.removeItem('kv_newsroom_notice'); } catch(e){}
+      if (inpAdminNotice) inpAdminNotice.value = '';
+      updateNewsroomNoticeUI('');
+      if (firebaseDb && isFirebaseLive) {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
+          text: '',
+          timestamp: Date.now()
+        }, { merge: true }).catch(function(){});
+      }
+      showAdminStatus('🗑️ Notice cleared.', false);
+      if (typeof showToast === 'function') showToast('🗑️ Notice cleared.');
+    });
+  }
+
+  // Realtime Cloud listener for Newsroom Notice from Firestore
+  window.addEventListener('load', function() {
+    if (firebaseDb && isFirebaseLive) {
+      try {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').onSnapshot(function(doc) {
+          if (doc && doc.exists) {
+            const data = doc.data();
+            if (data && data.text !== undefined) {
+              try { localStorage.setItem('kv_newsroom_notice', data.text); } catch(e){}
+              updateNewsroomNoticeUI(data.text);
+              if (inpAdminNotice) inpAdminNotice.value = data.text;
+            }
+          }
+        }, function(){});
+      } catch(e) {}
+    }
+  });
           showAdminStatus(item.active ? '✅ User unblocked!' : '🚫 User blocked!', false);
           if (typeof showToast === 'function') {
             showToast(item.active ? '✅ Unblocked: ' + item.name : '🚫 Blocked: ' + item.name);
@@ -6655,6 +7448,211 @@
           }
           refreshDemoAdminList();
           renderQuickUserPills();
+
+  // =========================================================================
+  // 5b. MALAYALAM VOICE TYPING ENGINE
+  // =========================================================================
+  function initVoiceTyping(btnId, targetInputId, labelName) {
+    const btn = document.getElementById(btnId);
+    const input = document.getElementById(targetInputId);
+    if (!btn || !input) return;
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      btn.title = 'Speech recognition not supported in this browser';
+      btn.addEventListener('click', function() {
+        alert('⚠️ Malayalam Voice Typing requires Google Chrome, Edge, or the Android app.');
+      });
+      return;
+    }
+
+    let recognition = null;
+    let isListening = false;
+
+    btn.addEventListener('click', function() {
+      if (isListening) {
+        if (recognition) recognition.stop();
+        return;
+      }
+
+      try {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'ml-IN'; // Malayalam India
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = function() {
+          isListening = true;
+          btn.classList.add('listening');
+          btn.innerHTML = '🔴 കേൾക്കുന്നു... (Stop)';
+          if (typeof showToast === 'function') showToast('🎙️ സംസാരിക്കൂ... (Listening in Malayalam)');
+        };
+
+        recognition.onresult = function(event) {
+          if (event.results && event.results[0] && event.results[0][0]) {
+            const text = event.results[0][0].transcript;
+            const currentVal = input.value.trim();
+            input.value = currentVal ? currentVal + ' ' + text : text;
+            input.dispatchEvent(new Event('input'));
+            if (typeof renderCard === 'function') renderCard();
+            if (typeof showToast === 'function') showToast('✅ ടൈപ്പ് ചെയ്തു: ' + text);
+          }
+        };
+
+        recognition.onerror = function(err) {
+          console.warn('Speech recognition error:', err);
+          isListening = false;
+          btn.classList.remove('listening');
+          btn.innerHTML = '🎙️ സംസാരിക്കുക';
+          if (err.error === 'not-allowed') {
+            alert('⚠️ Microphone permission required for voice typing.');
+          }
+        };
+
+        recognition.onend = function() {
+          isListening = false;
+          btn.classList.remove('listening');
+          btn.innerHTML = '🎙️ സംസാരിക്കുക';
+        };
+
+        recognition.start();
+      } catch (e) {
+        console.warn('Voice typing start error:', e);
+        isListening = false;
+        btn.classList.remove('listening');
+        btn.innerHTML = '🎙️ സംസാരിക്കുക';
+      }
+    });
+  }
+
+  // Initialize Voice Typing for Headline & Summary
+  initVoiceTyping('btnVoiceHeadline', 'txtHeadline', 'Headline');
+  initVoiceTyping('btnVoiceSummary', 'txtSummary', 'Summary');
+
+  // =========================================================================
+  // 5c. PHOTO CLARITY FILTER PILLS WIRE-UP
+  // =========================================================================
+  const filterPills = document.querySelectorAll('.btn-filter-pill');
+  const lblFilter = document.getElementById('lblActiveFilter');
+  filterPills.forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      filterPills.forEach(function(p) { p.classList.remove('active'); });
+      pill.classList.add('active');
+      activePhotoFilter = pill.getAttribute('data-filter') || 'normal';
+      if (lblFilter) lblFilter.textContent = pill.textContent.trim();
+      if (typeof renderCard === 'function') renderCard();
+      if (typeof showToast === 'function') showToast('✨ Filter: ' + pill.textContent.trim());
+    });
+  });
+
+  // =========================================================================
+  // 5d. REPORTER BYLINE AUTO-SYNC
+  // =========================================================================
+  const btnSyncByline = document.getElementById('btnSyncMyByline');
+  const txtReporterInput = document.getElementById('txtReporter');
+  if (btnSyncByline && txtReporterInput) {
+    btnSyncByline.addEventListener('click', function() {
+      const activeUser = window.KV_ACTIVE_USER || currentProfile;
+      if (activeUser) {
+        const uName = activeUser.name || activeUser.username || 'Reporter';
+        txtReporterInput.value = 'റിപ്പോർട്ട്: ' + uName + ' (കോഴിക്കോട് വിഷൻ)';
+        txtReporterInput.dispatchEvent(new Event('input'));
+        if (typeof renderCard === 'function') renderCard();
+        if (typeof showToast === 'function') showToast('🏷️ Byline updated: ' + txtReporterInput.value);
+      } else {
+        alert('Please log in first to use your reporter name.');
+      }
+    });
+  }
+
+  // =========================================================================
+  // 5e. NEWSROOM BROADCAST FLASH TICKER (REALTIME CLOUD & LOCAL)
+  // =========================================================================
+  const noticeBar = document.getElementById('kvNewsroomNoticeBar');
+  const noticeTextSpan = document.getElementById('kvNoticeMarqueeText');
+  const btnDismissNotice = document.getElementById('btnDismissNotice');
+  const inpAdminNotice = document.getElementById('kvInpAdminNotice');
+  const btnPublishNotice = document.getElementById('kvBtnPublishNotice');
+  const btnClearNotice = document.getElementById('kvBtnClearNotice');
+
+  function updateNewsroomNoticeUI(text) {
+    if (!noticeBar || !noticeTextSpan) return;
+    const clean = (text || '').trim();
+    if (clean) {
+      noticeTextSpan.textContent = clean;
+      noticeBar.classList.remove('kv-hidden');
+    } else {
+      noticeBar.classList.add('kv-hidden');
+    }
+  }
+
+  // Check saved notice on load
+  try {
+    const savedNotice = localStorage.getItem('kv_newsroom_notice');
+    if (savedNotice) updateNewsroomNoticeUI(savedNotice);
+  } catch(e) {}
+
+  if (btnDismissNotice && noticeBar) {
+    btnDismissNotice.addEventListener('click', function() {
+      noticeBar.classList.add('kv-hidden');
+    });
+  }
+
+  if (btnPublishNotice && inpAdminNotice) {
+    btnPublishNotice.addEventListener('click', function() {
+      const val = inpAdminNotice.value.trim();
+      if (!val) {
+        alert('Please enter announcement text to broadcast.');
+        return;
+      }
+      try { localStorage.setItem('kv_newsroom_notice', val); } catch(e){}
+      updateNewsroomNoticeUI(val);
+
+      if (firebaseDb && isFirebaseLive) {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
+          text: val,
+          postedBy: (currentProfile && currentProfile.name) || 'Admin',
+          timestamp: Date.now()
+        }, { merge: true }).catch(function(){});
+      }
+      showAdminStatus('📢 Notice broadcasted to all staff successfully!', false);
+      if (typeof showToast === 'function') showToast('📢 Notice broadcasted live!');
+    });
+  }
+
+  if (btnClearNotice) {
+    btnClearNotice.addEventListener('click', function() {
+      try { localStorage.removeItem('kv_newsroom_notice'); } catch(e){}
+      if (inpAdminNotice) inpAdminNotice.value = '';
+      updateNewsroomNoticeUI('');
+      if (firebaseDb && isFirebaseLive) {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
+          text: '',
+          timestamp: Date.now()
+        }, { merge: true }).catch(function(){});
+      }
+      showAdminStatus('🗑️ Notice cleared.', false);
+      if (typeof showToast === 'function') showToast('🗑️ Notice cleared.');
+    });
+  }
+
+  // Realtime Cloud listener for Newsroom Notice from Firestore
+  window.addEventListener('load', function() {
+    if (firebaseDb && isFirebaseLive) {
+      try {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').onSnapshot(function(doc) {
+          if (doc && doc.exists) {
+            const data = doc.data();
+            if (data && data.text !== undefined) {
+              try { localStorage.setItem('kv_newsroom_notice', data.text); } catch(e){}
+              updateNewsroomNoticeUI(data.text);
+              if (inpAdminNotice) inpAdminNotice.value = data.text;
+            }
+          }
+        }, function(){});
+      } catch(e) {}
+    }
+  });
           showAdminStatus('🗑️ "' + item.name + '" deleted. Can be restored from Recycle Bin below.', false);
           if (typeof showToast === 'function') {
             showToast('🗑️ Deleted: ' + item.name);
@@ -6673,6 +7671,211 @@
           }
           refreshDemoAdminList();
           renderQuickUserPills();
+
+  // =========================================================================
+  // 5b. MALAYALAM VOICE TYPING ENGINE
+  // =========================================================================
+  function initVoiceTyping(btnId, targetInputId, labelName) {
+    const btn = document.getElementById(btnId);
+    const input = document.getElementById(targetInputId);
+    if (!btn || !input) return;
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      btn.title = 'Speech recognition not supported in this browser';
+      btn.addEventListener('click', function() {
+        alert('⚠️ Malayalam Voice Typing requires Google Chrome, Edge, or the Android app.');
+      });
+      return;
+    }
+
+    let recognition = null;
+    let isListening = false;
+
+    btn.addEventListener('click', function() {
+      if (isListening) {
+        if (recognition) recognition.stop();
+        return;
+      }
+
+      try {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'ml-IN'; // Malayalam India
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = function() {
+          isListening = true;
+          btn.classList.add('listening');
+          btn.innerHTML = '🔴 കേൾക്കുന്നു... (Stop)';
+          if (typeof showToast === 'function') showToast('🎙️ സംസാരിക്കൂ... (Listening in Malayalam)');
+        };
+
+        recognition.onresult = function(event) {
+          if (event.results && event.results[0] && event.results[0][0]) {
+            const text = event.results[0][0].transcript;
+            const currentVal = input.value.trim();
+            input.value = currentVal ? currentVal + ' ' + text : text;
+            input.dispatchEvent(new Event('input'));
+            if (typeof renderCard === 'function') renderCard();
+            if (typeof showToast === 'function') showToast('✅ ടൈപ്പ് ചെയ്തു: ' + text);
+          }
+        };
+
+        recognition.onerror = function(err) {
+          console.warn('Speech recognition error:', err);
+          isListening = false;
+          btn.classList.remove('listening');
+          btn.innerHTML = '🎙️ സംസാരിക്കുക';
+          if (err.error === 'not-allowed') {
+            alert('⚠️ Microphone permission required for voice typing.');
+          }
+        };
+
+        recognition.onend = function() {
+          isListening = false;
+          btn.classList.remove('listening');
+          btn.innerHTML = '🎙️ സംസാരിക്കുക';
+        };
+
+        recognition.start();
+      } catch (e) {
+        console.warn('Voice typing start error:', e);
+        isListening = false;
+        btn.classList.remove('listening');
+        btn.innerHTML = '🎙️ സംസാരിക്കുക';
+      }
+    });
+  }
+
+  // Initialize Voice Typing for Headline & Summary
+  initVoiceTyping('btnVoiceHeadline', 'txtHeadline', 'Headline');
+  initVoiceTyping('btnVoiceSummary', 'txtSummary', 'Summary');
+
+  // =========================================================================
+  // 5c. PHOTO CLARITY FILTER PILLS WIRE-UP
+  // =========================================================================
+  const filterPills = document.querySelectorAll('.btn-filter-pill');
+  const lblFilter = document.getElementById('lblActiveFilter');
+  filterPills.forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      filterPills.forEach(function(p) { p.classList.remove('active'); });
+      pill.classList.add('active');
+      activePhotoFilter = pill.getAttribute('data-filter') || 'normal';
+      if (lblFilter) lblFilter.textContent = pill.textContent.trim();
+      if (typeof renderCard === 'function') renderCard();
+      if (typeof showToast === 'function') showToast('✨ Filter: ' + pill.textContent.trim());
+    });
+  });
+
+  // =========================================================================
+  // 5d. REPORTER BYLINE AUTO-SYNC
+  // =========================================================================
+  const btnSyncByline = document.getElementById('btnSyncMyByline');
+  const txtReporterInput = document.getElementById('txtReporter');
+  if (btnSyncByline && txtReporterInput) {
+    btnSyncByline.addEventListener('click', function() {
+      const activeUser = window.KV_ACTIVE_USER || currentProfile;
+      if (activeUser) {
+        const uName = activeUser.name || activeUser.username || 'Reporter';
+        txtReporterInput.value = 'റിപ്പോർട്ട്: ' + uName + ' (കോഴിക്കോട് വിഷൻ)';
+        txtReporterInput.dispatchEvent(new Event('input'));
+        if (typeof renderCard === 'function') renderCard();
+        if (typeof showToast === 'function') showToast('🏷️ Byline updated: ' + txtReporterInput.value);
+      } else {
+        alert('Please log in first to use your reporter name.');
+      }
+    });
+  }
+
+  // =========================================================================
+  // 5e. NEWSROOM BROADCAST FLASH TICKER (REALTIME CLOUD & LOCAL)
+  // =========================================================================
+  const noticeBar = document.getElementById('kvNewsroomNoticeBar');
+  const noticeTextSpan = document.getElementById('kvNoticeMarqueeText');
+  const btnDismissNotice = document.getElementById('btnDismissNotice');
+  const inpAdminNotice = document.getElementById('kvInpAdminNotice');
+  const btnPublishNotice = document.getElementById('kvBtnPublishNotice');
+  const btnClearNotice = document.getElementById('kvBtnClearNotice');
+
+  function updateNewsroomNoticeUI(text) {
+    if (!noticeBar || !noticeTextSpan) return;
+    const clean = (text || '').trim();
+    if (clean) {
+      noticeTextSpan.textContent = clean;
+      noticeBar.classList.remove('kv-hidden');
+    } else {
+      noticeBar.classList.add('kv-hidden');
+    }
+  }
+
+  // Check saved notice on load
+  try {
+    const savedNotice = localStorage.getItem('kv_newsroom_notice');
+    if (savedNotice) updateNewsroomNoticeUI(savedNotice);
+  } catch(e) {}
+
+  if (btnDismissNotice && noticeBar) {
+    btnDismissNotice.addEventListener('click', function() {
+      noticeBar.classList.add('kv-hidden');
+    });
+  }
+
+  if (btnPublishNotice && inpAdminNotice) {
+    btnPublishNotice.addEventListener('click', function() {
+      const val = inpAdminNotice.value.trim();
+      if (!val) {
+        alert('Please enter announcement text to broadcast.');
+        return;
+      }
+      try { localStorage.setItem('kv_newsroom_notice', val); } catch(e){}
+      updateNewsroomNoticeUI(val);
+
+      if (firebaseDb && isFirebaseLive) {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
+          text: val,
+          postedBy: (currentProfile && currentProfile.name) || 'Admin',
+          timestamp: Date.now()
+        }, { merge: true }).catch(function(){});
+      }
+      showAdminStatus('📢 Notice broadcasted to all staff successfully!', false);
+      if (typeof showToast === 'function') showToast('📢 Notice broadcasted live!');
+    });
+  }
+
+  if (btnClearNotice) {
+    btnClearNotice.addEventListener('click', function() {
+      try { localStorage.removeItem('kv_newsroom_notice'); } catch(e){}
+      if (inpAdminNotice) inpAdminNotice.value = '';
+      updateNewsroomNoticeUI('');
+      if (firebaseDb && isFirebaseLive) {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
+          text: '',
+          timestamp: Date.now()
+        }, { merge: true }).catch(function(){});
+      }
+      showAdminStatus('🗑️ Notice cleared.', false);
+      if (typeof showToast === 'function') showToast('🗑️ Notice cleared.');
+    });
+  }
+
+  // Realtime Cloud listener for Newsroom Notice from Firestore
+  window.addEventListener('load', function() {
+    if (firebaseDb && isFirebaseLive) {
+      try {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').onSnapshot(function(doc) {
+          if (doc && doc.exists) {
+            const data = doc.data();
+            if (data && data.text !== undefined) {
+              try { localStorage.setItem('kv_newsroom_notice', data.text); } catch(e){}
+              updateNewsroomNoticeUI(data.text);
+              if (inpAdminNotice) inpAdminNotice.value = data.text;
+            }
+          }
+        }, function(){});
+      } catch(e) {}
+    }
+  });
           showAdminStatus('♻️ "' + item.name + '" restored successfully!', false);
           if (typeof showToast === 'function') {
             showToast('♻️ Restored: ' + item.name);
@@ -6762,6 +7965,211 @@
 
     refreshDemoAdminList();
     renderQuickUserPills();
+
+  // =========================================================================
+  // 5b. MALAYALAM VOICE TYPING ENGINE
+  // =========================================================================
+  function initVoiceTyping(btnId, targetInputId, labelName) {
+    const btn = document.getElementById(btnId);
+    const input = document.getElementById(targetInputId);
+    if (!btn || !input) return;
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      btn.title = 'Speech recognition not supported in this browser';
+      btn.addEventListener('click', function() {
+        alert('⚠️ Malayalam Voice Typing requires Google Chrome, Edge, or the Android app.');
+      });
+      return;
+    }
+
+    let recognition = null;
+    let isListening = false;
+
+    btn.addEventListener('click', function() {
+      if (isListening) {
+        if (recognition) recognition.stop();
+        return;
+      }
+
+      try {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'ml-IN'; // Malayalam India
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = function() {
+          isListening = true;
+          btn.classList.add('listening');
+          btn.innerHTML = '🔴 കേൾക്കുന്നു... (Stop)';
+          if (typeof showToast === 'function') showToast('🎙️ സംസാരിക്കൂ... (Listening in Malayalam)');
+        };
+
+        recognition.onresult = function(event) {
+          if (event.results && event.results[0] && event.results[0][0]) {
+            const text = event.results[0][0].transcript;
+            const currentVal = input.value.trim();
+            input.value = currentVal ? currentVal + ' ' + text : text;
+            input.dispatchEvent(new Event('input'));
+            if (typeof renderCard === 'function') renderCard();
+            if (typeof showToast === 'function') showToast('✅ ടൈപ്പ് ചെയ്തു: ' + text);
+          }
+        };
+
+        recognition.onerror = function(err) {
+          console.warn('Speech recognition error:', err);
+          isListening = false;
+          btn.classList.remove('listening');
+          btn.innerHTML = '🎙️ സംസാരിക്കുക';
+          if (err.error === 'not-allowed') {
+            alert('⚠️ Microphone permission required for voice typing.');
+          }
+        };
+
+        recognition.onend = function() {
+          isListening = false;
+          btn.classList.remove('listening');
+          btn.innerHTML = '🎙️ സംസാരിക്കുക';
+        };
+
+        recognition.start();
+      } catch (e) {
+        console.warn('Voice typing start error:', e);
+        isListening = false;
+        btn.classList.remove('listening');
+        btn.innerHTML = '🎙️ സംസാരിക്കുക';
+      }
+    });
+  }
+
+  // Initialize Voice Typing for Headline & Summary
+  initVoiceTyping('btnVoiceHeadline', 'txtHeadline', 'Headline');
+  initVoiceTyping('btnVoiceSummary', 'txtSummary', 'Summary');
+
+  // =========================================================================
+  // 5c. PHOTO CLARITY FILTER PILLS WIRE-UP
+  // =========================================================================
+  const filterPills = document.querySelectorAll('.btn-filter-pill');
+  const lblFilter = document.getElementById('lblActiveFilter');
+  filterPills.forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      filterPills.forEach(function(p) { p.classList.remove('active'); });
+      pill.classList.add('active');
+      activePhotoFilter = pill.getAttribute('data-filter') || 'normal';
+      if (lblFilter) lblFilter.textContent = pill.textContent.trim();
+      if (typeof renderCard === 'function') renderCard();
+      if (typeof showToast === 'function') showToast('✨ Filter: ' + pill.textContent.trim());
+    });
+  });
+
+  // =========================================================================
+  // 5d. REPORTER BYLINE AUTO-SYNC
+  // =========================================================================
+  const btnSyncByline = document.getElementById('btnSyncMyByline');
+  const txtReporterInput = document.getElementById('txtReporter');
+  if (btnSyncByline && txtReporterInput) {
+    btnSyncByline.addEventListener('click', function() {
+      const activeUser = window.KV_ACTIVE_USER || currentProfile;
+      if (activeUser) {
+        const uName = activeUser.name || activeUser.username || 'Reporter';
+        txtReporterInput.value = 'റിപ്പോർട്ട്: ' + uName + ' (കോഴിക്കോട് വിഷൻ)';
+        txtReporterInput.dispatchEvent(new Event('input'));
+        if (typeof renderCard === 'function') renderCard();
+        if (typeof showToast === 'function') showToast('🏷️ Byline updated: ' + txtReporterInput.value);
+      } else {
+        alert('Please log in first to use your reporter name.');
+      }
+    });
+  }
+
+  // =========================================================================
+  // 5e. NEWSROOM BROADCAST FLASH TICKER (REALTIME CLOUD & LOCAL)
+  // =========================================================================
+  const noticeBar = document.getElementById('kvNewsroomNoticeBar');
+  const noticeTextSpan = document.getElementById('kvNoticeMarqueeText');
+  const btnDismissNotice = document.getElementById('btnDismissNotice');
+  const inpAdminNotice = document.getElementById('kvInpAdminNotice');
+  const btnPublishNotice = document.getElementById('kvBtnPublishNotice');
+  const btnClearNotice = document.getElementById('kvBtnClearNotice');
+
+  function updateNewsroomNoticeUI(text) {
+    if (!noticeBar || !noticeTextSpan) return;
+    const clean = (text || '').trim();
+    if (clean) {
+      noticeTextSpan.textContent = clean;
+      noticeBar.classList.remove('kv-hidden');
+    } else {
+      noticeBar.classList.add('kv-hidden');
+    }
+  }
+
+  // Check saved notice on load
+  try {
+    const savedNotice = localStorage.getItem('kv_newsroom_notice');
+    if (savedNotice) updateNewsroomNoticeUI(savedNotice);
+  } catch(e) {}
+
+  if (btnDismissNotice && noticeBar) {
+    btnDismissNotice.addEventListener('click', function() {
+      noticeBar.classList.add('kv-hidden');
+    });
+  }
+
+  if (btnPublishNotice && inpAdminNotice) {
+    btnPublishNotice.addEventListener('click', function() {
+      const val = inpAdminNotice.value.trim();
+      if (!val) {
+        alert('Please enter announcement text to broadcast.');
+        return;
+      }
+      try { localStorage.setItem('kv_newsroom_notice', val); } catch(e){}
+      updateNewsroomNoticeUI(val);
+
+      if (firebaseDb && isFirebaseLive) {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
+          text: val,
+          postedBy: (currentProfile && currentProfile.name) || 'Admin',
+          timestamp: Date.now()
+        }, { merge: true }).catch(function(){});
+      }
+      showAdminStatus('📢 Notice broadcasted to all staff successfully!', false);
+      if (typeof showToast === 'function') showToast('📢 Notice broadcasted live!');
+    });
+  }
+
+  if (btnClearNotice) {
+    btnClearNotice.addEventListener('click', function() {
+      try { localStorage.removeItem('kv_newsroom_notice'); } catch(e){}
+      if (inpAdminNotice) inpAdminNotice.value = '';
+      updateNewsroomNoticeUI('');
+      if (firebaseDb && isFirebaseLive) {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
+          text: '',
+          timestamp: Date.now()
+        }, { merge: true }).catch(function(){});
+      }
+      showAdminStatus('🗑️ Notice cleared.', false);
+      if (typeof showToast === 'function') showToast('🗑️ Notice cleared.');
+    });
+  }
+
+  // Realtime Cloud listener for Newsroom Notice from Firestore
+  window.addEventListener('load', function() {
+    if (firebaseDb && isFirebaseLive) {
+      try {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').onSnapshot(function(doc) {
+          if (doc && doc.exists) {
+            const data = doc.data();
+            if (data && data.text !== undefined) {
+              try { localStorage.setItem('kv_newsroom_notice', data.text); } catch(e){}
+              updateNewsroomNoticeUI(data.text);
+              if (inpAdminNotice) inpAdminNotice.value = data.text;
+            }
+          }
+        }, function(){});
+      } catch(e) {}
+    }
+  });
     showAdminStatus('✅ "' + name + '" (' + username + ') added successfully! User is now active.', false);
     if (typeof showToast === 'function') {
       showToast('✅ New user added: ' + name);
@@ -7627,6 +9035,211 @@
     adminModal.classList.remove('kv-hidden');
     refreshDemoAdminList();
     renderQuickUserPills();
+
+  // =========================================================================
+  // 5b. MALAYALAM VOICE TYPING ENGINE
+  // =========================================================================
+  function initVoiceTyping(btnId, targetInputId, labelName) {
+    const btn = document.getElementById(btnId);
+    const input = document.getElementById(targetInputId);
+    if (!btn || !input) return;
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      btn.title = 'Speech recognition not supported in this browser';
+      btn.addEventListener('click', function() {
+        alert('⚠️ Malayalam Voice Typing requires Google Chrome, Edge, or the Android app.');
+      });
+      return;
+    }
+
+    let recognition = null;
+    let isListening = false;
+
+    btn.addEventListener('click', function() {
+      if (isListening) {
+        if (recognition) recognition.stop();
+        return;
+      }
+
+      try {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'ml-IN'; // Malayalam India
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = function() {
+          isListening = true;
+          btn.classList.add('listening');
+          btn.innerHTML = '🔴 കേൾക്കുന്നു... (Stop)';
+          if (typeof showToast === 'function') showToast('🎙️ സംസാരിക്കൂ... (Listening in Malayalam)');
+        };
+
+        recognition.onresult = function(event) {
+          if (event.results && event.results[0] && event.results[0][0]) {
+            const text = event.results[0][0].transcript;
+            const currentVal = input.value.trim();
+            input.value = currentVal ? currentVal + ' ' + text : text;
+            input.dispatchEvent(new Event('input'));
+            if (typeof renderCard === 'function') renderCard();
+            if (typeof showToast === 'function') showToast('✅ ടൈപ്പ് ചെയ്തു: ' + text);
+          }
+        };
+
+        recognition.onerror = function(err) {
+          console.warn('Speech recognition error:', err);
+          isListening = false;
+          btn.classList.remove('listening');
+          btn.innerHTML = '🎙️ സംസാരിക്കുക';
+          if (err.error === 'not-allowed') {
+            alert('⚠️ Microphone permission required for voice typing.');
+          }
+        };
+
+        recognition.onend = function() {
+          isListening = false;
+          btn.classList.remove('listening');
+          btn.innerHTML = '🎙️ സംസാരിക്കുക';
+        };
+
+        recognition.start();
+      } catch (e) {
+        console.warn('Voice typing start error:', e);
+        isListening = false;
+        btn.classList.remove('listening');
+        btn.innerHTML = '🎙️ സംസാരിക്കുക';
+      }
+    });
+  }
+
+  // Initialize Voice Typing for Headline & Summary
+  initVoiceTyping('btnVoiceHeadline', 'txtHeadline', 'Headline');
+  initVoiceTyping('btnVoiceSummary', 'txtSummary', 'Summary');
+
+  // =========================================================================
+  // 5c. PHOTO CLARITY FILTER PILLS WIRE-UP
+  // =========================================================================
+  const filterPills = document.querySelectorAll('.btn-filter-pill');
+  const lblFilter = document.getElementById('lblActiveFilter');
+  filterPills.forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      filterPills.forEach(function(p) { p.classList.remove('active'); });
+      pill.classList.add('active');
+      activePhotoFilter = pill.getAttribute('data-filter') || 'normal';
+      if (lblFilter) lblFilter.textContent = pill.textContent.trim();
+      if (typeof renderCard === 'function') renderCard();
+      if (typeof showToast === 'function') showToast('✨ Filter: ' + pill.textContent.trim());
+    });
+  });
+
+  // =========================================================================
+  // 5d. REPORTER BYLINE AUTO-SYNC
+  // =========================================================================
+  const btnSyncByline = document.getElementById('btnSyncMyByline');
+  const txtReporterInput = document.getElementById('txtReporter');
+  if (btnSyncByline && txtReporterInput) {
+    btnSyncByline.addEventListener('click', function() {
+      const activeUser = window.KV_ACTIVE_USER || currentProfile;
+      if (activeUser) {
+        const uName = activeUser.name || activeUser.username || 'Reporter';
+        txtReporterInput.value = 'റിപ്പോർട്ട്: ' + uName + ' (കോഴിക്കോട് വിഷൻ)';
+        txtReporterInput.dispatchEvent(new Event('input'));
+        if (typeof renderCard === 'function') renderCard();
+        if (typeof showToast === 'function') showToast('🏷️ Byline updated: ' + txtReporterInput.value);
+      } else {
+        alert('Please log in first to use your reporter name.');
+      }
+    });
+  }
+
+  // =========================================================================
+  // 5e. NEWSROOM BROADCAST FLASH TICKER (REALTIME CLOUD & LOCAL)
+  // =========================================================================
+  const noticeBar = document.getElementById('kvNewsroomNoticeBar');
+  const noticeTextSpan = document.getElementById('kvNoticeMarqueeText');
+  const btnDismissNotice = document.getElementById('btnDismissNotice');
+  const inpAdminNotice = document.getElementById('kvInpAdminNotice');
+  const btnPublishNotice = document.getElementById('kvBtnPublishNotice');
+  const btnClearNotice = document.getElementById('kvBtnClearNotice');
+
+  function updateNewsroomNoticeUI(text) {
+    if (!noticeBar || !noticeTextSpan) return;
+    const clean = (text || '').trim();
+    if (clean) {
+      noticeTextSpan.textContent = clean;
+      noticeBar.classList.remove('kv-hidden');
+    } else {
+      noticeBar.classList.add('kv-hidden');
+    }
+  }
+
+  // Check saved notice on load
+  try {
+    const savedNotice = localStorage.getItem('kv_newsroom_notice');
+    if (savedNotice) updateNewsroomNoticeUI(savedNotice);
+  } catch(e) {}
+
+  if (btnDismissNotice && noticeBar) {
+    btnDismissNotice.addEventListener('click', function() {
+      noticeBar.classList.add('kv-hidden');
+    });
+  }
+
+  if (btnPublishNotice && inpAdminNotice) {
+    btnPublishNotice.addEventListener('click', function() {
+      const val = inpAdminNotice.value.trim();
+      if (!val) {
+        alert('Please enter announcement text to broadcast.');
+        return;
+      }
+      try { localStorage.setItem('kv_newsroom_notice', val); } catch(e){}
+      updateNewsroomNoticeUI(val);
+
+      if (firebaseDb && isFirebaseLive) {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
+          text: val,
+          postedBy: (currentProfile && currentProfile.name) || 'Admin',
+          timestamp: Date.now()
+        }, { merge: true }).catch(function(){});
+      }
+      showAdminStatus('📢 Notice broadcasted to all staff successfully!', false);
+      if (typeof showToast === 'function') showToast('📢 Notice broadcasted live!');
+    });
+  }
+
+  if (btnClearNotice) {
+    btnClearNotice.addEventListener('click', function() {
+      try { localStorage.removeItem('kv_newsroom_notice'); } catch(e){}
+      if (inpAdminNotice) inpAdminNotice.value = '';
+      updateNewsroomNoticeUI('');
+      if (firebaseDb && isFirebaseLive) {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
+          text: '',
+          timestamp: Date.now()
+        }, { merge: true }).catch(function(){});
+      }
+      showAdminStatus('🗑️ Notice cleared.', false);
+      if (typeof showToast === 'function') showToast('🗑️ Notice cleared.');
+    });
+  }
+
+  // Realtime Cloud listener for Newsroom Notice from Firestore
+  window.addEventListener('load', function() {
+    if (firebaseDb && isFirebaseLive) {
+      try {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').onSnapshot(function(doc) {
+          if (doc && doc.exists) {
+            const data = doc.data();
+            if (data && data.text !== undefined) {
+              try { localStorage.setItem('kv_newsroom_notice', data.text); } catch(e){}
+              updateNewsroomNoticeUI(data.text);
+              if (inpAdminNotice) inpAdminNotice.value = data.text;
+            }
+          }
+        }, function(){});
+      } catch(e) {}
+    }
+  });
     if (!adminPresenceRefreshTimer) {
       adminPresenceRefreshTimer = setInterval(function() {
         if (adminModal && !adminModal.classList.contains('kv-hidden')) {
@@ -7693,6 +9306,211 @@
 
   // Initial render of user pills on page startup
   renderQuickUserPills();
+
+  // =========================================================================
+  // 5b. MALAYALAM VOICE TYPING ENGINE
+  // =========================================================================
+  function initVoiceTyping(btnId, targetInputId, labelName) {
+    const btn = document.getElementById(btnId);
+    const input = document.getElementById(targetInputId);
+    if (!btn || !input) return;
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      btn.title = 'Speech recognition not supported in this browser';
+      btn.addEventListener('click', function() {
+        alert('⚠️ Malayalam Voice Typing requires Google Chrome, Edge, or the Android app.');
+      });
+      return;
+    }
+
+    let recognition = null;
+    let isListening = false;
+
+    btn.addEventListener('click', function() {
+      if (isListening) {
+        if (recognition) recognition.stop();
+        return;
+      }
+
+      try {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'ml-IN'; // Malayalam India
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = function() {
+          isListening = true;
+          btn.classList.add('listening');
+          btn.innerHTML = '🔴 കേൾക്കുന്നു... (Stop)';
+          if (typeof showToast === 'function') showToast('🎙️ സംസാരിക്കൂ... (Listening in Malayalam)');
+        };
+
+        recognition.onresult = function(event) {
+          if (event.results && event.results[0] && event.results[0][0]) {
+            const text = event.results[0][0].transcript;
+            const currentVal = input.value.trim();
+            input.value = currentVal ? currentVal + ' ' + text : text;
+            input.dispatchEvent(new Event('input'));
+            if (typeof renderCard === 'function') renderCard();
+            if (typeof showToast === 'function') showToast('✅ ടൈപ്പ് ചെയ്തു: ' + text);
+          }
+        };
+
+        recognition.onerror = function(err) {
+          console.warn('Speech recognition error:', err);
+          isListening = false;
+          btn.classList.remove('listening');
+          btn.innerHTML = '🎙️ സംസാരിക്കുക';
+          if (err.error === 'not-allowed') {
+            alert('⚠️ Microphone permission required for voice typing.');
+          }
+        };
+
+        recognition.onend = function() {
+          isListening = false;
+          btn.classList.remove('listening');
+          btn.innerHTML = '🎙️ സംസാരിക്കുക';
+        };
+
+        recognition.start();
+      } catch (e) {
+        console.warn('Voice typing start error:', e);
+        isListening = false;
+        btn.classList.remove('listening');
+        btn.innerHTML = '🎙️ സംസാരിക്കുക';
+      }
+    });
+  }
+
+  // Initialize Voice Typing for Headline & Summary
+  initVoiceTyping('btnVoiceHeadline', 'txtHeadline', 'Headline');
+  initVoiceTyping('btnVoiceSummary', 'txtSummary', 'Summary');
+
+  // =========================================================================
+  // 5c. PHOTO CLARITY FILTER PILLS WIRE-UP
+  // =========================================================================
+  const filterPills = document.querySelectorAll('.btn-filter-pill');
+  const lblFilter = document.getElementById('lblActiveFilter');
+  filterPills.forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      filterPills.forEach(function(p) { p.classList.remove('active'); });
+      pill.classList.add('active');
+      activePhotoFilter = pill.getAttribute('data-filter') || 'normal';
+      if (lblFilter) lblFilter.textContent = pill.textContent.trim();
+      if (typeof renderCard === 'function') renderCard();
+      if (typeof showToast === 'function') showToast('✨ Filter: ' + pill.textContent.trim());
+    });
+  });
+
+  // =========================================================================
+  // 5d. REPORTER BYLINE AUTO-SYNC
+  // =========================================================================
+  const btnSyncByline = document.getElementById('btnSyncMyByline');
+  const txtReporterInput = document.getElementById('txtReporter');
+  if (btnSyncByline && txtReporterInput) {
+    btnSyncByline.addEventListener('click', function() {
+      const activeUser = window.KV_ACTIVE_USER || currentProfile;
+      if (activeUser) {
+        const uName = activeUser.name || activeUser.username || 'Reporter';
+        txtReporterInput.value = 'റിപ്പോർട്ട്: ' + uName + ' (കോഴിക്കോട് വിഷൻ)';
+        txtReporterInput.dispatchEvent(new Event('input'));
+        if (typeof renderCard === 'function') renderCard();
+        if (typeof showToast === 'function') showToast('🏷️ Byline updated: ' + txtReporterInput.value);
+      } else {
+        alert('Please log in first to use your reporter name.');
+      }
+    });
+  }
+
+  // =========================================================================
+  // 5e. NEWSROOM BROADCAST FLASH TICKER (REALTIME CLOUD & LOCAL)
+  // =========================================================================
+  const noticeBar = document.getElementById('kvNewsroomNoticeBar');
+  const noticeTextSpan = document.getElementById('kvNoticeMarqueeText');
+  const btnDismissNotice = document.getElementById('btnDismissNotice');
+  const inpAdminNotice = document.getElementById('kvInpAdminNotice');
+  const btnPublishNotice = document.getElementById('kvBtnPublishNotice');
+  const btnClearNotice = document.getElementById('kvBtnClearNotice');
+
+  function updateNewsroomNoticeUI(text) {
+    if (!noticeBar || !noticeTextSpan) return;
+    const clean = (text || '').trim();
+    if (clean) {
+      noticeTextSpan.textContent = clean;
+      noticeBar.classList.remove('kv-hidden');
+    } else {
+      noticeBar.classList.add('kv-hidden');
+    }
+  }
+
+  // Check saved notice on load
+  try {
+    const savedNotice = localStorage.getItem('kv_newsroom_notice');
+    if (savedNotice) updateNewsroomNoticeUI(savedNotice);
+  } catch(e) {}
+
+  if (btnDismissNotice && noticeBar) {
+    btnDismissNotice.addEventListener('click', function() {
+      noticeBar.classList.add('kv-hidden');
+    });
+  }
+
+  if (btnPublishNotice && inpAdminNotice) {
+    btnPublishNotice.addEventListener('click', function() {
+      const val = inpAdminNotice.value.trim();
+      if (!val) {
+        alert('Please enter announcement text to broadcast.');
+        return;
+      }
+      try { localStorage.setItem('kv_newsroom_notice', val); } catch(e){}
+      updateNewsroomNoticeUI(val);
+
+      if (firebaseDb && isFirebaseLive) {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
+          text: val,
+          postedBy: (currentProfile && currentProfile.name) || 'Admin',
+          timestamp: Date.now()
+        }, { merge: true }).catch(function(){});
+      }
+      showAdminStatus('📢 Notice broadcasted to all staff successfully!', false);
+      if (typeof showToast === 'function') showToast('📢 Notice broadcasted live!');
+    });
+  }
+
+  if (btnClearNotice) {
+    btnClearNotice.addEventListener('click', function() {
+      try { localStorage.removeItem('kv_newsroom_notice'); } catch(e){}
+      if (inpAdminNotice) inpAdminNotice.value = '';
+      updateNewsroomNoticeUI('');
+      if (firebaseDb && isFirebaseLive) {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
+          text: '',
+          timestamp: Date.now()
+        }, { merge: true }).catch(function(){});
+      }
+      showAdminStatus('🗑️ Notice cleared.', false);
+      if (typeof showToast === 'function') showToast('🗑️ Notice cleared.');
+    });
+  }
+
+  // Realtime Cloud listener for Newsroom Notice from Firestore
+  window.addEventListener('load', function() {
+    if (firebaseDb && isFirebaseLive) {
+      try {
+        firebaseDb.collection('kv_settings').doc('newsroom_notice').onSnapshot(function(doc) {
+          if (doc && doc.exists) {
+            const data = doc.data();
+            if (data && data.text !== undefined) {
+              try { localStorage.setItem('kv_newsroom_notice', data.text); } catch(e){}
+              updateNewsroomNoticeUI(data.text);
+              if (inpAdminNotice) inpAdminNotice.value = data.text;
+            }
+          }
+        }, function(){});
+      } catch(e) {}
+    }
+  });
 
 })();
 </script>
