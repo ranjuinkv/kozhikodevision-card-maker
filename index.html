@@ -1810,6 +1810,177 @@
       color: #f87171;
       border: 1px solid rgba(239, 68, 68, 0.5);
     }
+    /* Real-Time User Presence & Online Indicator */
+    .kv-user-row.is-online {
+      border: 1.5px solid #10b981 !important;
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.16) 0%, rgba(15, 23, 42, 0.94) 100%) !important;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.25) !important;
+    }
+    .kv-user-row.is-online .kv-user-name {
+      color: #6ee7b7 !important;
+    }
+    .kv-presence-pill {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2.5px 8px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      letter-spacing: 0.3px;
+    }
+    .kv-presence-pill.online {
+      background: rgba(16, 185, 129, 0.25);
+      color: #34d399;
+      border: 1px solid #10b981;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    }
+    .kv-presence-pill.offline {
+      background: rgba(100, 116, 139, 0.2);
+      color: #94a3b8;
+      border: 1px solid rgba(100, 116, 139, 0.35);
+    }
+    .kv-pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .kv-pulse-dot.online {
+      background: #10b981;
+      box-shadow: 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: kvPresencePulse 1.8s infinite;
+    }
+    .kv-pulse-dot.offline {
+      background: #64748b;
+    }
+    @keyframes kvPresencePulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.8);
+      }
+      70% {
+        box-shadow: 0 0 0 7px rgba(16, 185, 129, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+      }
+    }
+
+    /* Floating Time-Based Welcome Greeting Banner / Toast */
+    #kvWelcomeToast {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-140%);
+      z-index: 999999;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+      max-width: 94vw;
+      width: 500px;
+    }
+    #kvWelcomeToast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .kv-welcome-card {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.96));
+      border: 1.5px solid rgba(56, 189, 248, 0.5);
+      border-radius: 14px;
+      padding: 12px 16px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 25px rgba(56, 189, 248, 0.25);
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      backdrop-filter: blur(14px);
+      position: relative;
+      overflow: hidden;
+    }
+    .kv-welcome-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: linear-gradient(90deg, #38bdf8, #10b981, #fbbf24, #ec4899);
+      animation: kvWelcomeShimmer 3s infinite linear;
+    }
+    @keyframes kvWelcomeShimmer {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+    .kv-welcome-icon-box {
+      font-size: 26px;
+      min-width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+      flex-shrink: 0;
+    }
+    .kv-welcome-body {
+      flex: 1;
+      min-width: 0;
+    }
+    .kv-welcome-title {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.3;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .kv-welcome-name {
+      color: #38bdf8;
+      text-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+    }
+    .kv-welcome-tagline {
+      font-size: 11px;
+      color: #cbd5e1;
+      margin-top: 3px;
+      line-height: 1.35;
+    }
+    .kv-welcome-role-badge {
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 1px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      background: #0284c7;
+      color: #ffffff;
+      margin-left: 4px;
+    }
+    .kv-welcome-role-badge.admin {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      color: #ffffff;
+    }
+    .kv-welcome-close {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: #94a3b8;
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    .kv-welcome-close:hover {
+      background: rgba(239, 68, 68, 0.35);
+      color: #ffffff;
+    }
     .kv-user-actions {
       display: flex;
       align-items: center;
@@ -5938,10 +6109,199 @@
   let unsubscribeUserWatch = null;
   let unsubscribeAdminList = null;
 
+  // -------------------------------------------------------------------------
+  // TIME-BASED WELCOME GREETING ENGINE
+  // -------------------------------------------------------------------------
+  let welcomeToastTimer = null;
+
+  function getTimeGreetingInfo() {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) {
+      return { text: 'Good Morning', icon: '🌅', emoji: '☀️', message: 'Have a productive news broadcast morning!' };
+    } else if (hour >= 12 && hour < 17) {
+      return { text: 'Good Afternoon', icon: '🌤️', emoji: '✨', message: 'Ready to craft breaking news & studio cards!' };
+    } else if (hour >= 17 && hour < 22) {
+      return { text: 'Good Evening', icon: '🌆', emoji: '🌙', message: 'Prime time evening news edition is active!' };
+    } else {
+      return { text: 'Good Night / Working Late', icon: '🌌', emoji: '⭐', message: 'Late night desk active. Ready to craft cards!' };
+    }
+  }
+
+  function showTimeBasedWelcome(profile) {
+    if (!profile) return;
+    let toast = document.getElementById('kvWelcomeToast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'kvWelcomeToast';
+      document.body.appendChild(toast);
+    }
+
+    const greeting = getTimeGreetingInfo();
+    const displayName = profile.name || profile.username || 'User';
+    const isAdm = profile.role === 'admin';
+    const roleTag = isAdm ? 'ADMIN' : 'STAFF';
+    const roleClass = isAdm ? 'admin' : 'staff';
+
+    toast.innerHTML =
+      '<div class="kv-welcome-card">' +
+        '<div class="kv-welcome-icon-box">' + greeting.icon + '</div>' +
+        '<div class="kv-welcome-body">' +
+          '<div class="kv-welcome-title">' +
+            greeting.text + ', <span class="kv-welcome-name">' + escapeHtml(displayName) + '</span> ' + greeting.emoji +
+            '<span class="kv-welcome-role-badge ' + roleClass + '">' + roleTag + '</span>' +
+          '</div>' +
+          '<div class="kv-welcome-tagline">' +
+            'Kozhikode Vision News Studio • ' + greeting.message +
+          '</div>' +
+        '</div>' +
+        '<button type="button" class="kv-welcome-close" id="kvBtnCloseWelcome" title="Dismiss">✕</button>' +
+      '</div>';
+
+    const btnClose = toast.querySelector('#kvBtnCloseWelcome');
+    if (btnClose) {
+      btnClose.addEventListener('click', function(e) {
+        e.stopPropagation();
+        hideWelcomeToast();
+      });
+    }
+
+    toast.onclick = function() {
+      hideWelcomeToast();
+    };
+
+    // Animate in
+    clearTimeout(welcomeToastTimer);
+    toast.classList.add('show');
+
+    // Auto dismiss after 4.5 seconds
+    welcomeToastTimer = setTimeout(function() {
+      hideWelcomeToast();
+    }, 4500);
+  }
+
+  function hideWelcomeToast() {
+    const toast = document.getElementById('kvWelcomeToast');
+    if (toast) {
+      toast.classList.remove('show');
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // REAL-TIME USER PRESENCE & ACTIVE STATUS ENGINE
+  // -------------------------------------------------------------------------
+  let presenceHeartbeatInterval = null;
+  const PRESENCE_TIMEOUT_MS = 50000; // 50 seconds active threshold
+
+  function updateUserPresence(profile, isOnline) {
+    if (!profile || !profile.uid) return;
+    const now = Date.now();
+    const presData = {
+      uid: profile.uid,
+      isOnline: isOnline,
+      lastActive: now,
+      username: profile.username || '',
+      name: profile.name || ''
+    };
+
+    // 1. LocalStorage cross-tab sync
+    try {
+      localStorage.setItem('kv_presence_' + profile.uid, JSON.stringify(presData));
+      const list = getDemoUsers();
+      const target = list.find(function(x) { return x.uid === profile.uid; });
+      if (target) {
+        target.isOnline = isOnline;
+        target.lastActive = now;
+        saveDemoUsers(list);
+      }
+    } catch (e) {}
+
+    // 2. Firebase Firestore realtime cloud presence sync
+    if (firebaseDb && isFirebaseLive) {
+      firebaseDb.collection('kv_users').doc(profile.uid).set({
+        isOnline: isOnline,
+        lastActive: now
+      }, { merge: true }).catch(function(){});
+    }
+  }
+
+  function startPresenceHeartbeat(profile) {
+    if (!profile || !profile.uid) return;
+    if (presenceHeartbeatInterval) {
+      clearInterval(presenceHeartbeatInterval);
+      presenceHeartbeatInterval = null;
+    }
+
+    // Immediate ping
+    updateUserPresence(profile, true);
+
+    // Heartbeat every 20 seconds while user is active on site
+    presenceHeartbeatInterval = setInterval(function() {
+      if (currentProfile && currentProfile.uid === profile.uid) {
+        updateUserPresence(currentProfile, true);
+      } else {
+        clearInterval(presenceHeartbeatInterval);
+        presenceHeartbeatInterval = null;
+      }
+    }, 20000);
+  }
+
+  function stopPresenceHeartbeat(profile) {
+    if (presenceHeartbeatInterval) {
+      clearInterval(presenceHeartbeatInterval);
+      presenceHeartbeatInterval = null;
+    }
+    if (profile) {
+      updateUserPresence(profile, false);
+    }
+  }
+
+  function isUserCurrentlyOnline(u) {
+    if (!u) return false;
+    // Current logged-in user on this tab is always active
+    if (currentProfile && (u.uid === currentProfile.uid || u.email === currentProfile.email || u.username === currentProfile.username)) {
+      return true;
+    }
+
+    const now = Date.now();
+    const lastActiveTime = typeof u.lastActive === 'number' ? u.lastActive : 0;
+    const isRecentlyActive = (now - lastActiveTime) < PRESENCE_TIMEOUT_MS;
+
+    if (u.isOnline === true && isRecentlyActive) {
+      return true;
+    }
+    if (isRecentlyActive && (now - lastActiveTime) < 35000) {
+      return true;
+    }
+
+    // LocalStorage fallback (for multiple browser tabs / local testing)
+    try {
+      const raw = localStorage.getItem('kv_presence_' + u.uid);
+      if (raw) {
+        const pres = JSON.parse(raw);
+        if (pres && pres.isOnline && (now - (pres.lastActive || 0) < PRESENCE_TIMEOUT_MS)) {
+          return true;
+        }
+      }
+    } catch (e) {}
+
+    return false;
+  }
+
+  // Handle browser close or page unload
+  window.addEventListener('beforeunload', function() {
+    if (currentProfile) {
+      updateUserPresence(currentProfile, false);
+    }
+  });
+
   function unlockApp(profile) {
     currentProfile = profile;
     window.KV_ACTIVE_USER = profile;
     document.body.classList.remove('kv-locked');
+
+    // Start Realtime Active Presence Heartbeat & Show Time-Based Welcome Greeting
+    startPresenceHeartbeat(profile);
+    showTimeBasedWelcome(profile);
     if (overlay) overlay.classList.add('kv-hidden');
     if (headerAuthBar) headerAuthBar.classList.remove('kv-hidden');
 
@@ -5969,6 +6329,7 @@
   }
 
   function lockApp(reasonMsg) {
+    if (currentProfile) { stopPresenceHeartbeat(currentProfile); }
     currentProfile = null;
     window.KV_ACTIVE_USER = null;
     window.dispatchEvent(new CustomEvent('kv-auth-changed'));
@@ -6014,8 +6375,11 @@
     if (!usersListContainer) return;
     const activeUsers = users.filter(function(u) { return !u.deleted; });
     const deletedUsers = users.filter(function(u) { return u.deleted === true; });
+    const onlineCount = activeUsers.filter(function(u) { return isUserCurrentlyOnline(u); }).length;
 
-    if (userCountBadge) userCountBadge.textContent = activeUsers.length + ' users';
+    if (userCountBadge) {
+      userCountBadge.innerHTML = activeUsers.length + ' users &nbsp;&bull;&nbsp; <b style="color:#10b981;font-weight:700;">' + onlineCount + ' Online Now 🟢</b>';
+    }
     if (deletedCountBadge) deletedCountBadge.textContent = deletedUsers.length + ' deleted';
 
     // 1. Active Users List
@@ -6026,21 +6390,28 @@
       activeUsers.forEach(function(u) {
         const isSelf = currentProfile && (u.uid === currentProfile.uid || u.email === currentProfile.email || u.username === currentProfile.username);
         const isBlocked = u.active === false;
+        const isOnline = isUserCurrentlyOnline(u);
 
         const row = document.createElement('div');
-        row.className = 'kv-user-row' + (isBlocked ? ' blocked' : '') + (u.isNew ? ' is-new' : '');
+        row.className = 'kv-user-row' + (isBlocked ? ' blocked' : '') + (isOnline ? ' is-online' : '') + (u.isNew ? ' is-new' : '');
 
         const meta = document.createElement('div');
         meta.className = 'kv-user-meta';
         const newBadge = u.isNew ? ' <span style="background:#10b981;color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700;">✨ NEW</span>' : '';
 
+        const presenceBadge = isOnline ?
+          ' <span class="kv-presence-pill online"><span class="kv-pulse-dot online"></span> 🟢 Active Now</span>' :
+          ' <span class="kv-presence-pill offline"><span class="kv-pulse-dot offline"></span> ⚪ Offline</span>';
+
         meta.innerHTML =
-          '<div class="kv-user-name">' +
-            escapeHtml(u.name || u.username) + newBadge +
+          '<div class="kv-user-name' + (isOnline ? ' is-online' : '') + '">' +
+            '<span style="color:' + (isOnline ? '#6ee7b7' : '#f8fafc') + ';font-weight:700;">' + escapeHtml(u.name || u.username) + '</span>' +
+            newBadge +
             ' <span class="kv-role-tag' + (u.role === 'admin' ? ' admin' : '') + '">' + (u.role === 'admin' ? 'ADMIN' : 'STAFF') + '</span>' +
+            presenceBadge +
             ' <span class="kv-status-pill ' + (isBlocked ? 'blocked' : 'active') + '">' + (isBlocked ? '🚫 Blocked' : '✅ Active') + '</span>' +
           '</div>' +
-          '<div class="kv-user-sub">Username: <b style="color:#38bdf8;">' + escapeHtml(u.username || extractUsername(u.email)) + '</b> &nbsp;|&nbsp; Password: <span style="color:#fbbf24;font-weight:700;">' + escapeHtml(u.password || '1234') + '</span>' + (isSelf ? ' <b style="color:#6ee7b7;">(You)</b>' : '') + '</div>';
+          '<div class="kv-user-sub">Username: <b style="color:#38bdf8;">' + escapeHtml(u.username || extractUsername(u.email)) + '</b> &nbsp;|&nbsp; Password: <span style="color:#fbbf24;font-weight:700;">' + escapeHtml(u.password || '1234') + '</span>' + (isSelf ? ' <b style="color:#6ee7b7;">(You)</b>' : '') + (isOnline ? ' &nbsp;|&nbsp; <span style="color:#10b981;font-weight:700;">● Active on site</span>' : '') + '</div>';
 
         row.appendChild(meta);
 
@@ -7134,15 +7505,31 @@
     lockApp();
   });
 
+  let adminPresenceRefreshTimer = null;
+
   btnOpenAdmin.addEventListener('click', function() {
     if (!currentProfile || currentProfile.role !== 'admin') return;
     adminModal.classList.remove('kv-hidden');
     refreshDemoAdminList();
     renderQuickUserPills();
+    if (!adminPresenceRefreshTimer) {
+      adminPresenceRefreshTimer = setInterval(function() {
+        if (adminModal && !adminModal.classList.contains('kv-hidden')) {
+          refreshDemoAdminList();
+        } else {
+          clearInterval(adminPresenceRefreshTimer);
+          adminPresenceRefreshTimer = null;
+        }
+      }, 8000);
+    }
   });
 
   btnCloseAdmin.addEventListener('click', function() {
     adminModal.classList.add('kv-hidden');
+    if (adminPresenceRefreshTimer) {
+      clearInterval(adminPresenceRefreshTimer);
+      adminPresenceRefreshTimer = null;
+    }
   });
 
   if (btnAddUser) {
