@@ -6446,7 +6446,13 @@
   // LIVE TV STREAM & LIVE RADIO CONFIGURATION LOGIC
   // =========================================================================
   let liveHlsInstance = null;
-  const DEFAULT_LIVE_STREAM_URL = 'http://103.146.174.75:8888/out/c2-social/index.m3u8';
+  const DEFAULT_LIVE_STREAM_URL = 'http://103.146.174.75:8888/out/social/index.m3u8';
+  try {
+    const oldSaved = localStorage.getItem('kv_live_tv_stream_url');
+    if (oldSaved && oldSaved.indexOf('c2-social') !== -1) {
+      localStorage.setItem('kv_live_tv_stream_url', DEFAULT_LIVE_STREAM_URL);
+    }
+  } catch(e) {}
   const DEFAULT_LIVE_RADIO_URL = 'http://103.146.174.75/stream/out/c2-radio/index.m3u8';
   const LIVE_STREAM_STORAGE_KEY = 'kv_live_tv_stream_url';
   const LIVE_RADIO_STORAGE_KEY = 'kv_liveradio_stream_url';
@@ -6702,13 +6708,14 @@
       sideLivetvBody.style.display = 'block';
     }
 
-    // Default to clean on-air display, then attempt video stream
-    if (miniStandby) miniStandby.style.display = 'flex';
-    if (miniVideo) miniVideo.style.display = 'none';
-
     const streamUrl = getSavedLiveStreamUrl();
     if (streamUrl && streamUrl.trim() && miniVideo) {
+      miniVideo.style.display = 'block';
+      miniVideo.muted = true;
       playMiniHlsStream(miniVideo, streamUrl.trim());
+    } else {
+      if (miniStandby) miniStandby.style.display = 'flex';
+      if (miniVideo) miniVideo.style.display = 'none';
     }
   }
 
@@ -6755,27 +6762,67 @@
     initMiniLiveTv();
   }
 
+  function showStreamInsecureGuide(container) {
+    if (!container) return;
+    let guide = container.querySelector('.stream-insecure-guide');
+    if (!guide) {
+      guide = document.createElement('div');
+      guide.className = 'stream-insecure-guide';
+      guide.style.cssText = 'position:absolute; inset:0; background:rgba(3,7,18,0.94); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px; text-align:center; z-index:10;';
+      guide.innerHTML = `
+        <div style="font-size:22px; filter:drop-shadow(0 0 8px rgba(56,189,248,0.7));">📺</div>
+        <div style="font-size:11px; font-weight:900; color:#fff; letter-spacing:0.5px; margin:2px 0;">KOZHIKODE VISION LIVE</div>
+        <div style="font-size:9px; color:#fbbf24; background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.35); border-radius:6px; padding:5px 8px; line-height:1.35; max-width:250px; margin:4px 0;">
+          🔒 <b>To play right here in browser:</b><br>
+          Click <b>🔒 icon</b> in address bar → <b>Site settings</b> → set <b>Insecure content</b> to <b>Allow</b> & reload!
+        </div>
+        <div style="font-size:8px; color:#94a3b8;">
+          (Plays automatically in Android App & Offline Studio)
+        </div>
+      `;
+      container.appendChild(guide);
+    } else {
+      guide.style.display = 'flex';
+    }
+  }
+
   function playMiniHlsStream(videoEl, url) {
     if (miniLiveHlsInstance) {
       miniLiveHlsInstance.destroy();
       miniLiveHlsInstance = null;
     }
     const miniStandby = document.getElementById('kvMiniTvStandby');
+    if (miniStandby) {
+      const g = miniStandby.querySelector('.stream-insecure-guide');
+      if (g) g.style.display = 'none';
+    }
+    videoEl.muted = true;
+    videoEl.setAttribute('playsinline', '');
+    videoEl.setAttribute('muted', '');
 
     if (typeof Hls !== 'undefined' && Hls.isSupported()) {
-      miniLiveHlsInstance = new Hls({ enableWorker: true });
+      miniLiveHlsInstance = new Hls({
+        enableWorker: true,
+        lowLatencyMode: true,
+        backBufferLength: 30
+      });
       miniLiveHlsInstance.loadSource(url);
       miniLiveHlsInstance.attachMedia(videoEl);
       miniLiveHlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
         if (miniStandby) miniStandby.style.display = 'none';
         videoEl.style.display = 'block';
-        videoEl.play().catch(function() {});
+        videoEl.play().catch(function(e) { console.warn('Play interrupted:', e); });
       });
       miniLiveHlsInstance.on(Hls.Events.ERROR, function(event, data) {
         if (data && data.fatal) {
-          console.warn('Mini HLS stream fatal error (mixed content or CORS):', data);
-          videoEl.style.display = 'none';
-          if (miniStandby) miniStandby.style.display = 'flex';
+          console.warn('Mini HLS stream fatal error:', data);
+          if (data.type === Hls.ErrorTypes.NETWORK_ERROR && window.location.protocol === 'https:') {
+            videoEl.style.display = 'none';
+            if (miniStandby) {
+              miniStandby.style.display = 'flex';
+              showStreamInsecureGuide(miniStandby);
+            }
+          }
         }
       });
     } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
@@ -6786,8 +6833,13 @@
         videoEl.play().catch(function() {});
       });
       videoEl.addEventListener('error', function() {
-        videoEl.style.display = 'none';
-        if (miniStandby) miniStandby.style.display = 'flex';
+        if (window.location.protocol === 'https:') {
+          videoEl.style.display = 'none';
+          if (miniStandby) {
+            miniStandby.style.display = 'flex';
+            showStreamInsecureGuide(miniStandby);
+          }
+        }
       });
     } else {
       videoEl.src = url;
