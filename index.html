@@ -3133,7 +3133,7 @@
           <!-- Step 1 Navigation -->
         <div class="step-nav-footer">
           <button id="btnToStep2" type="button" class="btn-tactile btn-next-step">
-            <span>Next Setting</span>
+            <span>അടുത്ത സ്റ്റെപ്പ് (Next Step)</span>
             <span>➔</span>
           </button>
         </div>
@@ -3462,10 +3462,10 @@
         <div class="step-nav-footer">
           <button id="btnBackToStep1" type="button" class="btn-tactile btn-prev-step">
             <span>◀</span>
-            <span>Previous Setting</span>
+            <span>മുമ്പത്തെ സ്റ്റെപ്പ് (Previous Step)</span>
           </button>
           <button id="btnToStep3" type="button" class="btn-tactile btn-next-step">
-            <span>Next Setting</span>
+            <span>അടുത്ത സ്റ്റെപ്പ് (Next Step)</span>
             <span>➔</span>
           </button>
         </div>
@@ -3645,7 +3645,7 @@
         <div class="step-nav-footer">
           <button id="btnBackToStep2" type="button" class="btn-tactile btn-prev-step">
             <span>◀</span>
-            <span>Previous Setting</span>
+            <span>മുമ്പത്തെ സ്റ്റെപ്പ് (Previous Step)</span>
           </button>
           <div style="font-size:11px; font-weight:800; color:#10b981;">
             ✓ Card Ready!
@@ -6424,19 +6424,19 @@ let selectedHeadlineFont = 'Anek Malayalam';
     if (status === 'connected') {
       badge.style.background = '#059669';
       badge.style.color = '#ffffff';
-      badge.innerHTML = 'ðŸŸ¢ ' + (text || 'Cloud Live (Active)');
+      badge.innerHTML = '\u{1F7E2} ' + (text || 'Cloud Live (Active)');
     } else if (status === 'connecting') {
       badge.style.background = '#0284c7';
       badge.style.color = '#ffffff';
-      badge.innerHTML = 'â³ ' + (text || 'Connecting...');
+      badge.innerHTML = '\u23F3 ' + (text || 'Connecting...');
     } else if (status === 'error') {
       badge.style.background = '#dc2626';
       badge.style.color = '#ffffff';
-      badge.innerHTML = 'âš ï¸ ' + (text || 'Cloud Connection Error');
+      badge.innerHTML = '\u26A0\uFE0F ' + (text || 'Cloud Connection Error');
     } else {
       badge.style.background = '#475569';
       badge.style.color = '#ffffff';
-      badge.innerHTML = 'ðŸŸ¡ ' + (text || 'Local Mode (Local Only)');
+      badge.innerHTML = '\u{1F7E1} ' + (text || 'Local Mode (Local Only)');
     }
   }
 
@@ -6456,7 +6456,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
     currentList.forEach(function(u) {
       firebaseDb.collection('kv_users').doc(u.uid).set(u, { merge: true }).catch(function(){});
     });
-    showAdminStatus('â˜ï¸ Users synced to cloud successfully!', false);
+    showAdminStatus('\u2601\uFE0F Users synced to cloud successfully!', false);
   }
 
   function initFirebaseDatabase() {
@@ -6547,7 +6547,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
           if (currentProfile) {
             const matched = merged.find(function(u) { return u.uid === currentProfile.uid || norm(u.username) === norm(currentProfile.username); });
             if (matched && (matched.active === false || matched.deleted === true)) {
-              lockApp('ðŸš« Your account has been blocked by Admin.');
+              lockApp('\u{1F6AB} Your account has been blocked by Admin.');
             }
           }
         }
@@ -6621,7 +6621,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
     btnTogglePass.addEventListener('click', function() {
       const isPwd = inpPass.type === 'password';
       inpPass.type = isPwd ? 'text' : 'password';
-      btnTogglePass.textContent = isPwd ? 'ðŸ™ˆ' : 'ðŸ‘ï¸';
+      btnTogglePass.textContent = isPwd ? '\u{1F648}' : '\u{1F441}\uFE0F';
     });
   }
 
@@ -6756,7 +6756,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
         if (key && (key.toLowerCase().includes('user') || key.startsWith('kv_'))) {
           try {
             const raw = localStorage.getItem(key);
-            if (raw && (raw.startsWith('[') || raw.startsWith('{'))) {
+            if (raw && (raw.indexOf('[') === 0 || raw.indexOf('{') === 0)) {
               const parsed = JSON.parse(raw);
               if (Array.isArray(parsed)) {
                 parsed.forEach(function(item) {
@@ -6829,13 +6829,13 @@ let selectedHeadlineFont = 'Anek Malayalam';
   function getTimeGreetingInfo() {
     const hour = new Date().getHours();
     if (hour >= 5 && hour < 12) {
-      return { text: 'Good Morning', icon: 'ðŸŒ…', emoji: 'â˜€ï¸', message: 'Have a productive news broadcast morning!' };
+      return { text: 'Good Morning', icon: '\u{1F305}', emoji: '\u2600\uFE0F', message: 'Have a productive news broadcast morning!' };
     } else if (hour >= 12 && hour < 17) {
-      return { text: 'Good Afternoon', icon: 'ðŸŒ¤ï¸', emoji: 'âœ¨', message: 'Ready to craft breaking news & studio cards!' };
+      return { text: 'Good Afternoon', icon: '\u{1F324}\uFE0F', emoji: '\u2728', message: 'Ready to craft breaking news & studio cards!' };
     } else if (hour >= 17 && hour < 22) {
-      return { text: 'Good Evening', icon: 'ðŸŒ†', emoji: 'ðŸŒ™', message: 'Prime time evening news edition is active!' };
+      return { text: 'Good Evening', icon: '\u{1F306}', emoji: '\u{1F319}', message: 'Prime time evening news edition is active!' };
     } else {
-      return { text: 'Good Night / Working Late', icon: 'ðŸŒŒ', emoji: 'â­', message: 'Late night desk active. Ready to craft cards!' };
+      return { text: 'Good Night / Working Late', icon: '\u{1F30C}', emoji: '\u2B50', message: 'Late night desk active. Ready to craft cards!' };
     }
   }
 
@@ -6882,10 +6882,10 @@ let selectedHeadlineFont = 'Anek Malayalam';
             greeting.message +
           '</div>' +
           '<div class="kv-welcome-status">' +
-            'ðŸŸ¢ Verified Active Session â€¢ Ready to craft broadcast cards' +
+            '\u{1F7E2} Verified Active Session \u2022 Ready to craft broadcast cards' +
           '</div>' +
         '</div>' +
-        '<button type="button" class="kv-welcome-close" id="kvBtnCloseWelcome" title="Dismiss">âœ•</button>' +
+        '<button type="button" class="kv-welcome-close" id="kvBtnCloseWelcome" title="Dismiss">\u2715</button>' +
         '<div class="kv-welcome-progress-bar"></div>' +
       '</div>';
 
@@ -7098,16 +7098,16 @@ let selectedHeadlineFont = 'Anek Malayalam';
     users.forEach(function(u) {
       const opt = document.createElement('option');
       opt.value = u.username || extractUsername(u.email);
-      const roleIcon = u.role === 'admin' ? 'ðŸ‘‘' : 'ðŸ‘¤';
+      const roleIcon = u.role === 'admin' ? '\u{1F451}' : '\u{1F464}';
       const roleLabel = u.role === 'admin' ? 'ADMIN' : 'STAFF';
-      const newTag = u.isNew ? ' âœ¨ New' : '';
+      const newTag = u.isNew ? ' \u2728 New' : '';
       opt.textContent = roleIcon + ' ' + (u.name || u.username) + newTag + ' (@' + (u.username || extractUsername(u.email)) + ') [' + roleLabel + ']';
       dropdown.appendChild(opt);
     });
 
     const manualOpt = document.createElement('option');
     manualOpt.value = '__manual__';
-    manualOpt.textContent = 'âœï¸ Type Another User Manually...';
+    manualOpt.textContent = '\u270F\uFE0F Type Another User Manually...';
     dropdown.appendChild(manualOpt);
   }
 
@@ -7121,7 +7121,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
     const onlineCount = activeUsers.filter(function(u) { return isUserCurrentlyOnline(u); }).length;
 
     if (userCountBadge) {
-      userCountBadge.innerHTML = activeUsers.length + ' users &nbsp;&bull;&nbsp; <b style="color:#10b981;font-weight:700;">' + onlineCount + ' Online Now ðŸŸ¢</b>';
+      userCountBadge.innerHTML = activeUsers.length + ' users &nbsp;&bull;&nbsp; <b style="color:#10b981;font-weight:700;">' + onlineCount + ' Online Now \u{1F7E2}</b>';
     }
     if (deletedCountBadge) deletedCountBadge.textContent = deletedUsers.length + ' deleted';
 
@@ -7140,11 +7140,11 @@ let selectedHeadlineFont = 'Anek Malayalam';
 
         const meta = document.createElement('div');
         meta.className = 'kv-user-meta';
-        const newBadge = u.isNew ? ' <span style="background:#10b981;color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700;">âœ¨ NEW</span>' : '';
+        const newBadge = u.isNew ? ' <span style="background:#10b981;color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700;">\u2728 NEW</span>' : '';
 
         const presenceBadge = isOnline ?
-          ' <span class="kv-presence-pill online"><span class="kv-pulse-dot online"></span> ðŸŸ¢ Active Now</span>' :
-          ' <span class="kv-presence-pill offline"><span class="kv-pulse-dot offline"></span> âšª Offline</span>';
+          ' <span class="kv-presence-pill online"><span class="kv-pulse-dot online"></span> \u{1F7E2} Active Now</span>' :
+          ' <span class="kv-presence-pill offline"><span class="kv-pulse-dot offline"></span> \u26AA Offline</span>';
 
         meta.innerHTML =
           '<div class="kv-user-name' + (isOnline ? ' is-online' : '') + '">' +
@@ -7152,9 +7152,9 @@ let selectedHeadlineFont = 'Anek Malayalam';
             newBadge +
             ' <span class="kv-role-tag' + (u.role === 'admin' ? ' admin' : '') + '">' + (u.role === 'admin' ? 'ADMIN' : 'STAFF') + '</span>' +
             presenceBadge +
-            ' <span class="kv-status-pill ' + (isBlocked ? 'blocked' : 'active') + '">' + (isBlocked ? 'ðŸš« Blocked' : 'âœ… Active') + '</span>' +
+            ' <span class="kv-status-pill ' + (isBlocked ? 'blocked' : 'active') + '">' + (isBlocked ? '\u{1F6AB} Blocked' : '\u2705 Active') + '</span>' +
           '</div>' +
-          '<div class="kv-user-sub">Username: <b style="color:#38bdf8;">' + escapeHtml(u.username || extractUsername(u.email)) + '</b> &nbsp;|&nbsp; Password: <span style="color:#fbbf24;font-weight:700;">' + escapeHtml(u.password || '1234') + '</span>' + (isSelf ? ' <b style="color:#6ee7b7;">(You)</b>' : '') + (isOnline ? ' &nbsp;|&nbsp; <span style="color:#10b981;font-weight:700;">â— Active on site</span>' : '') + '</div>';
+          '<div class="kv-user-sub">Username: <b style="color:#38bdf8;">' + escapeHtml(u.username || extractUsername(u.email)) + '</b> &nbsp;|&nbsp; Password: <span style="color:#fbbf24;font-weight:700;">' + escapeHtml(u.password || '1234') + '</span>' + (isSelf ? ' <b style="color:#6ee7b7;">(You)</b>' : '') + (isOnline ? ' &nbsp;|&nbsp; <span style="color:#10b981;font-weight:700;">\u25CF Active on site</span>' : '') + '</div>';
 
         row.appendChild(meta);
 
@@ -7168,7 +7168,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
           btnSwitch.className = 'kv-act-btn';
           btnSwitch.style.background = '#0284c7';
           btnSwitch.style.color = '#ffffff';
-          btnSwitch.textContent = 'ðŸš€ Switch to User';
+          btnSwitch.textContent = '\u{1F680} Switch to User';
           btnSwitch.title = 'Switch directly to this user account';
           btnSwitch.addEventListener('click', function() {
             handlers.onInstantSwitch(u);
@@ -7183,7 +7183,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
           btnPass.className = 'kv-act-btn';
           btnPass.style.background = '#d97706';
           btnPass.style.color = '#ffffff';
-          btnPass.textContent = 'ðŸ”‘ Change Password';
+          btnPass.textContent = '\u{1F511} Change Password';
           btnPass.addEventListener('click', function() {
             handlers.onResetPassword(u);
           });
@@ -7195,7 +7195,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
           const btnBlock = document.createElement('button');
           btnBlock.type = 'button';
           btnBlock.className = 'kv-act-btn' + (isBlocked ? ' unblock' : ' block');
-          btnBlock.textContent = isBlocked ? 'âœ… Unblock' : 'ðŸš« Block';
+          btnBlock.textContent = isBlocked ? '\u2705 Unblock' : '\u{1F6AB} Block';
           btnBlock.addEventListener('click', function() {
             handlers.onToggleBlock(u);
           });
@@ -7207,7 +7207,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
           const btnDel = document.createElement('button');
           btnDel.type = 'button';
           btnDel.className = 'kv-act-btn del';
-          btnDel.textContent = 'ðŸ—‘ï¸ Delete';
+          btnDel.textContent = '\u{1F5D1}\uFE0F Delete';
           btnDel.addEventListener('click', function() {
             if (confirm('Delete user "' + (u.name || u.username) + '"? (Can be restored anytime from Recycle Bin)')) {
               handlers.onDelete(u);
@@ -7238,7 +7238,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
               '<div class="kv-user-sub" style="color:#ef4444;">Deleted User</div>' +
             '</div>' +
             '<div class="kv-user-actions">' +
-              '<button type="button" class="kv-act-btn unblock" style="background:#059669;color:#fff;">â™»ï¸ Restore User</button>' +
+              '<button type="button" class="kv-act-btn unblock" style="background:#059669;color:#fff;">\u267B\uFE0F Restore User</button>' +
             '</div>';
 
           const restoreBtn = dRow.querySelector('button');
@@ -7268,7 +7268,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
         try { sessionStorage.setItem(SESSION_USER_KEY, u.uid); } catch (e) {}
         unlockApp(u);
         if (typeof showToast === 'function') {
-          showToast('ðŸš€ Switched to: ' + (u.name || u.username));
+          showToast('\u{1F680} Switched to: ' + (u.name || u.username));
         }
       },
       onResetPassword: function(u) {
@@ -7284,7 +7284,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
             }
             refreshDemoAdminList();
             renderQuickUserPills();
-            showAdminStatus('ðŸ”‘ Password updated for ' + item.name + '!', false);
+            showAdminStatus('\u{1F511} Password updated for ' + item.name + '!', false);
           }
         }
       },
@@ -7299,9 +7299,9 @@ let selectedHeadlineFont = 'Anek Malayalam';
           }
           refreshDemoAdminList();
           renderQuickUserPills();
-          showAdminStatus(item.active ? 'âœ… User unblocked!' : 'ðŸš« User blocked!', false);
+          showAdminStatus(item.active ? '\u2705 User unblocked!' : '\u{1F6AB} User blocked!', false);
           if (typeof showToast === 'function') {
-            showToast(item.active ? 'âœ… Unblocked: ' + item.name : 'ðŸš« Blocked: ' + item.name);
+            showToast(item.active ? '\u2705 Unblocked: ' + item.name : '\u{1F6AB} Blocked: ' + item.name);
           }
         }
       },
@@ -7318,9 +7318,9 @@ let selectedHeadlineFont = 'Anek Malayalam';
           }
           refreshDemoAdminList();
           renderQuickUserPills();
-          showAdminStatus('ðŸ—‘ï¸ "' + item.name + '" deleted. Can be restored from Recycle Bin below.', false);
+          showAdminStatus('\u{1F5D1}\uFE0F "' + item.name + '" deleted. Can be restored from Recycle Bin below.', false);
           if (typeof showToast === 'function') {
-            showToast('ðŸ—‘ï¸ Deleted: ' + item.name);
+            showToast('\u{1F5D1}\uFE0F Deleted: ' + item.name);
           }
         }
       },
@@ -7336,9 +7336,9 @@ let selectedHeadlineFont = 'Anek Malayalam';
           }
           refreshDemoAdminList();
           renderQuickUserPills();
-          showAdminStatus('â™»ï¸ "' + item.name + '" restored successfully!', false);
+          showAdminStatus('\u267B\uFE0F "' + item.name + '" restored successfully!', false);
           if (typeof showToast === 'function') {
-            showToast('â™»ï¸ Restored: ' + item.name);
+            showToast('\u267B\uFE0F Restored: ' + item.name);
           }
         }
       }
@@ -7349,7 +7349,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
   function executeAddUserAction() {
     try {
       if (!currentProfile || currentProfile.role !== 'admin') {
-        showAdminStatus('âš ï¸ Only Admin is authorized to add users!', true);
+        showAdminStatus('\u26A0\uFE0F Only Admin is authorized to add users!', true);
         return;
       }
 
@@ -7359,7 +7359,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
       const role = selNewRole ? selNewRole.value : 'user';
 
       if (!name && !rawUser) {
-        showAdminStatus('âš ï¸ Please enter name or username.', true);
+        showAdminStatus('\u26A0\uFE0F Please enter name or username.', true);
         if (inpNewName) inpNewName.focus();
         return;
       }
@@ -7370,7 +7370,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
       }
 
       if (!pass) {
-        showAdminStatus('âš ï¸ Please enter a password (e.g. 1234).', true);
+        showAdminStatus('\u26A0\uFE0F Please enter a password (e.g. 1234).', true);
         if (inpNewPass) inpNewPass.focus();
         return;
       }
@@ -7387,7 +7387,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
       });
 
       if (existing) {
-        showAdminStatus('âŒ User "' + (existing.name || existing.username) + '" already exists! Please choose another.', true);
+        showAdminStatus('\u274C User "' + (existing.name || existing.username) + '" already exists! Please choose another.', true);
         return;
       }
 
@@ -7424,9 +7424,9 @@ let selectedHeadlineFont = 'Anek Malayalam';
 
       refreshDemoAdminList();
       renderQuickUserPills();
-      showAdminStatus('ðŸŽ‰ User account "' + name + '" created successfully!', false);
+      showAdminStatus('\u{1F389} User account "' + name + '" created successfully!', false);
       if (typeof showToast === 'function') {
-        showToast('âœ¨ Added: ' + name);
+        showToast('\u2728 Added: ' + name);
       }
     } catch (err) {
       console.error('Error adding user:', err);
@@ -7446,7 +7446,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
     if (!SpeechRecognition) {
       btn.title = 'Speech recognition not supported in this browser';
       btn.addEventListener('click', function() {
-        alert('âš ï¸ Malayalam Voice Typing requires Google Chrome, Edge, or the Android app.');
+        alert('\u26A0\uFE0F Malayalam Voice Typing requires Google Chrome, Edge, or the Android app.');
       });
       return;
     }
@@ -7469,8 +7469,8 @@ let selectedHeadlineFont = 'Anek Malayalam';
         recognition.onstart = function() {
           isListening = true;
           btn.classList.add('listening');
-          btn.innerHTML = 'ðŸ”´ à´•àµ‡àµ¾à´•àµà´•àµà´¨àµà´¨àµ... (Stop)';
-          if (typeof showToast === 'function') showToast('ðŸŽ™ï¸ à´¸à´‚à´¸à´¾à´°à´¿à´•àµà´•àµ‚... (Listening in Malayalam)');
+          btn.innerHTML = '\u{1F534} \u0D15\u0D47\u0D7E\u0D15\u0D4D\u0D15\u0D41\u0D28\u0D4D\u0D28\u0D41... (Stop)';
+          if (typeof showToast === 'function') showToast('\u{1F399}\uFE0F \u0D38\u0D02\u0D38\u0D3E\u0D30\u0D3F\u0D15\u0D4D\u0D15\u0D42... (Listening in Malayalam)');
         };
 
         recognition.onresult = function(event) {
@@ -7480,7 +7480,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
             input.value = currentVal ? currentVal + ' ' + text : text;
             input.dispatchEvent(new Event('input'));
             if (typeof renderCard === 'function') renderCard();
-            if (typeof showToast === 'function') showToast('âœ… à´Ÿàµˆà´ªàµà´ªàµ à´šàµ†à´¯àµà´¤àµ: ' + text);
+            if (typeof showToast === 'function') showToast('\u2705 \u0D1F\u0D48\u0D2A\u0D4D\u0D2A\u0D4D \u0D1A\u0D46\u0D2F\u0D4D\u0D24\u0D41: ' + text);
           }
         };
 
@@ -7488,16 +7488,16 @@ let selectedHeadlineFont = 'Anek Malayalam';
           console.warn('Speech recognition error:', err);
           isListening = false;
           btn.classList.remove('listening');
-          btn.innerHTML = 'ðŸŽ™ï¸ à´¸à´‚à´¸à´¾à´°à´¿à´•àµà´•àµà´•';
+          btn.innerHTML = '\u{1F399}\uFE0F \u0D38\u0D02\u0D38\u0D3E\u0D30\u0D3F\u0D15\u0D4D\u0D15\u0D41\u0D15';
           if (err.error === 'not-allowed') {
-            alert('âš ï¸ Microphone permission required for voice typing.');
+            alert('\u26A0\uFE0F Microphone permission required for voice typing.');
           }
         };
 
         recognition.onend = function() {
           isListening = false;
           btn.classList.remove('listening');
-          btn.innerHTML = 'ðŸŽ™ï¸ à´¸à´‚à´¸à´¾à´°à´¿à´•àµà´•àµà´•';
+          btn.innerHTML = '\u{1F399}\uFE0F \u0D38\u0D02\u0D38\u0D3E\u0D30\u0D3F\u0D15\u0D4D\u0D15\u0D41\u0D15';
         };
 
         recognition.start();
@@ -7505,7 +7505,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
         console.warn('Voice typing start error:', e);
         isListening = false;
         btn.classList.remove('listening');
-        btn.innerHTML = 'ðŸŽ™ï¸ à´¸à´‚à´¸à´¾à´°à´¿à´•àµà´•àµà´•';
+        btn.innerHTML = '\u{1F399}\uFE0F \u0D38\u0D02\u0D38\u0D3E\u0D30\u0D3F\u0D15\u0D4D\u0D15\u0D41\u0D15';
       }
     });
   }
@@ -7526,7 +7526,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
       }
       if (lblFilter) lblFilter.textContent = pill.textContent.trim();
       if (typeof renderCard === 'function') renderCard();
-      if (typeof showToast === 'function') showToast('âœ¨ Filter: ' + pill.textContent.trim());
+      if (typeof showToast === 'function') showToast('\u2728 Filter: ' + pill.textContent.trim());
     });
   });
 
@@ -7538,10 +7538,10 @@ let selectedHeadlineFont = 'Anek Malayalam';
       const activeUser = window.KV_ACTIVE_USER || currentProfile;
       if (activeUser) {
         const uName = activeUser.name || activeUser.username || 'Reporter';
-        txtReporterInput.value = 'à´±à´¿à´ªàµà´ªàµ‹àµ¼à´Ÿàµà´Ÿàµ: ' + uName + ' (à´•àµ‹à´´à´¿à´•àµà´•àµ‹à´Ÿàµ à´µà´¿à´·àµ»)';
+        txtReporterInput.value = '\u0D31\u0D3F\u0D2A\u0D4D\u0D2A\u0D4B\u0D7E\u0D1F\u0D4D\u0D1F\u0D7E: ' + uName + ' (\u0D15\u0D4B\u0D34\u0D3F\u0D15\u0D4D\u0D15\u0D4B\u0D1F\u0D4D \u0D35\u0D3F\u0D37\u0D78)';
         txtReporterInput.dispatchEvent(new Event('input'));
         if (typeof renderCard === 'function') renderCard();
-        if (typeof showToast === 'function') showToast('ðŸ·ï¸ Byline updated: ' + txtReporterInput.value);
+        if (typeof showToast === 'function') showToast('\u{1F3F7}\uFE0F Byline updated: ' + txtReporterInput.value);
       } else {
         alert('Please log in first to use your reporter name.');
       }
@@ -7596,8 +7596,8 @@ let selectedHeadlineFont = 'Anek Malayalam';
           timestamp: Date.now()
         }, { merge: true }).catch(function(){});
       }
-      showAdminStatus('ðŸ“¢ Notice broadcasted to all staff successfully!', false);
-      if (typeof showToast === 'function') showToast('ðŸ“¢ Notice broadcasted live!');
+      showAdminStatus('\u{1F4E2} Notice broadcasted to all staff successfully!', false);
+      if (typeof showToast === 'function') showToast('\u{1F4E2} Notice broadcasted live!');
     });
   }
 
@@ -7612,8 +7612,8 @@ let selectedHeadlineFont = 'Anek Malayalam';
           timestamp: Date.now()
         }, { merge: true }).catch(function(){});
       }
-      showAdminStatus('ðŸ—‘ï¸ Notice cleared.', false);
-      if (typeof showToast === 'function') showToast('ðŸ—‘ï¸ Notice cleared.');
+      showAdminStatus('\u{1F5D1}\uFE0F Notice cleared.', false);
+      if (typeof showToast === 'function') showToast('\u{1F5D1}\uFE0F Notice cleared.');
     });
   }
 
@@ -7682,7 +7682,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
       const isHidden = boxAdminEditForm.classList.contains('kv-hidden');
       if (isHidden) {
         boxAdminEditForm.classList.remove('kv-hidden');
-        btnToggleAdminEdit.textContent = 'âœ• Close';
+        btnToggleAdminEdit.textContent = '\u2715 Close';
         const u = currentProfile || getDemoUsers().find(function(x) { return x.role === 'admin'; });
         if (u) {
           if (inpEditAdminName) inpEditAdminName.value = u.name || 'Channel Admin';
@@ -7690,7 +7690,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
         }
       } else {
         boxAdminEditForm.classList.add('kv-hidden');
-        btnToggleAdminEdit.textContent = 'âœï¸ Edit';
+        btnToggleAdminEdit.textContent = '\u270F\uFE0F Edit';
       }
     });
   }
@@ -7730,9 +7730,9 @@ let selectedHeadlineFont = 'Anek Malayalam';
 
         refreshDemoAdminList();
         renderQuickUserPills();
-        showAdminStatus('âœ… Admin credentials updated successfully!', false);
+        showAdminStatus('\u2705 Admin credentials updated successfully!', false);
         boxAdminEditForm.classList.add('kv-hidden');
-        btnToggleAdminEdit.textContent = 'âœï¸ Edit';
+        btnToggleAdminEdit.textContent = '\u270F\uFE0F Edit';
       }
     });
   }
@@ -7751,7 +7751,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
       if (isHidden) {
         boxCloudConfig.classList.remove('kv-hidden');
         boxCloudConfig.style.display = 'block';
-        btnToggleCloudConfig.textContent = 'âœ• Close Config';
+        btnToggleCloudConfig.textContent = '\u2715 Close Config';
         try {
           const savedCfg = localStorage.getItem(FIREBASE_CONFIG_STORAGE_KEY);
           if (savedCfg && txtFirebaseConfig) {
@@ -7763,7 +7763,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
       } else {
         boxCloudConfig.classList.add('kv-hidden');
         boxCloudConfig.style.display = 'none';
-        btnToggleCloudConfig.textContent = 'âš™ï¸ Configure Firebase';
+        btnToggleCloudConfig.textContent = '\u2699\uFE0F Configure Firebase';
       }
     });
   }
@@ -7783,7 +7783,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
           boxCloudConfig.style.display = 'none';
         }
         initFirebaseDatabase();
-        showAdminStatus('ðŸ’¾ Firebase Config saved successfully!', false);
+        showAdminStatus('\u{1F4BE} Firebase Config saved successfully!', false);
       } catch (e) {
         alert('Save failed: ' + e.message);
       }
@@ -7841,11 +7841,11 @@ let selectedHeadlineFont = 'Anek Malayalam';
     if (url && url.trim()) {
       liveStreamStatusBadge.style.background = '#065f46';
       liveStreamStatusBadge.style.color = '#34d399';
-      liveStreamStatusBadge.innerHTML = 'ðŸŸ¢ Live Stream Connected';
+      liveStreamStatusBadge.innerHTML = '\u{1F7E2} Live Stream Connected';
     } else {
       liveStreamStatusBadge.style.background = '#7f1d1d';
       liveStreamStatusBadge.style.color = '#fca5a5';
-      liveStreamStatusBadge.innerHTML = 'ðŸ”´ Stream Standby (No Link)';
+      liveStreamStatusBadge.innerHTML = '\u{1F534} Stream Standby (No Link)';
     }
   }
 
@@ -7881,8 +7881,8 @@ let selectedHeadlineFont = 'Anek Malayalam';
         }
 
         updateLiveStreamBadge(streamVal);
-        showAdminStatus('ðŸ’¾ Live stream links saved successfully!', false);
-        if (typeof showToast === 'function') showToast('ðŸ“º Live stream settings updated!');
+        showAdminStatus('\u{1F4BE} Live stream links saved successfully!', false);
+        if (typeof showToast === 'function') showToast('\u{1F4FA} Live stream settings updated!');
       } catch(e) {
         alert('Save failed: ' + e.message);
       }
@@ -7981,7 +7981,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
       liveTvAudio.src = '';
     }
     if (radioWaveBox) radioWaveBox.classList.remove('playing');
-    if (btnRadioPlayPause) btnRadioPlayPause.innerHTML = 'â–¶ Start Radio Audio';
+    if (btnRadioPlayPause) btnRadioPlayPause.innerHTML = '\u25B6 Start Radio Audio';
     if (radioPlayStatusText) radioPlayStatusText.textContent = 'Audio Standby';
   }
 
@@ -8035,7 +8035,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
       if (!liveTvAudio.paused) {
         liveTvAudio.pause();
         radioWaveBox.classList.remove('playing');
-        btnRadioPlayPause.innerHTML = 'â–¶ Start Radio Audio';
+        btnRadioPlayPause.innerHTML = '\u25B6 Start Radio Audio';
         radioPlayStatusText.textContent = 'Audio Paused';
       } else {
         const radUrl = getSavedRadioStreamUrl() || getSavedLiveStreamUrl();
@@ -8046,8 +8046,8 @@ let selectedHeadlineFont = 'Anek Malayalam';
         liveTvAudio.src = radUrl;
         liveTvAudio.play().then(function() {
           radioWaveBox.classList.add('playing');
-          btnRadioPlayPause.innerHTML = 'â¸ Pause Radio Audio';
-          radioPlayStatusText.textContent = 'Broadcasting Live Audio ðŸŸ¢';
+          btnRadioPlayPause.innerHTML = '\u23F8 Pause Radio Audio';
+          radioPlayStatusText.textContent = 'Broadcasting Live Audio \u{1F7E2}';
         }).catch(function(e) {
           console.warn('Radio audio play failed:', e);
           radioPlayStatusText.textContent = 'Playback error: Check Stream URL';
@@ -8120,7 +8120,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
       const isPwd = pInp.type === 'password';
       pInp.type = isPwd ? 'text' : 'password';
       if (cInp) cInp.type = isPwd ? 'text' : 'password';
-      btnToggleNewPass.textContent = isPwd ? 'ðŸ™ˆ Hide' : 'ðŸ‘ï¸ Show';
+      btnToggleNewPass.textContent = isPwd ? '\u{1F648} Hide' : '\u{1F441}\uFE0F Show';
     });
   }
 
@@ -8196,19 +8196,19 @@ let selectedHeadlineFont = 'Anek Malayalam';
       const confPass = (confPassInp ? confPassInp.value : '').trim();
 
       if (!newName) {
-        if (errDiv) errDiv.textContent = 'âš ï¸ Display Name is required.';
+        if (errDiv) errDiv.textContent = '\u26A0\uFE0F Display Name is required.';
         return;
       }
       if (!newUname) {
-        if (errDiv) errDiv.textContent = 'âš ï¸ Username is required.';
+        if (errDiv) errDiv.textContent = '\u26A0\uFE0F Username is required.';
         return;
       }
       if (!newPass) {
-        if (errDiv) errDiv.textContent = 'âš ï¸ Password cannot be empty.';
+        if (errDiv) errDiv.textContent = '\u26A0\uFE0F Password cannot be empty.';
         return;
       }
       if (newPass !== confPass) {
-        if (errDiv) errDiv.textContent = 'âŒ Passwords do not match!';
+        if (errDiv) errDiv.textContent = '\u274C Passwords do not match!';
         return;
       }
 
@@ -8218,7 +8218,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
         return u.uid !== user.uid && norm(u.username) === norm(newUname);
       });
       if (duplicate) {
-        if (errDiv) errDiv.textContent = 'âŒ Username "@' + newUname + '" is already taken!';
+        if (errDiv) errDiv.textContent = '\u274C Username "@' + newUname + '" is already taken!';
         return;
       }
 
@@ -8267,7 +8267,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
       closeUserProfileModal();
 
       if (typeof showToast === 'function') {
-        showToast('âœ… Profile & Password updated successfully!');
+        showToast('\u2705 Profile & Password updated successfully!');
       }
     });
   }
@@ -8291,11 +8291,11 @@ let selectedHeadlineFont = 'Anek Malayalam';
       });
 
       if (!match) {
-        showAuthError('âŒ Invalid username or password.');
+        showAuthError('\u274C Invalid username or password.');
         return;
       }
       if (match.deleted || match.active === false) {
-        showAuthError('ðŸš« Your account has been blocked by Admin.');
+        showAuthError('\u{1F6AB} Your account has been blocked by Admin.');
         return;
       }
 
@@ -8383,7 +8383,6 @@ let selectedHeadlineFont = 'Anek Malayalam';
   window.syncKVUsersToFirestore = syncUsersToFirestore;
 
 })();
-
 
 </script>
 </body>
