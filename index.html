@@ -6382,7 +6382,8 @@ let selectedHeadlineFont = 'Anek Malayalam';
     appId: "1:822240406412:web:2407061f774c5febfc84a9",
     measurementId: "G-CHPCKSWSX6"
   };
-    function parseFirebaseConfigInput(raw) {
+
+  function parseFirebaseConfigInput(raw) {
     if (!raw || typeof raw !== 'string') return null;
     const cleaned = raw.trim();
     try {
@@ -6423,20 +6424,30 @@ let selectedHeadlineFont = 'Anek Malayalam';
     if (status === 'connected') {
       badge.style.background = '#059669';
       badge.style.color = '#ffffff';
-      badge.innerHTML = '🟢 ' + (text || 'Cloud Live (Active)');
+      badge.innerHTML = 'ðŸŸ¢ ' + (text || 'Cloud Live (Active)');
     } else if (status === 'connecting') {
       badge.style.background = '#0284c7';
       badge.style.color = '#ffffff';
-      badge.innerHTML = '⏳ ' + (text || 'Connecting...');
+      badge.innerHTML = 'â³ ' + (text || 'Connecting...');
     } else if (status === 'error') {
       badge.style.background = '#dc2626';
       badge.style.color = '#ffffff';
-      badge.innerHTML = '⚠️ ' + (text || 'Cloud Connection Error');
+      badge.innerHTML = 'âš ï¸ ' + (text || 'Cloud Connection Error');
     } else {
       badge.style.background = '#475569';
       badge.style.color = '#ffffff';
-      badge.innerHTML = '🟡 ' + (text || 'Local Mode (Local Only)');
+      badge.innerHTML = 'ðŸŸ¡ ' + (text || 'Local Mode (Local Only)');
     }
+  }
+
+  function syncUsersToFirestore(list) {
+    if (!firebaseDb || !isFirebaseLive) return;
+    const users = list || getDemoUsers();
+    users.forEach(function(u) {
+      if (u && u.uid) {
+        firebaseDb.collection('kv_users').doc(u.uid).set(u, { merge: true }).catch(function(){});
+      }
+    });
   }
 
   function seedDefaultsToFirestore() {
@@ -6445,7 +6456,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
     currentList.forEach(function(u) {
       firebaseDb.collection('kv_users').doc(u.uid).set(u, { merge: true }).catch(function(){});
     });
-    showAdminStatus('☁️ Users synced to cloud successfully!', false);
+    showAdminStatus('â˜ï¸ Users synced to cloud successfully!', false);
   }
 
   function initFirebaseDatabase() {
@@ -6484,21 +6495,59 @@ let selectedHeadlineFont = 'Anek Malayalam';
         const cloudUsers = [];
         snapshot.forEach(function(doc) {
           const data = doc.data();
-          if (data && data.uid) {
+          if (data && (data.uid || data.username)) {
+            if (!data.uid) data.uid = 'u-' + (data.username || Math.random()).toLowerCase().replace(/[^a-z0-9]/g, '');
             cloudUsers.push(data);
           }
         });
 
         if (cloudUsers.length > 0) {
-          inMemoryUsers = cloudUsers;
-          saveDemoUsers(cloudUsers);
+          // Smart merge: merge cloudUsers with existing local users so nothing is lost
+          const localList = getDemoUsers();
+          const userMap = {};
+
+          // Seed defaults
+          DEFAULT_USERS.forEach(function(def) {
+            userMap[norm(def.username)] = Object.assign({}, def);
+          });
+
+          // Overlay local users
+          localList.forEach(function(u) {
+            if (u && (u.username || u.name)) {
+              const k = norm(u.username || u.name);
+              userMap[k] = Object.assign(userMap[k] || {}, u);
+            }
+          });
+
+          // Overlay cloud users (cloud is authoritative for cross-device sync)
+          cloudUsers.forEach(function(u) {
+            if (u && (u.username || u.name)) {
+              const k = norm(u.username || u.name);
+              userMap[k] = Object.assign(userMap[k] || {}, u);
+            }
+          });
+
+          const merged = Object.keys(userMap).map(function(k) { return userMap[k]; });
+
+          inMemoryUsers = merged;
+          saveDemoUsers(merged);
           refreshDemoAdminList();
+          renderQuickUserPills();
+
+          // If local had custom users not yet in cloud, upload them to cloud
+          const cloudUidMap = {};
+          cloudUsers.forEach(function(cu) { if (cu.uid) cloudUidMap[cu.uid] = true; });
+          merged.forEach(function(mu) {
+            if (!cloudUidMap[mu.uid]) {
+              firebaseDb.collection('kv_users').doc(mu.uid).set(mu, { merge: true }).catch(function(){});
+            }
+          });
 
           // Remote block enforcement
           if (currentProfile) {
-            const matched = cloudUsers.find(function(u) { return u.uid === currentProfile.uid; });
+            const matched = merged.find(function(u) { return u.uid === currentProfile.uid || norm(u.username) === norm(currentProfile.username); });
             if (matched && (matched.active === false || matched.deleted === true)) {
-              lockApp('🚫 Your account has been blocked by Admin.');
+              lockApp('ðŸš« Your account has been blocked by Admin.');
             }
           }
         }
@@ -6572,7 +6621,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
     btnTogglePass.addEventListener('click', function() {
       const isPwd = inpPass.type === 'password';
       inpPass.type = isPwd ? 'text' : 'password';
-      btnTogglePass.textContent = isPwd ? '🙈' : '👁️';
+      btnTogglePass.textContent = isPwd ? 'ðŸ™ˆ' : 'ðŸ‘ï¸';
     });
   }
 
@@ -6640,6 +6689,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
 
   let inMemoryUsers = null;
 
+  // COMPREHENSIVE SCANNER: Finds all users from ALL storage layers and keys ever created
   function getDemoUsers() {
     if (inMemoryUsers && inMemoryUsers.length > 0) return inMemoryUsers;
     if (window.KV_GLOBAL_USERS && window.KV_GLOBAL_USERS.length > 0) {
@@ -6647,54 +6697,105 @@ let selectedHeadlineFont = 'Anek Malayalam';
       return inMemoryUsers;
     }
 
-    let loaded = null;
+    const userMap = {}; // key: normalized username or uid
 
-    // Layer 1: Primary localStorage
-    try {
-      const raw = localStorage.getItem(STORE_KEY_V3);
-      if (raw) loaded = JSON.parse(raw);
-    } catch (e) {}
+    function ingestUser(u) {
+      if (!u || typeof u !== 'object') return;
+      const uname = (u.username || extractUsername(u.email) || '').trim().toLowerCase();
+      const uid = u.uid || ('u-' + (uname || Math.random()).replace(/[^a-z0-9]/g, ''));
+      const key = uname || uid;
+      if (!key) return;
 
-    // Layer 2: Fallback localStorage
-    if (!Array.isArray(loaded) || loaded.length === 0) {
-      try {
-        const raw2 = localStorage.getItem(STORE_KEY_V2) || localStorage.getItem(STORE_KEY_BACKUP);
-        if (raw2) loaded = JSON.parse(raw2);
-      } catch (e) {}
+      if (!userMap[key]) {
+        userMap[key] = Object.assign({}, u, { uid: uid });
+      } else {
+        // Merge preserving existing password, custom name, photo, status
+        const cur = userMap[key];
+        userMap[key] = Object.assign({}, cur, u, {
+          photo: u.photo || cur.photo || '',
+          password: u.password || cur.password || '1234',
+          name: (u.name && u.name !== 'User') ? u.name : (cur.name || u.name),
+          deleted: (u.deleted !== undefined) ? u.deleted : (cur.deleted || false),
+          active: (u.active !== undefined) ? u.active : (cur.active !== false)
+        });
+      }
     }
 
-    // Layer 3: sessionStorage
-    if (!Array.isArray(loaded) || loaded.length === 0) {
-      try {
-        const sRaw = sessionStorage.getItem(STORE_KEY_V3);
-        if (sRaw) loaded = JSON.parse(sRaw);
-      } catch (e) {}
-    }
+    // 1. Seed defaults first
+    DEFAULT_USERS.forEach(ingestUser);
 
-    // Layer 4: window.name payload
-    if (!Array.isArray(loaded) || loaded.length === 0) {
+    // 2. Scan ALL specific historical storage keys
+    const historicalKeys = [
+      STORE_KEY_V3,
+      STORE_KEY_V2,
+      'kv_studio_demo_users_v1',
+      'kv_studio_demo_users',
+      STORE_KEY_BACKUP,
+      'kv_users_v1',
+      'kv_users_v2',
+      'kv_users',
+      'kv_demo_users',
+      'kv_active_users',
+      'kozhikode_vision_users'
+    ];
+
+    historicalKeys.forEach(function(k) {
       try {
-        if (window.name && window.name.indexOf('kv_users') !== -1) {
-          const wObj = JSON.parse(window.name);
-          if (wObj && Array.isArray(wObj.kv_users)) loaded = wObj.kv_users;
+        const raw = localStorage.getItem(k);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) parsed.forEach(ingestUser);
         }
       } catch (e) {}
-    }
+    });
 
-    // Merge defaults so core admin/staff exist, while preserving ALL custom users!
-    if (Array.isArray(loaded) && loaded.length > 0) {
-      const map = {};
-      loaded.forEach(function(u) { if (u && u.uid) map[u.uid] = u; });
-      DEFAULT_USERS.forEach(function(def) {
-        if (!map[def.uid]) loaded.push(def);
-      });
-      inMemoryUsers = loaded;
-    } else {
-      inMemoryUsers = DEFAULT_USERS.slice(0);
-    }
+    // 3. Dynamic scan of ALL keys in localStorage matching 'user' or 'kv_'
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.toLowerCase().includes('user') || key.startsWith('kv_'))) {
+          try {
+            const raw = localStorage.getItem(key);
+            if (raw && (raw.startsWith('[') || raw.startsWith('{'))) {
+              const parsed = JSON.parse(raw);
+              if (Array.isArray(parsed)) {
+                parsed.forEach(function(item) {
+                  if (item && (item.username || item.password || item.uid)) ingestUser(item);
+                });
+              } else if (parsed && typeof parsed === 'object') {
+                if (Array.isArray(parsed.kv_users)) parsed.kv_users.forEach(ingestUser);
+                if (Array.isArray(parsed.users)) parsed.users.forEach(ingestUser);
+                if (parsed.username && parsed.password) ingestUser(parsed);
+              }
+            }
+          } catch(e) {}
+        }
+      }
+    } catch(e) {}
 
-    saveDemoUsers(inMemoryUsers);
-    return inMemoryUsers;
+    // 4. Scan sessionStorage
+    try {
+      const sRaw = sessionStorage.getItem(STORE_KEY_V3) || sessionStorage.getItem(STORE_KEY_V2);
+      if (sRaw) {
+        const parsed = JSON.parse(sRaw);
+        if (Array.isArray(parsed)) parsed.forEach(ingestUser);
+      }
+    } catch (e) {}
+
+    // 5. Scan window.name
+    try {
+      if (window.name && window.name.indexOf('kv_users') !== -1) {
+        const wObj = JSON.parse(window.name);
+        if (wObj && Array.isArray(wObj.kv_users)) wObj.kv_users.forEach(ingestUser);
+      }
+    } catch (e) {}
+
+    const unifiedList = Object.keys(userMap).map(function(k) { return userMap[k]; });
+    inMemoryUsers = unifiedList;
+    window.KV_GLOBAL_USERS = unifiedList;
+
+    saveDemoUsers(unifiedList);
+    return unifiedList;
   }
 
   function saveDemoUsers(list) {
@@ -6714,7 +6815,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
   }
 
   // =========================================================================
-  // 3. APP UNLOCK, LOCK & QUICK USER PILLS (TOP-LEVEL ACCESSIBLE!)
+  // 3. APP UNLOCK, LOCK & QUICK USER PILLS
   // =========================================================================
   let currentProfile = null;
   let unsubscribeUserWatch = null;
@@ -6728,17 +6829,17 @@ let selectedHeadlineFont = 'Anek Malayalam';
   function getTimeGreetingInfo() {
     const hour = new Date().getHours();
     if (hour >= 5 && hour < 12) {
-      return { text: 'Good Morning', icon: '🌅', emoji: '☀️', message: 'Have a productive news broadcast morning!' };
+      return { text: 'Good Morning', icon: 'ðŸŒ…', emoji: 'â˜€ï¸', message: 'Have a productive news broadcast morning!' };
     } else if (hour >= 12 && hour < 17) {
-      return { text: 'Good Afternoon', icon: '🌤️', emoji: '✨', message: 'Ready to craft breaking news & studio cards!' };
+      return { text: 'Good Afternoon', icon: 'ðŸŒ¤ï¸', emoji: 'âœ¨', message: 'Ready to craft breaking news & studio cards!' };
     } else if (hour >= 17 && hour < 22) {
-      return { text: 'Good Evening', icon: '🌆', emoji: '🌙', message: 'Prime time evening news edition is active!' };
+      return { text: 'Good Evening', icon: 'ðŸŒ†', emoji: 'ðŸŒ™', message: 'Prime time evening news edition is active!' };
     } else {
-      return { text: 'Good Night / Working Late', icon: '🌌', emoji: '⭐', message: 'Late night desk active. Ready to craft cards!' };
+      return { text: 'Good Night / Working Late', icon: 'ðŸŒŒ', emoji: 'â­', message: 'Late night desk active. Ready to craft cards!' };
     }
   }
 
-    function showTimeBasedWelcome(profile) {
+  function showTimeBasedWelcome(profile) {
     if (!profile) return;
     let overlay = document.getElementById('kvWelcomeOverlay');
     if (!overlay) {
@@ -6781,10 +6882,10 @@ let selectedHeadlineFont = 'Anek Malayalam';
             greeting.message +
           '</div>' +
           '<div class="kv-welcome-status">' +
-            '🟢 Verified Active Session • Ready to craft broadcast cards' +
+            'ðŸŸ¢ Verified Active Session â€¢ Ready to craft broadcast cards' +
           '</div>' +
         '</div>' +
-        '<button type="button" class="kv-welcome-close" id="kvBtnCloseWelcome" title="Dismiss">✕</button>' +
+        '<button type="button" class="kv-welcome-close" id="kvBtnCloseWelcome" title="Dismiss">âœ•</button>' +
         '<div class="kv-welcome-progress-bar"></div>' +
       '</div>';
 
@@ -6899,59 +7000,58 @@ let selectedHeadlineFont = 'Anek Malayalam';
     if (u.isOnline === true && isRecentlyActive) {
       return true;
     }
-    if (isRecentlyActive && (now - lastActiveTime) < 35000) {
-      return true;
-    }
 
-    // LocalStorage fallback (for multiple browser tabs / local testing)
+    // Fallback cross-tab check via localStorage presence key
     try {
-      const raw = localStorage.getItem('kv_presence_' + u.uid);
-      if (raw) {
-        const pres = JSON.parse(raw);
-        if (pres && pres.isOnline && (now - (pres.lastActive || 0) < PRESENCE_TIMEOUT_MS)) {
+      const pRaw = localStorage.getItem('kv_presence_' + u.uid);
+      if (pRaw) {
+        const pres = JSON.parse(pRaw);
+        if (pres && pres.isOnline === true && (now - pres.lastActive) < PRESENCE_TIMEOUT_MS) {
           return true;
         }
       }
-    } catch (e) {}
+    } catch(e) {}
 
     return false;
   }
 
-  // Handle browser close or page unload
-  window.addEventListener('beforeunload', function() {
-    if (currentProfile) {
-      updateUserPresence(currentProfile, false);
-    }
-  });
-
   function unlockApp(profile) {
     currentProfile = profile;
     window.KV_ACTIVE_USER = profile;
-    document.body.classList.remove('kv-locked');
 
-    // Start Realtime Active Presence Heartbeat & Show Time-Based Welcome Greeting
+    // Start Realtime Presence tracking
     startPresenceHeartbeat(profile);
+
+    // Trigger Time-based Welcome Greeting Toast
     showTimeBasedWelcome(profile);
+
+    document.body.classList.remove('kv-locked');
     if (overlay) overlay.classList.add('kv-hidden');
     if (headerAuthBar) headerAuthBar.classList.remove('kv-hidden');
 
     if (lblUserName) lblUserName.textContent = profile.name || profile.username || 'User';
-    if (lblUserRole) {
-      const isAdm = profile.role === 'admin';
-      lblUserRole.textContent = isAdm ? 'ADMIN' : 'STAFF';
-      lblUserRole.className = 'kv-role-tag' + (isAdm ? ' admin' : '');
-    }
-    const headerPhoto = document.getElementById('kvHeaderUserPhoto');
-    const headerIcon = document.getElementById('kvHeaderUserIcon');
-    if (headerPhoto && headerIcon) {
+
+    // Circular Profile Photo in header
+    const headerPhotoImg = document.getElementById('kvHeaderUserPhoto');
+    const headerUserIcon = document.getElementById('kvHeaderUserIcon');
+    if (headerPhotoImg && headerUserIcon) {
       if (profile.photo && profile.photo.trim()) {
-        headerPhoto.src = profile.photo;
-        headerPhoto.style.display = 'inline-block';
-        headerIcon.style.display = 'none';
+        headerPhotoImg.src = profile.photo;
+        headerPhotoImg.style.display = 'inline-block';
+        headerUserIcon.style.display = 'none';
       } else {
-        headerPhoto.src = '';
-        headerPhoto.style.display = 'none';
-        headerIcon.style.display = 'inline-block';
+        headerPhotoImg.style.display = 'none';
+        headerUserIcon.style.display = 'inline-block';
+      }
+    }
+
+    if (lblUserRole) {
+      if (profile.role === 'admin') {
+        lblUserRole.textContent = 'ADMIN';
+        lblUserRole.classList.remove('staff');
+      } else {
+        lblUserRole.textContent = 'STAFF';
+        lblUserRole.classList.add('staff');
       }
     }
     if (btnOpenAdmin) {
@@ -6985,211 +7085,6 @@ let selectedHeadlineFont = 'Anek Malayalam';
     if (overlay) overlay.classList.remove('kv-hidden');
     if (reasonMsg) showAuthError(reasonMsg);
     renderQuickUserPills();
-
-  // =========================================================================
-  // 5b. MALAYALAM VOICE TYPING ENGINE
-  // =========================================================================
-  function initVoiceTyping(btnId, targetInputId, labelName) {
-    const btn = document.getElementById(btnId);
-    const input = document.getElementById(targetInputId);
-    if (!btn || !input) return;
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      btn.title = 'Speech recognition not supported in this browser';
-      btn.addEventListener('click', function() {
-        alert('⚠️ Malayalam Voice Typing requires Google Chrome, Edge, or the Android app.');
-      });
-      return;
-    }
-
-    let recognition = null;
-    let isListening = false;
-
-    btn.addEventListener('click', function() {
-      if (isListening) {
-        if (recognition) recognition.stop();
-        return;
-      }
-
-      try {
-        recognition = new SpeechRecognition();
-        recognition.lang = 'ml-IN'; // Malayalam India
-        recognition.continuous = false;
-        recognition.interimResults = false;
-
-        recognition.onstart = function() {
-          isListening = true;
-          btn.classList.add('listening');
-          btn.innerHTML = '🔴 കേൾക്കുന്നു... (Stop)';
-          if (typeof showToast === 'function') showToast('🎙️ സംസാരിക്കൂ... (Listening in Malayalam)');
-        };
-
-        recognition.onresult = function(event) {
-          if (event.results && event.results[0] && event.results[0][0]) {
-            const text = event.results[0][0].transcript;
-            const currentVal = input.value.trim();
-            input.value = currentVal ? currentVal + ' ' + text : text;
-            input.dispatchEvent(new Event('input'));
-            if (typeof renderCard === 'function') renderCard();
-            if (typeof showToast === 'function') showToast('✅ ടൈപ്പ് ചെയ്തു: ' + text);
-          }
-        };
-
-        recognition.onerror = function(err) {
-          console.warn('Speech recognition error:', err);
-          isListening = false;
-          btn.classList.remove('listening');
-          btn.innerHTML = '🎙️ സംസാരിക്കുക';
-          if (err.error === 'not-allowed') {
-            alert('⚠️ Microphone permission required for voice typing.');
-          }
-        };
-
-        recognition.onend = function() {
-          isListening = false;
-          btn.classList.remove('listening');
-          btn.innerHTML = '🎙️ സംസാരിക്കുക';
-        };
-
-        recognition.start();
-      } catch (e) {
-        console.warn('Voice typing start error:', e);
-        isListening = false;
-        btn.classList.remove('listening');
-        btn.innerHTML = '🎙️ സംസാരിക്കുക';
-      }
-    });
-  }
-
-  // Initialize Voice Typing for Headline & Summary
-  initVoiceTyping('btnVoiceHeadline', 'txtHeadline', 'Headline');
-  initVoiceTyping('btnVoiceSummary', 'txtSummary', 'Summary');
-
-  // =========================================================================
-  // 5c. PHOTO CLARITY FILTER PILLS WIRE-UP
-  // =========================================================================
-  const filterPills = document.querySelectorAll('.btn-filter-pill');
-  const lblFilter = document.getElementById('lblActiveFilter');
-  filterPills.forEach(function(pill) {
-    pill.addEventListener('click', function() {
-      filterPills.forEach(function(p) { p.classList.remove('active'); });
-      pill.classList.add('active');
-      activePhotoFilter = pill.getAttribute('data-filter') || 'normal';
-      if (lblFilter) lblFilter.textContent = pill.textContent.trim();
-      if (typeof renderCard === 'function') renderCard();
-      if (typeof showToast === 'function') showToast('✨ Filter: ' + pill.textContent.trim());
-    });
-  });
-
-  // =========================================================================
-  // 5d. REPORTER BYLINE AUTO-SYNC
-  // =========================================================================
-  const btnSyncByline = document.getElementById('btnSyncMyByline');
-  const txtReporterInput = document.getElementById('txtReporter');
-  if (btnSyncByline && txtReporterInput) {
-    btnSyncByline.addEventListener('click', function() {
-      const activeUser = window.KV_ACTIVE_USER || currentProfile;
-      if (activeUser) {
-        const uName = activeUser.name || activeUser.username || 'Reporter';
-        txtReporterInput.value = 'റിപ്പോർട്ട്: ' + uName + ' (കോഴിക്കോട് വിഷൻ)';
-        txtReporterInput.dispatchEvent(new Event('input'));
-        if (typeof renderCard === 'function') renderCard();
-        if (typeof showToast === 'function') showToast('🏷️ Byline updated: ' + txtReporterInput.value);
-      } else {
-        alert('Please log in first to use your reporter name.');
-      }
-    });
-  }
-
-  // =========================================================================
-  // 5e. NEWSROOM BROADCAST FLASH TICKER (REALTIME CLOUD & LOCAL)
-  // =========================================================================
-  const noticeBar = document.getElementById('kvNewsroomNoticeBar');
-  const noticeTextSpan = document.getElementById('kvNoticeMarqueeText');
-  const btnDismissNotice = document.getElementById('btnDismissNotice');
-  const inpAdminNotice = document.getElementById('kvInpAdminNotice');
-  const btnPublishNotice = document.getElementById('kvBtnPublishNotice');
-  const btnClearNotice = document.getElementById('kvBtnClearNotice');
-
-  function updateNewsroomNoticeUI(text) {
-    if (!noticeBar || !noticeTextSpan) return;
-    const clean = (text || '').trim();
-    if (clean) {
-      noticeTextSpan.textContent = clean;
-      noticeBar.classList.remove('kv-hidden');
-    } else {
-      noticeBar.classList.add('kv-hidden');
-    }
-  }
-
-  // Check saved notice on load
-  try {
-    const savedNotice = localStorage.getItem('kv_newsroom_notice');
-    if (savedNotice) updateNewsroomNoticeUI(savedNotice);
-  } catch(e) {}
-
-  if (btnDismissNotice && noticeBar) {
-    btnDismissNotice.addEventListener('click', function() {
-      noticeBar.classList.add('kv-hidden');
-    });
-  }
-
-  if (btnPublishNotice && inpAdminNotice) {
-    btnPublishNotice.addEventListener('click', function() {
-      const val = inpAdminNotice.value.trim();
-      if (!val) {
-        alert('Please enter announcement text to broadcast.');
-        return;
-      }
-      try { localStorage.setItem('kv_newsroom_notice', val); } catch(e){}
-      updateNewsroomNoticeUI(val);
-
-      if (firebaseDb && isFirebaseLive) {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
-          text: val,
-          postedBy: (currentProfile && currentProfile.name) || 'Admin',
-          timestamp: Date.now()
-        }, { merge: true }).catch(function(){});
-      }
-      showAdminStatus('📢 Notice broadcasted to all staff successfully!', false);
-      if (typeof showToast === 'function') showToast('📢 Notice broadcasted live!');
-    });
-  }
-
-  if (btnClearNotice) {
-    btnClearNotice.addEventListener('click', function() {
-      try { localStorage.removeItem('kv_newsroom_notice'); } catch(e){}
-      if (inpAdminNotice) inpAdminNotice.value = '';
-      updateNewsroomNoticeUI('');
-      if (firebaseDb && isFirebaseLive) {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
-          text: '',
-          timestamp: Date.now()
-        }, { merge: true }).catch(function(){});
-      }
-      showAdminStatus('🗑️ Notice cleared.', false);
-      if (typeof showToast === 'function') showToast('🗑️ Notice cleared.');
-    });
-  }
-
-  // Realtime Cloud listener for Newsroom Notice from Firestore
-  window.addEventListener('load', function() {
-    if (firebaseDb && isFirebaseLive) {
-      try {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').onSnapshot(function(doc) {
-          if (doc && doc.exists) {
-            const data = doc.data();
-            if (data && data.text !== undefined) {
-              try { localStorage.setItem('kv_newsroom_notice', data.text); } catch(e){}
-              updateNewsroomNoticeUI(data.text);
-              if (inpAdminNotice) inpAdminNotice.value = data.text;
-            }
-          }
-        }, function(){});
-      } catch(e) {}
-    }
-  });
   }
 
   function renderQuickUserPills() {
@@ -7203,16 +7098,16 @@ let selectedHeadlineFont = 'Anek Malayalam';
     users.forEach(function(u) {
       const opt = document.createElement('option');
       opt.value = u.username || extractUsername(u.email);
-      const roleIcon = u.role === 'admin' ? '👑' : '👤';
+      const roleIcon = u.role === 'admin' ? 'ðŸ‘‘' : 'ðŸ‘¤';
       const roleLabel = u.role === 'admin' ? 'ADMIN' : 'STAFF';
-      const newTag = u.isNew ? ' ✨ New' : '';
+      const newTag = u.isNew ? ' âœ¨ New' : '';
       opt.textContent = roleIcon + ' ' + (u.name || u.username) + newTag + ' (@' + (u.username || extractUsername(u.email)) + ') [' + roleLabel + ']';
       dropdown.appendChild(opt);
     });
 
     const manualOpt = document.createElement('option');
     manualOpt.value = '__manual__';
-    manualOpt.textContent = '✏️ Type Another User Manually...';
+    manualOpt.textContent = 'âœï¸ Type Another User Manually...';
     dropdown.appendChild(manualOpt);
   }
 
@@ -7226,7 +7121,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
     const onlineCount = activeUsers.filter(function(u) { return isUserCurrentlyOnline(u); }).length;
 
     if (userCountBadge) {
-      userCountBadge.innerHTML = activeUsers.length + ' users &nbsp;&bull;&nbsp; <b style="color:#10b981;font-weight:700;">' + onlineCount + ' Online Now 🟢</b>';
+      userCountBadge.innerHTML = activeUsers.length + ' users &nbsp;&bull;&nbsp; <b style="color:#10b981;font-weight:700;">' + onlineCount + ' Online Now ðŸŸ¢</b>';
     }
     if (deletedCountBadge) deletedCountBadge.textContent = deletedUsers.length + ' deleted';
 
@@ -7245,11 +7140,11 @@ let selectedHeadlineFont = 'Anek Malayalam';
 
         const meta = document.createElement('div');
         meta.className = 'kv-user-meta';
-        const newBadge = u.isNew ? ' <span style="background:#10b981;color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700;">✨ NEW</span>' : '';
+        const newBadge = u.isNew ? ' <span style="background:#10b981;color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700;">âœ¨ NEW</span>' : '';
 
         const presenceBadge = isOnline ?
-          ' <span class="kv-presence-pill online"><span class="kv-pulse-dot online"></span> 🟢 Active Now</span>' :
-          ' <span class="kv-presence-pill offline"><span class="kv-pulse-dot offline"></span> ⚪ Offline</span>';
+          ' <span class="kv-presence-pill online"><span class="kv-pulse-dot online"></span> ðŸŸ¢ Active Now</span>' :
+          ' <span class="kv-presence-pill offline"><span class="kv-pulse-dot offline"></span> âšª Offline</span>';
 
         meta.innerHTML =
           '<div class="kv-user-name' + (isOnline ? ' is-online' : '') + '">' +
@@ -7257,9 +7152,9 @@ let selectedHeadlineFont = 'Anek Malayalam';
             newBadge +
             ' <span class="kv-role-tag' + (u.role === 'admin' ? ' admin' : '') + '">' + (u.role === 'admin' ? 'ADMIN' : 'STAFF') + '</span>' +
             presenceBadge +
-            ' <span class="kv-status-pill ' + (isBlocked ? 'blocked' : 'active') + '">' + (isBlocked ? '🚫 Blocked' : '✅ Active') + '</span>' +
+            ' <span class="kv-status-pill ' + (isBlocked ? 'blocked' : 'active') + '">' + (isBlocked ? 'ðŸš« Blocked' : 'âœ… Active') + '</span>' +
           '</div>' +
-          '<div class="kv-user-sub">Username: <b style="color:#38bdf8;">' + escapeHtml(u.username || extractUsername(u.email)) + '</b> &nbsp;|&nbsp; Password: <span style="color:#fbbf24;font-weight:700;">' + escapeHtml(u.password || '1234') + '</span>' + (isSelf ? ' <b style="color:#6ee7b7;">(You)</b>' : '') + (isOnline ? ' &nbsp;|&nbsp; <span style="color:#10b981;font-weight:700;">● Active on site</span>' : '') + '</div>';
+          '<div class="kv-user-sub">Username: <b style="color:#38bdf8;">' + escapeHtml(u.username || extractUsername(u.email)) + '</b> &nbsp;|&nbsp; Password: <span style="color:#fbbf24;font-weight:700;">' + escapeHtml(u.password || '1234') + '</span>' + (isSelf ? ' <b style="color:#6ee7b7;">(You)</b>' : '') + (isOnline ? ' &nbsp;|&nbsp; <span style="color:#10b981;font-weight:700;">â— Active on site</span>' : '') + '</div>';
 
         row.appendChild(meta);
 
@@ -7273,7 +7168,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
           btnSwitch.className = 'kv-act-btn';
           btnSwitch.style.background = '#0284c7';
           btnSwitch.style.color = '#ffffff';
-          btnSwitch.textContent = '🚀 Switch to User';
+          btnSwitch.textContent = 'ðŸš€ Switch to User';
           btnSwitch.title = 'Switch directly to this user account';
           btnSwitch.addEventListener('click', function() {
             handlers.onInstantSwitch(u);
@@ -7281,26 +7176,43 @@ let selectedHeadlineFont = 'Anek Malayalam';
           actions.appendChild(btnSwitch);
         }
 
-        if (!isSelf) {
-          const btnToggle = document.createElement('button');
-          btnToggle.type = 'button';
-          btnToggle.className = 'kv-act-btn ' + (isBlocked ? 'kv-act-unblock' : 'kv-act-block');
-          btnToggle.textContent = isBlocked ? '✅ Unblock' : '🚫 Block';
-          btnToggle.addEventListener('click', function() {
+        // Edit Password Button
+        if (handlers.onResetPassword) {
+          const btnPass = document.createElement('button');
+          btnPass.type = 'button';
+          btnPass.className = 'kv-act-btn';
+          btnPass.style.background = '#d97706';
+          btnPass.style.color = '#ffffff';
+          btnPass.textContent = 'ðŸ”‘ Change Password';
+          btnPass.addEventListener('click', function() {
+            handlers.onResetPassword(u);
+          });
+          actions.appendChild(btnPass);
+        }
+
+        // Block / Unblock Button
+        if (!isSelf && handlers.onToggleBlock) {
+          const btnBlock = document.createElement('button');
+          btnBlock.type = 'button';
+          btnBlock.className = 'kv-act-btn' + (isBlocked ? ' unblock' : ' block');
+          btnBlock.textContent = isBlocked ? 'âœ… Unblock' : 'ðŸš« Block';
+          btnBlock.addEventListener('click', function() {
             handlers.onToggleBlock(u);
           });
+          actions.appendChild(btnBlock);
+        }
 
+        // Delete Button
+        if (!isSelf && handlers.onDelete) {
           const btnDel = document.createElement('button');
           btnDel.type = 'button';
-          btnDel.className = 'kv-act-btn kv-act-delete';
-          btnDel.textContent = '🗑️ Delete';
+          btnDel.className = 'kv-act-btn del';
+          btnDel.textContent = 'ðŸ—‘ï¸ Delete';
           btnDel.addEventListener('click', function() {
-            if (confirm('Delete user "' + (u.name || u.username) + '"? (Can be restored from Recycle Bin below)')) {
+            if (confirm('Delete user "' + (u.name || u.username) + '"? (Can be restored anytime from Recycle Bin)')) {
               handlers.onDelete(u);
             }
           });
-
-          actions.appendChild(btnToggle);
           actions.appendChild(btnDel);
         }
 
@@ -7318,15 +7230,15 @@ let selectedHeadlineFont = 'Anek Malayalam';
           const dRow = document.createElement('div');
           dRow.className = 'kv-user-row';
           dRow.style.opacity = '0.75';
-          dRow.style.border = '1px dashed #64748b';
-
           dRow.innerHTML =
             '<div class="kv-user-meta">' +
-              '<div class="kv-user-name" style="text-decoration:line-through;color:#94a3b8;">' + escapeHtml(du.name || du.username) + ' (@' + escapeHtml(du.username || extractUsername(du.email)) + ')</div>' +
-              '<div class="kv-user-sub" style="color:#64748b;">Password: ' + escapeHtml(du.password || '1234') + '</div>' +
+              '<div class="kv-user-name" style="text-decoration:line-through;color:#94a3b8;">' +
+                escapeHtml(du.name || du.username) + ' (@' + escapeHtml(du.username || extractUsername(du.email)) + ')' +
+              '</div>' +
+              '<div class="kv-user-sub" style="color:#ef4444;">Deleted User</div>' +
             '</div>' +
             '<div class="kv-user-actions">' +
-              '<button type="button" class="kv-act-btn" style="background:#059669;color:#fff;">♻️ Restore User</button>' +
+              '<button type="button" class="kv-act-btn unblock" style="background:#059669;color:#fff;">â™»ï¸ Restore User</button>' +
             '</div>';
 
           const restoreBtn = dRow.querySelector('button');
@@ -7346,210 +7258,6 @@ let selectedHeadlineFont = 'Anek Malayalam';
     const users = getDemoUsers();
     renderQuickUserPills();
 
-  // =========================================================================
-  // 5b. MALAYALAM VOICE TYPING ENGINE
-  // =========================================================================
-  function initVoiceTyping(btnId, targetInputId, labelName) {
-    const btn = document.getElementById(btnId);
-    const input = document.getElementById(targetInputId);
-    if (!btn || !input) return;
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      btn.title = 'Speech recognition not supported in this browser';
-      btn.addEventListener('click', function() {
-        alert('⚠️ Malayalam Voice Typing requires Google Chrome, Edge, or the Android app.');
-      });
-      return;
-    }
-
-    let recognition = null;
-    let isListening = false;
-
-    btn.addEventListener('click', function() {
-      if (isListening) {
-        if (recognition) recognition.stop();
-        return;
-      }
-
-      try {
-        recognition = new SpeechRecognition();
-        recognition.lang = 'ml-IN'; // Malayalam India
-        recognition.continuous = false;
-        recognition.interimResults = false;
-
-        recognition.onstart = function() {
-          isListening = true;
-          btn.classList.add('listening');
-          btn.innerHTML = '🔴 കേൾക്കുന്നു... (Stop)';
-          if (typeof showToast === 'function') showToast('🎙️ സംസാരിക്കൂ... (Listening in Malayalam)');
-        };
-
-        recognition.onresult = function(event) {
-          if (event.results && event.results[0] && event.results[0][0]) {
-            const text = event.results[0][0].transcript;
-            const currentVal = input.value.trim();
-            input.value = currentVal ? currentVal + ' ' + text : text;
-            input.dispatchEvent(new Event('input'));
-            if (typeof renderCard === 'function') renderCard();
-            if (typeof showToast === 'function') showToast('✅ ടൈപ്പ് ചെയ്തു: ' + text);
-          }
-        };
-
-        recognition.onerror = function(err) {
-          console.warn('Speech recognition error:', err);
-          isListening = false;
-          btn.classList.remove('listening');
-          btn.innerHTML = '🎙️ സംസാരിക്കുക';
-          if (err.error === 'not-allowed') {
-            alert('⚠️ Microphone permission required for voice typing.');
-          }
-        };
-
-        recognition.onend = function() {
-          isListening = false;
-          btn.classList.remove('listening');
-          btn.innerHTML = '🎙️ സംസാരിക്കുക';
-        };
-
-        recognition.start();
-      } catch (e) {
-        console.warn('Voice typing start error:', e);
-        isListening = false;
-        btn.classList.remove('listening');
-        btn.innerHTML = '🎙️ സംസാരിക്കുക';
-      }
-    });
-  }
-
-  // Initialize Voice Typing for Headline & Summary
-  initVoiceTyping('btnVoiceHeadline', 'txtHeadline', 'Headline');
-  initVoiceTyping('btnVoiceSummary', 'txtSummary', 'Summary');
-
-  // =========================================================================
-  // 5c. PHOTO CLARITY FILTER PILLS WIRE-UP
-  // =========================================================================
-  const filterPills = document.querySelectorAll('.btn-filter-pill');
-  const lblFilter = document.getElementById('lblActiveFilter');
-  filterPills.forEach(function(pill) {
-    pill.addEventListener('click', function() {
-      filterPills.forEach(function(p) { p.classList.remove('active'); });
-      pill.classList.add('active');
-      activePhotoFilter = pill.getAttribute('data-filter') || 'normal';
-      if (lblFilter) lblFilter.textContent = pill.textContent.trim();
-      if (typeof renderCard === 'function') renderCard();
-      if (typeof showToast === 'function') showToast('✨ Filter: ' + pill.textContent.trim());
-    });
-  });
-
-  // =========================================================================
-  // 5d. REPORTER BYLINE AUTO-SYNC
-  // =========================================================================
-  const btnSyncByline = document.getElementById('btnSyncMyByline');
-  const txtReporterInput = document.getElementById('txtReporter');
-  if (btnSyncByline && txtReporterInput) {
-    btnSyncByline.addEventListener('click', function() {
-      const activeUser = window.KV_ACTIVE_USER || currentProfile;
-      if (activeUser) {
-        const uName = activeUser.name || activeUser.username || 'Reporter';
-        txtReporterInput.value = 'റിപ്പോർട്ട്: ' + uName + ' (കോഴിക്കോട് വിഷൻ)';
-        txtReporterInput.dispatchEvent(new Event('input'));
-        if (typeof renderCard === 'function') renderCard();
-        if (typeof showToast === 'function') showToast('🏷️ Byline updated: ' + txtReporterInput.value);
-      } else {
-        alert('Please log in first to use your reporter name.');
-      }
-    });
-  }
-
-  // =========================================================================
-  // 5e. NEWSROOM BROADCAST FLASH TICKER (REALTIME CLOUD & LOCAL)
-  // =========================================================================
-  const noticeBar = document.getElementById('kvNewsroomNoticeBar');
-  const noticeTextSpan = document.getElementById('kvNoticeMarqueeText');
-  const btnDismissNotice = document.getElementById('btnDismissNotice');
-  const inpAdminNotice = document.getElementById('kvInpAdminNotice');
-  const btnPublishNotice = document.getElementById('kvBtnPublishNotice');
-  const btnClearNotice = document.getElementById('kvBtnClearNotice');
-
-  function updateNewsroomNoticeUI(text) {
-    if (!noticeBar || !noticeTextSpan) return;
-    const clean = (text || '').trim();
-    if (clean) {
-      noticeTextSpan.textContent = clean;
-      noticeBar.classList.remove('kv-hidden');
-    } else {
-      noticeBar.classList.add('kv-hidden');
-    }
-  }
-
-  // Check saved notice on load
-  try {
-    const savedNotice = localStorage.getItem('kv_newsroom_notice');
-    if (savedNotice) updateNewsroomNoticeUI(savedNotice);
-  } catch(e) {}
-
-  if (btnDismissNotice && noticeBar) {
-    btnDismissNotice.addEventListener('click', function() {
-      noticeBar.classList.add('kv-hidden');
-    });
-  }
-
-  if (btnPublishNotice && inpAdminNotice) {
-    btnPublishNotice.addEventListener('click', function() {
-      const val = inpAdminNotice.value.trim();
-      if (!val) {
-        alert('Please enter announcement text to broadcast.');
-        return;
-      }
-      try { localStorage.setItem('kv_newsroom_notice', val); } catch(e){}
-      updateNewsroomNoticeUI(val);
-
-      if (firebaseDb && isFirebaseLive) {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
-          text: val,
-          postedBy: (currentProfile && currentProfile.name) || 'Admin',
-          timestamp: Date.now()
-        }, { merge: true }).catch(function(){});
-      }
-      showAdminStatus('📢 Notice broadcasted to all staff successfully!', false);
-      if (typeof showToast === 'function') showToast('📢 Notice broadcasted live!');
-    });
-  }
-
-  if (btnClearNotice) {
-    btnClearNotice.addEventListener('click', function() {
-      try { localStorage.removeItem('kv_newsroom_notice'); } catch(e){}
-      if (inpAdminNotice) inpAdminNotice.value = '';
-      updateNewsroomNoticeUI('');
-      if (firebaseDb && isFirebaseLive) {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
-          text: '',
-          timestamp: Date.now()
-        }, { merge: true }).catch(function(){});
-      }
-      showAdminStatus('🗑️ Notice cleared.', false);
-      if (typeof showToast === 'function') showToast('🗑️ Notice cleared.');
-    });
-  }
-
-  // Realtime Cloud listener for Newsroom Notice from Firestore
-  window.addEventListener('load', function() {
-    if (firebaseDb && isFirebaseLive) {
-      try {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').onSnapshot(function(doc) {
-          if (doc && doc.exists) {
-            const data = doc.data();
-            if (data && data.text !== undefined) {
-              try { localStorage.setItem('kv_newsroom_notice', data.text); } catch(e){}
-              updateNewsroomNoticeUI(data.text);
-              if (inpAdminNotice) inpAdminNotice.value = data.text;
-            }
-          }
-        }, function(){});
-      } catch(e) {}
-    }
-  });
     renderUsersList(users, {
       onInstantSwitch: function(u) {
         if (u.active === false || u.deleted) {
@@ -7560,228 +7268,40 @@ let selectedHeadlineFont = 'Anek Malayalam';
         try { sessionStorage.setItem(SESSION_USER_KEY, u.uid); } catch (e) {}
         unlockApp(u);
         if (typeof showToast === 'function') {
-          showToast('🚀 Switched to: ' + (u.name || u.username));
+          showToast('ðŸš€ Switched to: ' + (u.name || u.username));
+        }
+      },
+      onResetPassword: function(u) {
+        const newP = prompt('Enter new password for ' + (u.name || u.username) + ':', u.password || '1234');
+        if (newP && newP.trim()) {
+          const list = getDemoUsers();
+          const item = list.find(function(x) { return x.uid === u.uid; });
+          if (item) {
+            item.password = newP.trim();
+            saveDemoUsers(list);
+            if (firebaseDb && isFirebaseLive) {
+              firebaseDb.collection('kv_users').doc(item.uid).update({ password: item.password }).catch(function(){});
+            }
+            refreshDemoAdminList();
+            renderQuickUserPills();
+            showAdminStatus('ðŸ”‘ Password updated for ' + item.name + '!', false);
+          }
         }
       },
       onToggleBlock: function(u) {
         const list = getDemoUsers();
         const item = list.find(function(x) { return x.uid === u.uid; });
         if (item) {
-                    item.active = item.active === false ? true : false;
+          item.active = item.active === false ? true : false;
           saveDemoUsers(list);
           if (firebaseDb && isFirebaseLive) {
             firebaseDb.collection('kv_users').doc(item.uid).update({ active: item.active }).catch(function(){});
           }
           refreshDemoAdminList();
           renderQuickUserPills();
-
-  // =========================================================================
-  // 5b. MALAYALAM VOICE TYPING ENGINE
-  // =========================================================================
-  function initVoiceTyping(btnId, targetInputId, labelName) {
-    const btn = document.getElementById(btnId);
-    const input = document.getElementById(targetInputId);
-    if (!btn || !input) return;
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      btn.title = 'Speech recognition not supported in this browser';
-      btn.addEventListener('click', function() {
-        alert('⚠️ Malayalam Voice Typing requires Google Chrome, Edge, or the Android app.');
-      });
-      return;
-    }
-
-    let recognition = null;
-    let isListening = false;
-
-    btn.addEventListener('click', function() {
-      if (isListening) {
-        if (recognition) recognition.stop();
-        return;
-      }
-
-      try {
-        recognition = new SpeechRecognition();
-        recognition.lang = 'ml-IN'; // Malayalam India
-        recognition.continuous = false;
-        recognition.interimResults = false;
-
-        recognition.onstart = function() {
-          isListening = true;
-          btn.classList.add('listening');
-          btn.innerHTML = '🔴 കേൾക്കുന്നു... (Stop)';
-          if (typeof showToast === 'function') showToast('🎙️ സംസാരിക്കൂ... (Listening in Malayalam)');
-        };
-
-        recognition.onresult = function(event) {
-          if (event.results && event.results[0] && event.results[0][0]) {
-            const text = event.results[0][0].transcript;
-            const currentVal = input.value.trim();
-            input.value = currentVal ? currentVal + ' ' + text : text;
-            input.dispatchEvent(new Event('input'));
-            if (typeof renderCard === 'function') renderCard();
-            if (typeof showToast === 'function') showToast('✅ ടൈപ്പ് ചെയ്തു: ' + text);
-          }
-        };
-
-        recognition.onerror = function(err) {
-          console.warn('Speech recognition error:', err);
-          isListening = false;
-          btn.classList.remove('listening');
-          btn.innerHTML = '🎙️ സംസാരിക്കുക';
-          if (err.error === 'not-allowed') {
-            alert('⚠️ Microphone permission required for voice typing.');
-          }
-        };
-
-        recognition.onend = function() {
-          isListening = false;
-          btn.classList.remove('listening');
-          btn.innerHTML = '🎙️ സംസാരിക്കുക';
-        };
-
-        recognition.start();
-      } catch (e) {
-        console.warn('Voice typing start error:', e);
-        isListening = false;
-        btn.classList.remove('listening');
-        btn.innerHTML = '🎙️ സംസാരിക്കുക';
-      }
-    });
-  }
-
-  // Initialize Voice Typing for Headline & Summary
-  initVoiceTyping('btnVoiceHeadline', 'txtHeadline', 'Headline');
-  initVoiceTyping('btnVoiceSummary', 'txtSummary', 'Summary');
-
-  // =========================================================================
-  // 5c. PHOTO CLARITY FILTER PILLS WIRE-UP
-  // =========================================================================
-  const filterPills = document.querySelectorAll('.btn-filter-pill');
-  const lblFilter = document.getElementById('lblActiveFilter');
-  filterPills.forEach(function(pill) {
-    pill.addEventListener('click', function() {
-      filterPills.forEach(function(p) { p.classList.remove('active'); });
-      pill.classList.add('active');
-      activePhotoFilter = pill.getAttribute('data-filter') || 'normal';
-      if (lblFilter) lblFilter.textContent = pill.textContent.trim();
-      if (typeof renderCard === 'function') renderCard();
-      if (typeof showToast === 'function') showToast('✨ Filter: ' + pill.textContent.trim());
-    });
-  });
-
-  // =========================================================================
-  // 5d. REPORTER BYLINE AUTO-SYNC
-  // =========================================================================
-  const btnSyncByline = document.getElementById('btnSyncMyByline');
-  const txtReporterInput = document.getElementById('txtReporter');
-  if (btnSyncByline && txtReporterInput) {
-    btnSyncByline.addEventListener('click', function() {
-      const activeUser = window.KV_ACTIVE_USER || currentProfile;
-      if (activeUser) {
-        const uName = activeUser.name || activeUser.username || 'Reporter';
-        txtReporterInput.value = 'റിപ്പോർട്ട്: ' + uName + ' (കോഴിക്കോട് വിഷൻ)';
-        txtReporterInput.dispatchEvent(new Event('input'));
-        if (typeof renderCard === 'function') renderCard();
-        if (typeof showToast === 'function') showToast('🏷️ Byline updated: ' + txtReporterInput.value);
-      } else {
-        alert('Please log in first to use your reporter name.');
-      }
-    });
-  }
-
-  // =========================================================================
-  // 5e. NEWSROOM BROADCAST FLASH TICKER (REALTIME CLOUD & LOCAL)
-  // =========================================================================
-  const noticeBar = document.getElementById('kvNewsroomNoticeBar');
-  const noticeTextSpan = document.getElementById('kvNoticeMarqueeText');
-  const btnDismissNotice = document.getElementById('btnDismissNotice');
-  const inpAdminNotice = document.getElementById('kvInpAdminNotice');
-  const btnPublishNotice = document.getElementById('kvBtnPublishNotice');
-  const btnClearNotice = document.getElementById('kvBtnClearNotice');
-
-  function updateNewsroomNoticeUI(text) {
-    if (!noticeBar || !noticeTextSpan) return;
-    const clean = (text || '').trim();
-    if (clean) {
-      noticeTextSpan.textContent = clean;
-      noticeBar.classList.remove('kv-hidden');
-    } else {
-      noticeBar.classList.add('kv-hidden');
-    }
-  }
-
-  // Check saved notice on load
-  try {
-    const savedNotice = localStorage.getItem('kv_newsroom_notice');
-    if (savedNotice) updateNewsroomNoticeUI(savedNotice);
-  } catch(e) {}
-
-  if (btnDismissNotice && noticeBar) {
-    btnDismissNotice.addEventListener('click', function() {
-      noticeBar.classList.add('kv-hidden');
-    });
-  }
-
-  if (btnPublishNotice && inpAdminNotice) {
-    btnPublishNotice.addEventListener('click', function() {
-      const val = inpAdminNotice.value.trim();
-      if (!val) {
-        alert('Please enter announcement text to broadcast.');
-        return;
-      }
-      try { localStorage.setItem('kv_newsroom_notice', val); } catch(e){}
-      updateNewsroomNoticeUI(val);
-
-      if (firebaseDb && isFirebaseLive) {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
-          text: val,
-          postedBy: (currentProfile && currentProfile.name) || 'Admin',
-          timestamp: Date.now()
-        }, { merge: true }).catch(function(){});
-      }
-      showAdminStatus('📢 Notice broadcasted to all staff successfully!', false);
-      if (typeof showToast === 'function') showToast('📢 Notice broadcasted live!');
-    });
-  }
-
-  if (btnClearNotice) {
-    btnClearNotice.addEventListener('click', function() {
-      try { localStorage.removeItem('kv_newsroom_notice'); } catch(e){}
-      if (inpAdminNotice) inpAdminNotice.value = '';
-      updateNewsroomNoticeUI('');
-      if (firebaseDb && isFirebaseLive) {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
-          text: '',
-          timestamp: Date.now()
-        }, { merge: true }).catch(function(){});
-      }
-      showAdminStatus('🗑️ Notice cleared.', false);
-      if (typeof showToast === 'function') showToast('🗑️ Notice cleared.');
-    });
-  }
-
-  // Realtime Cloud listener for Newsroom Notice from Firestore
-  window.addEventListener('load', function() {
-    if (firebaseDb && isFirebaseLive) {
-      try {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').onSnapshot(function(doc) {
-          if (doc && doc.exists) {
-            const data = doc.data();
-            if (data && data.text !== undefined) {
-              try { localStorage.setItem('kv_newsroom_notice', data.text); } catch(e){}
-              updateNewsroomNoticeUI(data.text);
-              if (inpAdminNotice) inpAdminNotice.value = data.text;
-            }
-          }
-        }, function(){});
-      } catch(e) {}
-    }
-  });
-          showAdminStatus(item.active ? '✅ User unblocked!' : '🚫 User blocked!', false);
+          showAdminStatus(item.active ? 'âœ… User unblocked!' : 'ðŸš« User blocked!', false);
           if (typeof showToast === 'function') {
-            showToast(item.active ? '✅ Unblocked: ' + item.name : '🚫 Blocked: ' + item.name);
+            showToast(item.active ? 'âœ… Unblocked: ' + item.name : 'ðŸš« Blocked: ' + item.name);
           }
         }
       },
@@ -7791,221 +7311,16 @@ let selectedHeadlineFont = 'Anek Malayalam';
         if (item) {
           item.active = false;
           item.deleted = true;
-                    item.isNew = false;
+          item.isNew = false;
           saveDemoUsers(list);
           if (firebaseDb && isFirebaseLive) {
             firebaseDb.collection('kv_users').doc(item.uid).update({ active: false, deleted: true, isNew: false }).catch(function(){});
           }
           refreshDemoAdminList();
           renderQuickUserPills();
-
-  // =========================================================================
-  // 5b. MALAYALAM VOICE TYPING ENGINE
-  // =========================================================================
-  function initVoiceTyping(btnId, targetInputId, labelName) {
-    const btn = document.getElementById(btnId);
-    const input = document.getElementById(targetInputId);
-    if (!btn || !input) return;
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      btn.title = 'Speech recognition not supported in this browser';
-      btn.addEventListener('click', function() {
-        alert('⚠️ Malayalam Voice Typing requires Google Chrome, Edge, or the Android app.');
-      });
-      return;
-    }
-
-    let recognition = null;
-    let isListening = false;
-
-    btn.addEventListener('click', function() {
-      if (isListening) {
-        if (recognition) recognition.stop();
-        return;
-      }
-
-      try {
-        recognition = new SpeechRecognition();
-        recognition.lang = 'ml-IN'; // Malayalam India
-        recognition.continuous = false;
-        recognition.interimResults = false;
-
-        recognition.onstart = function() {
-          isListening = true;
-          btn.classList.add('listening');
-          btn.innerHTML = '🔴 കേൾക്കുന്നു... (Stop)';
-          if (typeof showToast === 'function') showToast('🎙️ സംസാരിക്കൂ... (Listening in Malayalam)');
-        };
-
-        recognition.onresult = function(event) {
-          if (event.results && event.results[0] && event.results[0][0]) {
-            const text = event.results[0][0].transcript;
-            const currentVal = input.value.trim();
-            input.value = currentVal ? currentVal + ' ' + text : text;
-            input.dispatchEvent(new Event('input'));
-            if (typeof renderCard === 'function') renderCard();
-            if (typeof showToast === 'function') showToast('✅ ടൈപ്പ് ചെയ്തു: ' + text);
-          }
-        };
-
-        recognition.onerror = function(err) {
-          console.warn('Speech recognition error:', err);
-          isListening = false;
-          btn.classList.remove('listening');
-          btn.innerHTML = '🎙️ സംസാരിക്കുക';
-          if (err.error === 'not-allowed') {
-            alert('⚠️ Microphone permission required for voice typing.');
-          }
-        };
-
-        recognition.onend = function() {
-          isListening = false;
-          btn.classList.remove('listening');
-          btn.innerHTML = '🎙️ സംസാരിക്കുക';
-        };
-
-        recognition.start();
-      } catch (e) {
-        console.warn('Voice typing start error:', e);
-        isListening = false;
-        btn.classList.remove('listening');
-        btn.innerHTML = '🎙️ സംസാരിക്കുക';
-      }
-    });
-  }
-
-  // Initialize Voice Typing for Headline & Summary
-  initVoiceTyping('btnVoiceHeadline', 'txtHeadline', 'Headline');
-  initVoiceTyping('btnVoiceSummary', 'txtSummary', 'Summary');
-
-  // =========================================================================
-  // 5c. PHOTO CLARITY FILTER PILLS WIRE-UP
-  // =========================================================================
-  const filterPills = document.querySelectorAll('.btn-filter-pill');
-  const lblFilter = document.getElementById('lblActiveFilter');
-  filterPills.forEach(function(pill) {
-    pill.addEventListener('click', function() {
-      filterPills.forEach(function(p) { p.classList.remove('active'); });
-      pill.classList.add('active');
-      activePhotoFilter = pill.getAttribute('data-filter') || 'normal';
-      if (lblFilter) lblFilter.textContent = pill.textContent.trim();
-      if (typeof renderCard === 'function') renderCard();
-      if (typeof showToast === 'function') showToast('✨ Filter: ' + pill.textContent.trim());
-    });
-  });
-
-  // =========================================================================
-  // 5d. REPORTER BYLINE AUTO-SYNC
-  // =========================================================================
-  const btnSyncByline = document.getElementById('btnSyncMyByline');
-  const txtReporterInput = document.getElementById('txtReporter');
-  if (btnSyncByline && txtReporterInput) {
-    btnSyncByline.addEventListener('click', function() {
-      const activeUser = window.KV_ACTIVE_USER || currentProfile;
-      if (activeUser) {
-        const uName = activeUser.name || activeUser.username || 'Reporter';
-        txtReporterInput.value = 'റിപ്പോർട്ട്: ' + uName + ' (കോഴിക്കോട് വിഷൻ)';
-        txtReporterInput.dispatchEvent(new Event('input'));
-        if (typeof renderCard === 'function') renderCard();
-        if (typeof showToast === 'function') showToast('🏷️ Byline updated: ' + txtReporterInput.value);
-      } else {
-        alert('Please log in first to use your reporter name.');
-      }
-    });
-  }
-
-  // =========================================================================
-  // 5e. NEWSROOM BROADCAST FLASH TICKER (REALTIME CLOUD & LOCAL)
-  // =========================================================================
-  const noticeBar = document.getElementById('kvNewsroomNoticeBar');
-  const noticeTextSpan = document.getElementById('kvNoticeMarqueeText');
-  const btnDismissNotice = document.getElementById('btnDismissNotice');
-  const inpAdminNotice = document.getElementById('kvInpAdminNotice');
-  const btnPublishNotice = document.getElementById('kvBtnPublishNotice');
-  const btnClearNotice = document.getElementById('kvBtnClearNotice');
-
-  function updateNewsroomNoticeUI(text) {
-    if (!noticeBar || !noticeTextSpan) return;
-    const clean = (text || '').trim();
-    if (clean) {
-      noticeTextSpan.textContent = clean;
-      noticeBar.classList.remove('kv-hidden');
-    } else {
-      noticeBar.classList.add('kv-hidden');
-    }
-  }
-
-  // Check saved notice on load
-  try {
-    const savedNotice = localStorage.getItem('kv_newsroom_notice');
-    if (savedNotice) updateNewsroomNoticeUI(savedNotice);
-  } catch(e) {}
-
-  if (btnDismissNotice && noticeBar) {
-    btnDismissNotice.addEventListener('click', function() {
-      noticeBar.classList.add('kv-hidden');
-    });
-  }
-
-  if (btnPublishNotice && inpAdminNotice) {
-    btnPublishNotice.addEventListener('click', function() {
-      const val = inpAdminNotice.value.trim();
-      if (!val) {
-        alert('Please enter announcement text to broadcast.');
-        return;
-      }
-      try { localStorage.setItem('kv_newsroom_notice', val); } catch(e){}
-      updateNewsroomNoticeUI(val);
-
-      if (firebaseDb && isFirebaseLive) {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
-          text: val,
-          postedBy: (currentProfile && currentProfile.name) || 'Admin',
-          timestamp: Date.now()
-        }, { merge: true }).catch(function(){});
-      }
-      showAdminStatus('📢 Notice broadcasted to all staff successfully!', false);
-      if (typeof showToast === 'function') showToast('📢 Notice broadcasted live!');
-    });
-  }
-
-  if (btnClearNotice) {
-    btnClearNotice.addEventListener('click', function() {
-      try { localStorage.removeItem('kv_newsroom_notice'); } catch(e){}
-      if (inpAdminNotice) inpAdminNotice.value = '';
-      updateNewsroomNoticeUI('');
-      if (firebaseDb && isFirebaseLive) {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
-          text: '',
-          timestamp: Date.now()
-        }, { merge: true }).catch(function(){});
-      }
-      showAdminStatus('🗑️ Notice cleared.', false);
-      if (typeof showToast === 'function') showToast('🗑️ Notice cleared.');
-    });
-  }
-
-  // Realtime Cloud listener for Newsroom Notice from Firestore
-  window.addEventListener('load', function() {
-    if (firebaseDb && isFirebaseLive) {
-      try {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').onSnapshot(function(doc) {
-          if (doc && doc.exists) {
-            const data = doc.data();
-            if (data && data.text !== undefined) {
-              try { localStorage.setItem('kv_newsroom_notice', data.text); } catch(e){}
-              updateNewsroomNoticeUI(data.text);
-              if (inpAdminNotice) inpAdminNotice.value = data.text;
-            }
-          }
-        }, function(){});
-      } catch(e) {}
-    }
-  });
-          showAdminStatus('🗑️ "' + item.name + '" deleted. Can be restored from Recycle Bin below.', false);
+          showAdminStatus('ðŸ—‘ï¸ "' + item.name + '" deleted. Can be restored from Recycle Bin below.', false);
           if (typeof showToast === 'function') {
-            showToast('🗑️ Deleted: ' + item.name);
+            showToast('ðŸ—‘ï¸ Deleted: ' + item.name);
           }
         }
       },
@@ -8014,221 +7329,16 @@ let selectedHeadlineFont = 'Anek Malayalam';
         const item = list.find(function(x) { return x.uid === u.uid; });
         if (item) {
           item.deleted = false;
-                    item.active = true;
+          item.active = true;
           saveDemoUsers(list);
           if (firebaseDb && isFirebaseLive) {
             firebaseDb.collection('kv_users').doc(item.uid).update({ active: true, deleted: false }).catch(function(){});
           }
           refreshDemoAdminList();
           renderQuickUserPills();
-
-  // =========================================================================
-  // 5b. MALAYALAM VOICE TYPING ENGINE
-  // =========================================================================
-  function initVoiceTyping(btnId, targetInputId, labelName) {
-    const btn = document.getElementById(btnId);
-    const input = document.getElementById(targetInputId);
-    if (!btn || !input) return;
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      btn.title = 'Speech recognition not supported in this browser';
-      btn.addEventListener('click', function() {
-        alert('⚠️ Malayalam Voice Typing requires Google Chrome, Edge, or the Android app.');
-      });
-      return;
-    }
-
-    let recognition = null;
-    let isListening = false;
-
-    btn.addEventListener('click', function() {
-      if (isListening) {
-        if (recognition) recognition.stop();
-        return;
-      }
-
-      try {
-        recognition = new SpeechRecognition();
-        recognition.lang = 'ml-IN'; // Malayalam India
-        recognition.continuous = false;
-        recognition.interimResults = false;
-
-        recognition.onstart = function() {
-          isListening = true;
-          btn.classList.add('listening');
-          btn.innerHTML = '🔴 കേൾക്കുന്നു... (Stop)';
-          if (typeof showToast === 'function') showToast('🎙️ സംസാരിക്കൂ... (Listening in Malayalam)');
-        };
-
-        recognition.onresult = function(event) {
-          if (event.results && event.results[0] && event.results[0][0]) {
-            const text = event.results[0][0].transcript;
-            const currentVal = input.value.trim();
-            input.value = currentVal ? currentVal + ' ' + text : text;
-            input.dispatchEvent(new Event('input'));
-            if (typeof renderCard === 'function') renderCard();
-            if (typeof showToast === 'function') showToast('✅ ടൈപ്പ് ചെയ്തു: ' + text);
-          }
-        };
-
-        recognition.onerror = function(err) {
-          console.warn('Speech recognition error:', err);
-          isListening = false;
-          btn.classList.remove('listening');
-          btn.innerHTML = '🎙️ സംസാരിക്കുക';
-          if (err.error === 'not-allowed') {
-            alert('⚠️ Microphone permission required for voice typing.');
-          }
-        };
-
-        recognition.onend = function() {
-          isListening = false;
-          btn.classList.remove('listening');
-          btn.innerHTML = '🎙️ സംസാരിക്കുക';
-        };
-
-        recognition.start();
-      } catch (e) {
-        console.warn('Voice typing start error:', e);
-        isListening = false;
-        btn.classList.remove('listening');
-        btn.innerHTML = '🎙️ സംസാരിക്കുക';
-      }
-    });
-  }
-
-  // Initialize Voice Typing for Headline & Summary
-  initVoiceTyping('btnVoiceHeadline', 'txtHeadline', 'Headline');
-  initVoiceTyping('btnVoiceSummary', 'txtSummary', 'Summary');
-
-  // =========================================================================
-  // 5c. PHOTO CLARITY FILTER PILLS WIRE-UP
-  // =========================================================================
-  const filterPills = document.querySelectorAll('.btn-filter-pill');
-  const lblFilter = document.getElementById('lblActiveFilter');
-  filterPills.forEach(function(pill) {
-    pill.addEventListener('click', function() {
-      filterPills.forEach(function(p) { p.classList.remove('active'); });
-      pill.classList.add('active');
-      activePhotoFilter = pill.getAttribute('data-filter') || 'normal';
-      if (lblFilter) lblFilter.textContent = pill.textContent.trim();
-      if (typeof renderCard === 'function') renderCard();
-      if (typeof showToast === 'function') showToast('✨ Filter: ' + pill.textContent.trim());
-    });
-  });
-
-  // =========================================================================
-  // 5d. REPORTER BYLINE AUTO-SYNC
-  // =========================================================================
-  const btnSyncByline = document.getElementById('btnSyncMyByline');
-  const txtReporterInput = document.getElementById('txtReporter');
-  if (btnSyncByline && txtReporterInput) {
-    btnSyncByline.addEventListener('click', function() {
-      const activeUser = window.KV_ACTIVE_USER || currentProfile;
-      if (activeUser) {
-        const uName = activeUser.name || activeUser.username || 'Reporter';
-        txtReporterInput.value = 'റിപ്പോർട്ട്: ' + uName + ' (കോഴിക്കോട് വിഷൻ)';
-        txtReporterInput.dispatchEvent(new Event('input'));
-        if (typeof renderCard === 'function') renderCard();
-        if (typeof showToast === 'function') showToast('🏷️ Byline updated: ' + txtReporterInput.value);
-      } else {
-        alert('Please log in first to use your reporter name.');
-      }
-    });
-  }
-
-  // =========================================================================
-  // 5e. NEWSROOM BROADCAST FLASH TICKER (REALTIME CLOUD & LOCAL)
-  // =========================================================================
-  const noticeBar = document.getElementById('kvNewsroomNoticeBar');
-  const noticeTextSpan = document.getElementById('kvNoticeMarqueeText');
-  const btnDismissNotice = document.getElementById('btnDismissNotice');
-  const inpAdminNotice = document.getElementById('kvInpAdminNotice');
-  const btnPublishNotice = document.getElementById('kvBtnPublishNotice');
-  const btnClearNotice = document.getElementById('kvBtnClearNotice');
-
-  function updateNewsroomNoticeUI(text) {
-    if (!noticeBar || !noticeTextSpan) return;
-    const clean = (text || '').trim();
-    if (clean) {
-      noticeTextSpan.textContent = clean;
-      noticeBar.classList.remove('kv-hidden');
-    } else {
-      noticeBar.classList.add('kv-hidden');
-    }
-  }
-
-  // Check saved notice on load
-  try {
-    const savedNotice = localStorage.getItem('kv_newsroom_notice');
-    if (savedNotice) updateNewsroomNoticeUI(savedNotice);
-  } catch(e) {}
-
-  if (btnDismissNotice && noticeBar) {
-    btnDismissNotice.addEventListener('click', function() {
-      noticeBar.classList.add('kv-hidden');
-    });
-  }
-
-  if (btnPublishNotice && inpAdminNotice) {
-    btnPublishNotice.addEventListener('click', function() {
-      const val = inpAdminNotice.value.trim();
-      if (!val) {
-        alert('Please enter announcement text to broadcast.');
-        return;
-      }
-      try { localStorage.setItem('kv_newsroom_notice', val); } catch(e){}
-      updateNewsroomNoticeUI(val);
-
-      if (firebaseDb && isFirebaseLive) {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
-          text: val,
-          postedBy: (currentProfile && currentProfile.name) || 'Admin',
-          timestamp: Date.now()
-        }, { merge: true }).catch(function(){});
-      }
-      showAdminStatus('📢 Notice broadcasted to all staff successfully!', false);
-      if (typeof showToast === 'function') showToast('📢 Notice broadcasted live!');
-    });
-  }
-
-  if (btnClearNotice) {
-    btnClearNotice.addEventListener('click', function() {
-      try { localStorage.removeItem('kv_newsroom_notice'); } catch(e){}
-      if (inpAdminNotice) inpAdminNotice.value = '';
-      updateNewsroomNoticeUI('');
-      if (firebaseDb && isFirebaseLive) {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
-          text: '',
-          timestamp: Date.now()
-        }, { merge: true }).catch(function(){});
-      }
-      showAdminStatus('🗑️ Notice cleared.', false);
-      if (typeof showToast === 'function') showToast('🗑️ Notice cleared.');
-    });
-  }
-
-  // Realtime Cloud listener for Newsroom Notice from Firestore
-  window.addEventListener('load', function() {
-    if (firebaseDb && isFirebaseLive) {
-      try {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').onSnapshot(function(doc) {
-          if (doc && doc.exists) {
-            const data = doc.data();
-            if (data && data.text !== undefined) {
-              try { localStorage.setItem('kv_newsroom_notice', data.text); } catch(e){}
-              updateNewsroomNoticeUI(data.text);
-              if (inpAdminNotice) inpAdminNotice.value = data.text;
-            }
-          }
-        }, function(){});
-      } catch(e) {}
-    }
-  });
-          showAdminStatus('♻️ "' + item.name + '" restored successfully!', false);
+          showAdminStatus('â™»ï¸ "' + item.name + '" restored successfully!', false);
           if (typeof showToast === 'function') {
-            showToast('♻️ Restored: ' + item.name);
+            showToast('â™»ï¸ Restored: ' + item.name);
           }
         }
       }
@@ -8237,87 +7347,95 @@ let selectedHeadlineFont = 'Anek Malayalam';
 
   // Core Add User execution function
   function executeAddUserAction() {
-  try {
+    try {
+      if (!currentProfile || currentProfile.role !== 'admin') {
+        showAdminStatus('âš ï¸ Only Admin is authorized to add users!', true);
+        return;
+      }
 
-    if (!currentProfile || currentProfile.role !== 'admin') {
-      showAdminStatus('⚠️ Only Admin is authorized to add users!', true);
-      return;
-    }
+      let name = (inpNewName.value || '').trim();
+      let rawUser = (inpNewUser.value || '').trim();
+      let pass = (inpNewPass.value || '').trim();
+      const role = selNewRole ? selNewRole.value : 'user';
 
-    let name = (inpNewName.value || '').trim();
-    let rawUser = (inpNewUser.value || '').trim();
-    let pass = (inpNewPass.value || '').trim();
-    const role = selNewRole ? selNewRole.value : 'user';
+      if (!name && !rawUser) {
+        showAdminStatus('âš ï¸ Please enter name or username.', true);
+        if (inpNewName) inpNewName.focus();
+        return;
+      }
+      if (!name) name = rawUser;
+      if (!rawUser) {
+        rawUser = name.toLowerCase().replace(/[^a-z0-9_]/g, '');
+        if (!rawUser) rawUser = 'user_' + Math.floor(100 + Math.random() * 900);
+      }
 
-    if (!name && !rawUser) {
-      showAdminStatus('⚠️ Please enter name or username.', true);
-      if (inpNewName) inpNewName.focus();
-      return;
-    }
-    if (!name) name = rawUser;
-    if (!rawUser) {
-      rawUser = name.toLowerCase().replace(/[^a-z0-9_]/g, '');
-      if (!rawUser) rawUser = 'user_' + Math.floor(100 + Math.random() * 900);
-    }
+      if (!pass) {
+        showAdminStatus('âš ï¸ Please enter a password (e.g. 1234).', true);
+        if (inpNewPass) inpNewPass.focus();
+        return;
+      }
 
-    if (!pass) {
-      showAdminStatus('⚠️ Please enter a password (e.g. 1234).', true);
-      if (inpNewPass) inpNewPass.focus();
-      return;
-    }
+      const username = rawUser;
+      const email = normalizeEmail(username);
 
-    const username = rawUser;
-    const email = normalizeEmail(username);
-
-    const list = getDemoUsers();
-    const existing = list.find(function(u) {
-      return !u.deleted && (
-        (u.username && norm(u.username) === norm(username)) ||
-        (u.name && norm(u.name) === norm(name))
-      );
-    });
-
-    if (existing) {
-      showAdminStatus('❌ User "' + (existing.name || existing.username) + '" already exists! Please choose another.', true);
-      return;
-    }
-
-    // Reset isNew flag on older users
-    list.forEach(function(u) { u.isNew = false; });
-
-    const newUser = {
-      uid: 'u-' + Date.now(),
-      name: name,
-      username: username,
-      email: email,
-      password: pass,
-      role: role,
-      active: true,
-      deleted: false,
-      isNew: true,
-      createdAt: Date.now()
-    };
-
-    // Prepend new user so they appear AT THE TOP!
-        list.unshift(newUser);
-    saveDemoUsers(list);
-
-    if (firebaseDb && isFirebaseLive) {
-      firebaseDb.collection('kv_users').doc(newUser.uid).set(newUser).catch(function(e) {
-        console.warn('Firestore write failed:', e);
+      const list = getDemoUsers();
+      const existing = list.find(function(u) {
+        return !u.deleted && (
+          (u.username && norm(u.username) === norm(username)) ||
+          (u.name && norm(u.name) === norm(name))
+        );
       });
+
+      if (existing) {
+        showAdminStatus('âŒ User "' + (existing.name || existing.username) + '" already exists! Please choose another.', true);
+        return;
+      }
+
+      // Reset isNew flag on older users
+      list.forEach(function(u) { u.isNew = false; });
+
+      const newUser = {
+        uid: 'u-' + Date.now(),
+        name: name,
+        username: username,
+        email: email,
+        password: pass,
+        role: role,
+        active: true,
+        deleted: false,
+        isNew: true,
+        createdAt: Date.now()
+      };
+
+      // Prepend new user so they appear AT THE TOP!
+      list.unshift(newUser);
+      saveDemoUsers(list);
+
+      if (firebaseDb && isFirebaseLive) {
+        firebaseDb.collection('kv_users').doc(newUser.uid).set(newUser).catch(function(e) {
+          console.warn('Firestore write failed:', e);
+        });
+      }
+
+      if (inpNewName) inpNewName.value = '';
+      if (inpNewUser) inpNewUser.value = '';
+      if (inpNewPass) inpNewPass.value = '';
+      if (selNewRole) selNewRole.value = 'user';
+
+      refreshDemoAdminList();
+      renderQuickUserPills();
+      showAdminStatus('ðŸŽ‰ User account "' + name + '" created successfully!', false);
+      if (typeof showToast === 'function') {
+        showToast('âœ¨ Added: ' + name);
+      }
+    } catch (err) {
+      console.error('Error adding user:', err);
+      showAdminStatus('Error adding user: ' + err.message, true);
     }
-
-    if (inpNewName) inpNewName.value = '';
-    if (inpNewUser) inpNewUser.value = '';
-    if (inpNewPass) inpNewPass.value = '';
-    if (selNewRole) selNewRole.value = 'user';
-
-    refreshDemoAdminList();
-    renderQuickUserPills();
+  }
 
   // =========================================================================
-  // 5b. MALAYALAM VOICE TYPING ENGINE
+  // 5. MALAYALAM VOICE TYPING ENGINE (DEFINED ONCE)
   // =========================================================================
   function initVoiceTyping(btnId, targetInputId, labelName) {
     const btn = document.getElementById(btnId);
@@ -8328,7 +7446,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
     if (!SpeechRecognition) {
       btn.title = 'Speech recognition not supported in this browser';
       btn.addEventListener('click', function() {
-        alert('⚠️ Malayalam Voice Typing requires Google Chrome, Edge, or the Android app.');
+        alert('âš ï¸ Malayalam Voice Typing requires Google Chrome, Edge, or the Android app.');
       });
       return;
     }
@@ -8351,8 +7469,8 @@ let selectedHeadlineFont = 'Anek Malayalam';
         recognition.onstart = function() {
           isListening = true;
           btn.classList.add('listening');
-          btn.innerHTML = '🔴 കേൾക്കുന്നു... (Stop)';
-          if (typeof showToast === 'function') showToast('🎙️ സംസാരിക്കൂ... (Listening in Malayalam)');
+          btn.innerHTML = 'ðŸ”´ à´•àµ‡àµ¾à´•àµà´•àµà´¨àµà´¨àµ... (Stop)';
+          if (typeof showToast === 'function') showToast('ðŸŽ™ï¸ à´¸à´‚à´¸à´¾à´°à´¿à´•àµà´•àµ‚... (Listening in Malayalam)');
         };
 
         recognition.onresult = function(event) {
@@ -8362,7 +7480,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
             input.value = currentVal ? currentVal + ' ' + text : text;
             input.dispatchEvent(new Event('input'));
             if (typeof renderCard === 'function') renderCard();
-            if (typeof showToast === 'function') showToast('✅ ടൈപ്പ് ചെയ്തു: ' + text);
+            if (typeof showToast === 'function') showToast('âœ… à´Ÿàµˆà´ªàµà´ªàµ à´šàµ†à´¯àµà´¤àµ: ' + text);
           }
         };
 
@@ -8370,16 +7488,16 @@ let selectedHeadlineFont = 'Anek Malayalam';
           console.warn('Speech recognition error:', err);
           isListening = false;
           btn.classList.remove('listening');
-          btn.innerHTML = '🎙️ സംസാരിക്കുക';
+          btn.innerHTML = 'ðŸŽ™ï¸ à´¸à´‚à´¸à´¾à´°à´¿à´•àµà´•àµà´•';
           if (err.error === 'not-allowed') {
-            alert('⚠️ Microphone permission required for voice typing.');
+            alert('âš ï¸ Microphone permission required for voice typing.');
           }
         };
 
         recognition.onend = function() {
           isListening = false;
           btn.classList.remove('listening');
-          btn.innerHTML = '🎙️ സംസാരിക്കുക';
+          btn.innerHTML = 'ðŸŽ™ï¸ à´¸à´‚à´¸à´¾à´°à´¿à´•àµà´•àµà´•';
         };
 
         recognition.start();
@@ -8387,7 +7505,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
         console.warn('Voice typing start error:', e);
         isListening = false;
         btn.classList.remove('listening');
-        btn.innerHTML = '🎙️ സംസാരിക്കുക';
+        btn.innerHTML = 'ðŸŽ™ï¸ à´¸à´‚à´¸à´¾à´°à´¿à´•àµà´•àµà´•';
       }
     });
   }
@@ -8396,25 +7514,23 @@ let selectedHeadlineFont = 'Anek Malayalam';
   initVoiceTyping('btnVoiceHeadline', 'txtHeadline', 'Headline');
   initVoiceTyping('btnVoiceSummary', 'txtSummary', 'Summary');
 
-  // =========================================================================
-  // 5c. PHOTO CLARITY FILTER PILLS WIRE-UP
-  // =========================================================================
+  // Photo clarity filter pills wire-up
   const filterPills = document.querySelectorAll('.btn-filter-pill');
   const lblFilter = document.getElementById('lblActiveFilter');
   filterPills.forEach(function(pill) {
     pill.addEventListener('click', function() {
       filterPills.forEach(function(p) { p.classList.remove('active'); });
       pill.classList.add('active');
-      activePhotoFilter = pill.getAttribute('data-filter') || 'normal';
+      if (typeof activePhotoFilter !== 'undefined') {
+        activePhotoFilter = pill.getAttribute('data-filter') || 'normal';
+      }
       if (lblFilter) lblFilter.textContent = pill.textContent.trim();
       if (typeof renderCard === 'function') renderCard();
-      if (typeof showToast === 'function') showToast('✨ Filter: ' + pill.textContent.trim());
+      if (typeof showToast === 'function') showToast('âœ¨ Filter: ' + pill.textContent.trim());
     });
   });
 
-  // =========================================================================
-  // 5d. REPORTER BYLINE AUTO-SYNC
-  // =========================================================================
+  // Reporter byline auto-sync wire-up
   const btnSyncByline = document.getElementById('btnSyncMyByline');
   const txtReporterInput = document.getElementById('txtReporter');
   if (btnSyncByline && txtReporterInput) {
@@ -8422,19 +7538,17 @@ let selectedHeadlineFont = 'Anek Malayalam';
       const activeUser = window.KV_ACTIVE_USER || currentProfile;
       if (activeUser) {
         const uName = activeUser.name || activeUser.username || 'Reporter';
-        txtReporterInput.value = 'റിപ്പോർട്ട്: ' + uName + ' (കോഴിക്കോട് വിഷൻ)';
+        txtReporterInput.value = 'à´±à´¿à´ªàµà´ªàµ‹àµ¼à´Ÿàµà´Ÿàµ: ' + uName + ' (à´•àµ‹à´´à´¿à´•àµà´•àµ‹à´Ÿàµ à´µà´¿à´·àµ»)';
         txtReporterInput.dispatchEvent(new Event('input'));
         if (typeof renderCard === 'function') renderCard();
-        if (typeof showToast === 'function') showToast('🏷️ Byline updated: ' + txtReporterInput.value);
+        if (typeof showToast === 'function') showToast('ðŸ·ï¸ Byline updated: ' + txtReporterInput.value);
       } else {
         alert('Please log in first to use your reporter name.');
       }
     });
   }
 
-  // =========================================================================
-  // 5e. NEWSROOM BROADCAST FLASH TICKER (REALTIME CLOUD & LOCAL)
-  // =========================================================================
+  // Newsroom Notice Bar UI
   const noticeBar = document.getElementById('kvNewsroomNoticeBar');
   const noticeTextSpan = document.getElementById('kvNoticeMarqueeText');
   const btnDismissNotice = document.getElementById('btnDismissNotice');
@@ -8443,25 +7557,26 @@ let selectedHeadlineFont = 'Anek Malayalam';
   const btnClearNotice = document.getElementById('kvBtnClearNotice');
 
   function updateNewsroomNoticeUI(text) {
-    if (!noticeBar || !noticeTextSpan) return;
     const clean = (text || '').trim();
+    if (!noticeBar || !noticeTextSpan) return;
     if (clean) {
       noticeTextSpan.textContent = clean;
       noticeBar.classList.remove('kv-hidden');
     } else {
       noticeBar.classList.add('kv-hidden');
+      noticeTextSpan.textContent = '';
     }
   }
 
-  // Check saved notice on load
+  // Restore locally saved notice on startup
   try {
     const savedNotice = localStorage.getItem('kv_newsroom_notice');
     if (savedNotice) updateNewsroomNoticeUI(savedNotice);
-  } catch(e) {}
+  } catch(e){}
 
-  if (btnDismissNotice && noticeBar) {
+  if (btnDismissNotice) {
     btnDismissNotice.addEventListener('click', function() {
-      noticeBar.classList.add('kv-hidden');
+      if (noticeBar) noticeBar.classList.add('kv-hidden');
     });
   }
 
@@ -8469,12 +7584,11 @@ let selectedHeadlineFont = 'Anek Malayalam';
     btnPublishNotice.addEventListener('click', function() {
       const val = inpAdminNotice.value.trim();
       if (!val) {
-        alert('Please enter announcement text to broadcast.');
+        alert('Please enter a notice message to broadcast.');
         return;
       }
       try { localStorage.setItem('kv_newsroom_notice', val); } catch(e){}
       updateNewsroomNoticeUI(val);
-
       if (firebaseDb && isFirebaseLive) {
         firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
           text: val,
@@ -8482,8 +7596,8 @@ let selectedHeadlineFont = 'Anek Malayalam';
           timestamp: Date.now()
         }, { merge: true }).catch(function(){});
       }
-      showAdminStatus('📢 Notice broadcasted to all staff successfully!', false);
-      if (typeof showToast === 'function') showToast('📢 Notice broadcasted live!');
+      showAdminStatus('ðŸ“¢ Notice broadcasted to all staff successfully!', false);
+      if (typeof showToast === 'function') showToast('ðŸ“¢ Notice broadcasted live!');
     });
   }
 
@@ -8498,8 +7612,8 @@ let selectedHeadlineFont = 'Anek Malayalam';
           timestamp: Date.now()
         }, { merge: true }).catch(function(){});
       }
-      showAdminStatus('🗑️ Notice cleared.', false);
-      if (typeof showToast === 'function') showToast('🗑️ Notice cleared.');
+      showAdminStatus('ðŸ—‘ï¸ Notice cleared.', false);
+      if (typeof showToast === 'function') showToast('ðŸ—‘ï¸ Notice cleared.');
     });
   }
 
@@ -8520,120 +7634,146 @@ let selectedHeadlineFont = 'Anek Malayalam';
       } catch(e) {}
     }
   });
-    showAdminStatus('✅ "' + name + '" (' + username + ') added successfully! User is now active.', false);
-    if (typeof showToast === 'function') {
-      showToast('✅ New user added: ' + name);
-    }
-  } catch (err) {
-    console.warn('CAUGHT_IN_EXECUTE_ADD_USER: ' + err.message + ' ' + err.stack);
+
+  // =========================================================================
+  // 6. ADMIN CONSOLE, FIREBASE CONFIG & LIVE STREAM HANDLERS
+  // =========================================================================
+  if (btnOpenAdmin) {
+    btnOpenAdmin.addEventListener('click', function() {
+      adminModal.classList.remove('kv-hidden');
+      refreshDemoAdminList();
+      renderQuickUserPills();
+    });
   }
-}
 
-  // =========================================================================
-  // 5. EVENT LISTENERS & INITIALIZATION
-  // =========================================================================
-  if (demoBanner) demoBanner.classList.remove('kv-hidden');
-  if (adminModeBadge) adminModeBadge.innerHTML = '⚡ <b>User Control Active</b> — Add, manage or switch user accounts instantly';
+  if (btnCloseAdmin) {
+    btnCloseAdmin.addEventListener('click', function() {
+      adminModal.classList.add('kv-hidden');
+    });
+  }
 
-  // 5a-1. Admin Self Profile Edit Wire-up
+  if (btnAddUser) {
+    btnAddUser.addEventListener('click', function(e) {
+      e.preventDefault();
+      executeAddUserAction();
+    });
+  }
+
+  [inpNewName, inpNewUser, inpNewPass].forEach(function(inp) {
+    if (inp) {
+      inp.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          executeAddUserAction();
+        }
+      });
+    }
+  });
+
+  // Admin Profile & Password Edit Wire-up
   const btnToggleAdminEdit = document.getElementById('kvBtnToggleAdminEdit');
-  const boxAdminEdit = document.getElementById('kvAdminEditFormBox');
+  const boxAdminEditForm = document.getElementById('kvAdminEditFormBox');
   const inpEditAdminName = document.getElementById('kvEditAdminName');
   const inpEditAdminPass = document.getElementById('kvEditAdminPass');
   const btnSaveAdminProfile = document.getElementById('kvBtnSaveAdminProfile');
 
-  if (btnToggleAdminEdit && boxAdminEdit) {
+  if (btnToggleAdminEdit && boxAdminEditForm) {
     btnToggleAdminEdit.addEventListener('click', function() {
-      const isHidden = boxAdminEdit.classList.contains('kv-hidden');
+      const isHidden = boxAdminEditForm.classList.contains('kv-hidden');
       if (isHidden) {
-        boxAdminEdit.classList.remove('kv-hidden');
-        boxAdminEdit.style.display = 'block';
-        if (inpEditAdminName) inpEditAdminName.value = (currentProfile && currentProfile.name) || 'Channel Admin';
-        if (inpEditAdminPass) inpEditAdminPass.value = (currentProfile && currentProfile.password) || '123456';
+        boxAdminEditForm.classList.remove('kv-hidden');
+        btnToggleAdminEdit.textContent = 'âœ• Close';
+        const u = currentProfile || getDemoUsers().find(function(x) { return x.role === 'admin'; });
+        if (u) {
+          if (inpEditAdminName) inpEditAdminName.value = u.name || 'Channel Admin';
+          if (inpEditAdminPass) inpEditAdminPass.value = u.password || '123456';
+        }
       } else {
-        boxAdminEdit.classList.add('kv-hidden');
-        boxAdminEdit.style.display = 'none';
+        boxAdminEditForm.classList.add('kv-hidden');
+        btnToggleAdminEdit.textContent = 'âœï¸ Edit';
       }
     });
   }
 
   if (btnSaveAdminProfile) {
     btnSaveAdminProfile.addEventListener('click', function() {
-      if (!currentProfile || currentProfile.role !== 'admin') {
-        alert('Only Admin is authorized to edit this!');
-        return;
-      }
       const newName = (inpEditAdminName.value || '').trim();
       const newPass = (inpEditAdminPass.value || '').trim();
 
-      if (!newName) {
-        alert('Please enter Admin display name.');
+      if (!newName || !newPass) {
+        alert('Please fill out both name and password.');
         return;
       }
-      if (!newPass) {
-        alert('Please enter a password.');
-        return;
-      }
-
-      currentProfile.name = newName;
-      currentProfile.password = newPass;
 
       const list = getDemoUsers();
-      const adminItem = list.find(function(u) { return u.uid === currentProfile.uid || u.role === 'admin'; });
-      if (adminItem) {
-        adminItem.name = newName;
-        adminItem.password = newPass;
-      }
-      saveDemoUsers(list);
+      const adminUser = list.find(function(x) {
+        return (currentProfile && x.uid === currentProfile.uid) || x.role === 'admin';
+      });
 
-      // Cloud Firestore Sync
-      if (firebaseDb && isFirebaseLive && adminItem) {
-        firebaseDb.collection('kv_users').doc(adminItem.uid).set(adminItem, { merge: true }).catch(function(){});
-      }
+      if (adminUser) {
+        adminUser.name = newName;
+        adminUser.password = newPass;
+        saveDemoUsers(list);
 
-      // Update UI
-      if (lblUserName) lblUserName.textContent = newName;
-      if (boxAdminEdit) {
-        boxAdminEdit.classList.add('kv-hidden');
-        boxAdminEdit.style.display = 'none';
-      }
-      refreshDemoAdminList();
-      window.dispatchEvent(new CustomEvent('kv-auth-changed'));
-      showAdminStatus('✅ Admin credentials updated successfully!', false);
-      if (typeof showToast === 'function') {
-        showToast('✅ Admin credentials updated!');
+        if (currentProfile && (currentProfile.uid === adminUser.uid || currentProfile.role === 'admin')) {
+          currentProfile.name = newName;
+          currentProfile.password = newPass;
+          if (lblUserName) lblUserName.textContent = newName;
+        }
+
+        if (firebaseDb && isFirebaseLive) {
+          firebaseDb.collection('kv_users').doc(adminUser.uid).update({
+            name: newName,
+            password: newPass
+          }).catch(function(){});
+        }
+
+        refreshDemoAdminList();
+        renderQuickUserPills();
+        showAdminStatus('âœ… Admin credentials updated successfully!', false);
+        boxAdminEditForm.classList.add('kv-hidden');
+        btnToggleAdminEdit.textContent = 'âœï¸ Edit';
       }
     });
   }
 
-  // 5a. Cloud Database UI Wire-up
-  const btnToggleCloud = document.getElementById('kvBtnToggleCloudConfig');
+  // Firebase Config Modal Controls
+  const btnToggleCloudConfig = document.getElementById('kvBtnToggleCloudConfig');
   const boxCloudConfig = document.getElementById('kvCloudConfigBox');
-  const txtCloudConfig = document.getElementById('kvTxtFirebaseConfig');
-  const btnSaveCloudConfig = document.getElementById('kvBtnSaveFirebaseConfig');
-  const btnClearCloudConfig = document.getElementById('kvBtnClearFirebaseConfig');
-  const btnSyncDefaults = document.getElementById('kvBtnSyncDefaultsToCloud');
+  const txtFirebaseConfig = document.getElementById('kvTxtFirebaseConfig');
+  const btnSaveFirebaseConfig = document.getElementById('kvBtnSaveFirebaseConfig');
+  const btnClearFirebaseConfig = document.getElementById('kvBtnClearFirebaseConfig');
+  const btnSyncDefaultsToCloud = document.getElementById('kvBtnSyncDefaultsToCloud');
 
-  if (btnToggleCloud && boxCloudConfig) {
-    btnToggleCloud.addEventListener('click', function() {
-      const isHidden = boxCloudConfig.classList.contains('kv-hidden');
+  if (btnToggleCloudConfig && boxCloudConfig) {
+    btnToggleCloudConfig.addEventListener('click', function() {
+      const isHidden = boxCloudConfig.classList.contains('kv-hidden') || boxCloudConfig.style.display === 'none';
       if (isHidden) {
         boxCloudConfig.classList.remove('kv-hidden');
         boxCloudConfig.style.display = 'block';
-        const saved = getSavedFirebaseConfig();
-        if (saved && txtCloudConfig) txtCloudConfig.value = JSON.stringify(saved, null, 2);
+        btnToggleCloudConfig.textContent = 'âœ• Close Config';
+        try {
+          const savedCfg = localStorage.getItem(FIREBASE_CONFIG_STORAGE_KEY);
+          if (savedCfg && txtFirebaseConfig) {
+            txtFirebaseConfig.value = savedCfg;
+          } else if (txtFirebaseConfig) {
+            txtFirebaseConfig.value = JSON.stringify(DEFAULT_FIREBASE_CONFIG, null, 2);
+          }
+        } catch(e){}
       } else {
         boxCloudConfig.classList.add('kv-hidden');
         boxCloudConfig.style.display = 'none';
+        btnToggleCloudConfig.textContent = 'âš™ï¸ Configure Firebase';
       }
     });
   }
 
-  if (btnSaveCloudConfig && txtCloudConfig) {
-    btnSaveCloudConfig.addEventListener('click', function() {
-      const parsed = parseFirebaseConfigInput(txtCloudConfig.value);
-      if (!parsed || !parsed.apiKey || !parsed.projectId) {
-        alert('⚠️ Invalid config! Please provide valid Firebase config containing apiKey and projectId.');
+  if (btnSaveFirebaseConfig && txtFirebaseConfig) {
+    btnSaveFirebaseConfig.addEventListener('click', function() {
+      const raw = txtFirebaseConfig.value.trim();
+      const parsed = parseFirebaseConfigInput(raw);
+      if (!parsed) {
+        alert('Invalid Firebase configuration! Please paste valid JSON or config object from Firebase console.');
         return;
       }
       try {
@@ -8643,784 +7783,281 @@ let selectedHeadlineFont = 'Anek Malayalam';
           boxCloudConfig.style.display = 'none';
         }
         initFirebaseDatabase();
-        showAdminStatus('💾 Firebase Config saved successfully!', false);
+        showAdminStatus('ðŸ’¾ Firebase Config saved successfully!', false);
       } catch (e) {
         alert('Save failed: ' + e.message);
       }
     });
   }
 
-  if (btnClearCloudConfig) {
-    btnClearCloudConfig.addEventListener('click', function() {
-      if (confirm('Disconnect Firebase cloud database and switch to local mode?')) {
+  if (btnClearFirebaseConfig) {
+    btnClearFirebaseConfig.addEventListener('click', function() {
+      if (confirm('Reset Firebase to local mode?')) {
         try { localStorage.removeItem(FIREBASE_CONFIG_STORAGE_KEY); } catch (e) {}
-        if (firestoreUnsubscribe) { firestoreUnsubscribe(); firestoreUnsubscribe = null; }
-        firebaseDb = null;
-        isFirebaseLive = false;
-        if (txtCloudConfig) txtCloudConfig.value = '';
+        if (txtFirebaseConfig) txtFirebaseConfig.value = '';
         if (boxCloudConfig) {
           boxCloudConfig.classList.add('kv-hidden');
           boxCloudConfig.style.display = 'none';
         }
         updateCloudStatusPill('local', 'Local Mode (Local Only)');
-        showAdminStatus('🗑️ Cloud connection removed. Now running in local mode.', false);
+        showAdminStatus('Reset to Local Mode.', false);
       }
     });
   }
 
-  if (btnSyncDefaults) {
-    btnSyncDefaults.addEventListener('click', function() {
-      if (!firebaseDb || !isFirebaseLive) {
-        alert('⚠️ Please save Firebase Config first to connect to cloud!');
-        if (boxCloudConfig) {
-          boxCloudConfig.classList.remove('kv-hidden');
-          boxCloudConfig.style.display = 'block';
-        }
-        return;
-      }
+  if (btnSyncDefaultsToCloud) {
+    btnSyncDefaultsToCloud.addEventListener('click', function() {
       seedDefaultsToFirestore();
     });
   }
 
-  // Initialize Firebase Cloud DB on load
-  initFirebaseDatabase();
-
-    // =========================================================================
   // LIVE TV STREAM & LIVE RADIO CONFIGURATION LOGIC
-  // =========================================================================
   let liveHlsInstance = null;
-  const DEFAULT_LIVE_STREAM_URL = 'http://103.146.174.75:8888/out/c2-social/index.m3u8';
-  try {
-    localStorage.setItem('kv_live_tv_stream_url', DEFAULT_LIVE_STREAM_URL);
-  } catch(e) {}
-  try {
-    const oldSaved = localStorage.getItem('kv_live_tv_stream_url');
-    if (oldSaved && oldSaved.indexOf('c2-social') !== -1) {
-      localStorage.setItem('kv_live_tv_stream_url', DEFAULT_LIVE_STREAM_URL);
-    }
-  } catch(e) {}
-  const DEFAULT_LIVE_RADIO_URL = 'http://103.146.174.75/stream/out/c2-radio/index.m3u8';
-  const LIVE_STREAM_STORAGE_KEY = 'kv_live_tv_stream_url';
-  const LIVE_RADIO_STORAGE_KEY = 'kv_liveradio_stream_url';
-  let activeModalStreamMode = 'tv';
-  let miniStreamMode = 'tv';
+  const inpLiveStreamUrl = document.getElementById('kvInpLiveStreamUrl');
+  const inpRadioStreamUrl = document.getElementById('kvInpRadioStreamUrl');
+  const btnSaveLiveStreamUrl = document.getElementById('kvBtnSaveLiveStreamUrl');
+  const btnClearLiveStreamUrl = document.getElementById('kvBtnClearLiveStreamUrl');
+  const btnPreviewLiveTv = document.getElementById('kvBtnPreviewLiveTv');
+  const liveStreamStatusBadge = document.getElementById('kvLiveStreamStatusBadge');
 
   function getSavedLiveStreamUrl() {
     try {
-      let saved = localStorage.getItem(LIVE_STREAM_STORAGE_KEY);
-      if (saved && saved.trim()) {
-        saved = saved.replace(/^ffplay\s+-i\s+/i, '').trim();
-        return saved;
-      }
-      return DEFAULT_LIVE_STREAM_URL;
-    } catch (e) {
-      return DEFAULT_LIVE_STREAM_URL;
-    }
+      const saved = localStorage.getItem('kv_live_tv_stream_url');
+      if (saved && saved.trim()) return saved.trim();
+    } catch(e){}
+    return '';
   }
 
   function getSavedRadioStreamUrl() {
     try {
-      const r = localStorage.getItem(LIVE_RADIO_STORAGE_KEY);
-      if (r && r.trim()) return r.trim();
-      return DEFAULT_LIVE_RADIO_URL;
-    } catch (e) {
-      return DEFAULT_LIVE_RADIO_URL;
-    }
-  }
-
-  function showStreamMixedNotice(isMini) {
-    if (window.location.protocol === 'https:') {
-      const standbyMsg = isMini ? document.getElementById('kvMiniTvStandby') : document.getElementById('kvLiveTvStandbyScreen');
-      if (standbyMsg) {
-        standbyMsg.style.display = 'flex';
-        let noticeEl = standbyMsg.querySelector('.mixed-stream-notice');
-        if (!noticeEl) {
-          noticeEl = document.createElement('div');
-          noticeEl.className = 'mixed-stream-notice';
-          noticeEl.style.cssText = 'position:absolute; inset:0; background:rgba(3,7,18,0.94); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px; text-align:center; z-index:10; backdrop-filter:blur(6px);';
-          noticeEl.innerHTML = `
-            <div style="font-size:24px; filter:drop-shadow(0 0 8px rgba(56,189,248,0.7));">📺</div>
-            <div style="font-size:13px; font-weight:900; color:#fff; letter-spacing:0.5px; margin-top:2px;">KOZHIKODE VISION LIVE BROADCAST</div>
-            <div style="font-size:11px; color:#cbd5e1; margin:6px 0 12px 0; line-height:1.45; max-width:320px;">
-              HTTPS ബ്രൗസറിലെ സുരക്ഷാ പോളിസി കാരണം സ്ട്രീം തടസ്സമില്ലാതെ പ്ലേ ചെയ്യാൻ താഴെയുള്ള പ്ലെയർ ഓപ്ഷനുകൾ ഉപയോഗിക്കുക:
-            </div>
-            <div style="display:flex; flex-direction:column; gap:8px; width:100%; max-width:300px;">
-              <a href="http://103.146.174.75/watch" target="_blank" rel="noopener noreferrer" class="btn-tactile" style="font-size:12px; font-weight:800; background:linear-gradient(135deg, #ef4444, #b91c1c); color:#fff; padding:8px 16px; border-radius:8px; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 3px 12px rgba(239,68,68,0.45); border:1px solid #f87171;">
-                <span>🔴 Official Kozhikode Vision Player</span>
-                <span>↗</span>
-              </a>
-              <a href="http://103.146.174.75:8888/out/c2-social/" target="_blank" rel="noopener noreferrer" class="btn-tactile" style="font-size:11.5px; font-weight:800; background:linear-gradient(135deg, #0284c7, #0369a1); color:#fff; padding:8px 16px; border-radius:8px; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 3px 12px rgba(2,132,199,0.4); border:1px solid #38bdf8;">
-                <span>📺 MediaMTX Full HD Player</span>
-                <span>↗</span>
-              </a>
-            </div>
-            <div style="font-size:10px; color:#38bdf8; margin-top:10px;">
-              📱 Kozhikode Vision Android APK-യിൽ ഇൻ-ആപ്പായി നേരിട്ട് ലഭ്യമാണ്.
-            </div>
-          `;
-          standbyMsg.appendChild(noticeEl);
-        } else {
-          noticeEl.style.display = 'flex';
-        }
-      }
-    }
-  }
-
-  function hideStreamMixedNotice(isMini) {
-    const standbyMsg = isMini ? document.getElementById('kvMiniTvStandby') : document.getElementById('kvLiveTvStandbyScreen');
-    if (standbyMsg) {
-      const noticeEl = standbyMsg.querySelector('.mixed-stream-notice');
-      if (noticeEl) noticeEl.style.display = 'none';
-    }
+      const saved = localStorage.getItem('kv_liveradio_stream_url');
+      if (saved && saved.trim()) return saved.trim();
+    } catch(e){}
+    return '';
   }
 
   function updateLiveStreamBadge(url) {
-    const badge = document.getElementById('kvLiveStreamStatusBadge');
-    if (badge) {
-      if (url && url.trim()) {
-        badge.textContent = '🟢 Live Stream Active';
-        badge.style.background = '#065f46';
-        badge.style.color = '#6ee7b7';
-      } else {
-        badge.textContent = '🔴 Stream Standby (No Link)';
-        badge.style.background = '#7f1d1d';
-        badge.style.color = '#fca5a5';
-      }
-    }
-  }
-
-  function setModalStreamMode(mode) {
-    activeModalStreamMode = mode;
-    const btnTv = document.getElementById('btnModalModeTv');
-    const btnRadio = document.getElementById('btnModalModeRadio');
-    const video = document.getElementById('kvLiveTvVideo');
-    const radioScreen = document.getElementById('kvLiveRadioScreen');
-    const standby = document.getElementById('kvLiveTvStandbyScreen');
-    const radioLogo = document.getElementById('kvRadioLogoImg');
-    const radioEq = document.getElementById('radioEqBars');
-    const lblPlayIcon = document.getElementById('lblRadioPlayIcon');
-    const lblPlayText = document.getElementById('lblRadioPlayText');
-
-    if (radioLogo && typeof OFFICIAL_LOGO_B64 !== 'undefined') radioLogo.src = OFFICIAL_LOGO_B64;
-
-    if (mode === 'radio') {
-      if (btnTv) btnTv.classList.remove('active');
-      if (btnRadio) btnRadio.classList.add('active');
-      if (standby) standby.style.display = 'none';
-      if (radioScreen) radioScreen.style.display = 'flex';
-
-      const radioUrl = getSavedRadioStreamUrl();
-      if (radioUrl && radioUrl.trim()) {
-        if (radioEq) radioEq.classList.remove('paused');
-        if (video) {
-          video.style.display = 'none'; // Audio only in radio mode
-          playHlsStream(video, radioUrl.trim());
-        }
-        if (lblPlayIcon) lblPlayIcon.textContent = '⏸️';
-        if (lblPlayText) lblPlayText.textContent = 'Pause';
-      } else {
-        if (video) {
-          video.pause();
-          video.style.display = 'none';
-        }
-        if (radioEq) radioEq.classList.add('paused');
-        if (lblPlayIcon) lblPlayIcon.textContent = '▶️';
-        if (lblPlayText) lblPlayText.textContent = 'Play';
-      }
+    if (!liveStreamStatusBadge) return;
+    if (url && url.trim()) {
+      liveStreamStatusBadge.style.background = '#065f46';
+      liveStreamStatusBadge.style.color = '#34d399';
+      liveStreamStatusBadge.innerHTML = 'ðŸŸ¢ Live Stream Connected';
     } else {
-      // TV Mode
-      if (btnRadio) btnRadio.classList.remove('active');
-      if (btnTv) btnTv.classList.add('active');
-      if (radioScreen) radioScreen.style.display = 'none';
-
-      const streamUrl = getSavedLiveStreamUrl();
-      if (streamUrl && streamUrl.trim()) {
-        if (standby) standby.style.display = 'none';
-        if (video) {
-          video.style.display = 'block';
-          playHlsStream(video, streamUrl.trim());
-        }
-      } else {
-        if (video) {
-          video.style.display = 'none';
-          video.pause();
-        }
-        if (standby) standby.style.display = 'flex';
-      }
+      liveStreamStatusBadge.style.background = '#7f1d1d';
+      liveStreamStatusBadge.style.color = '#fca5a5';
+      liveStreamStatusBadge.innerHTML = 'ðŸ”´ Stream Standby (No Link)';
     }
   }
 
-  function openLiveTvPlayer(targetMode) {
-    const modal = document.getElementById('kvLiveTvModal');
-    const adminHelper = document.getElementById('kvLiveTvAdminHelper');
-    const logo = document.getElementById('kvLiveTvLogoImg');
-    const radioLogo = document.getElementById('kvRadioLogoImg');
-    if (logo && typeof OFFICIAL_LOGO_B64 !== 'undefined') logo.src = OFFICIAL_LOGO_B64;
-    if (radioLogo && typeof OFFICIAL_LOGO_B64 !== 'undefined') radioLogo.src = OFFICIAL_LOGO_B64;
+  const initialStreamUrl = getSavedLiveStreamUrl();
+  const initialRadioUrl = getSavedRadioStreamUrl();
+  if (inpLiveStreamUrl) inpLiveStreamUrl.value = initialStreamUrl;
+  if (inpRadioStreamUrl) inpRadioStreamUrl.value = initialRadioUrl;
+  updateLiveStreamBadge(initialStreamUrl);
 
-    // Pause mini TV while big player is active
-    stopMiniLiveTv();
-
-    if (modal) modal.classList.remove('kv-hidden');
-
-    const isAdmin = window.KV_ACTIVE_USER && window.KV_ACTIVE_USER.role === 'admin';
-    if (adminHelper) adminHelper.style.display = isAdmin ? 'block' : 'none';
-
-    if (targetMode && (targetMode === 'tv' || targetMode === 'radio')) {
-      activeModalStreamMode = targetMode;
-    }
-    setModalStreamMode(activeModalStreamMode || 'tv');
-  }
-
-  function closeLiveTvPlayer() {
-    const modal = document.getElementById('kvLiveTvModal');
-    const video = document.getElementById('kvLiveTvVideo');
-    const iframe = document.getElementById('kvLiveTvIframe');
-    if (modal) modal.classList.add('kv-hidden');
-    if (video) {
-      video.pause();
-      video.removeAttribute('src');
-      video.load();
-    }
-    if (iframe) {
-      iframe.src = '';
-      iframe.style.display = 'none';
-    }
-    if (liveHlsInstance) {
-      liveHlsInstance.destroy();
-      liveHlsInstance = null;
-    }
-    // Resume Mini TV / Radio if on video mode
-    if (cardType === 'video') {
-      if (miniStreamMode === 'radio') {
-        showMiniRadio();
-      } else {
-        initMiniLiveTv();
-      }
-    }
-  }
-
-  function playHlsStream(videoElement, url) {
-    if (liveHlsInstance) {
-      liveHlsInstance.destroy();
-      liveHlsInstance = null;
-    }
-    const standby = document.getElementById('kvLiveTvStandbyScreen');
-    const iframe = document.getElementById('kvLiveTvIframe');
-    hideStreamMixedNotice(false);
-
-    // If on HTTPS, modern browsers block insecure HTTP HLS XHR without CORS:
-    if (window.location.protocol === 'https:') {
-      showStreamMixedNotice(false);
-      return;
-    }
-
-    // In Android APK (file://) or HTTP local server, the embedded MediaMTX player iframe plays directly!
-    if (iframe && (window.location.protocol === 'file:' || window.location.protocol === 'http:')) {
-      iframe.src = 'http://103.146.174.75:8888/out/c2-social/';
-      iframe.style.display = 'block';
-      if (videoElement) videoElement.style.display = 'none';
-      if (standby) standby.style.display = 'none';
-      return;
-    }
-
-    if (typeof Hls !== 'undefined' && Hls.isSupported()) {
-      liveHlsInstance = new Hls({ enableWorker: true });
-      liveHlsInstance.loadSource(url);
-      liveHlsInstance.attachMedia(videoElement);
-      liveHlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
-        if (standby) standby.style.display = 'none';
-        videoElement.style.display = 'block';
-        videoElement.play().catch(function() {});
-      });
-      liveHlsInstance.on(Hls.Events.ERROR, function(event, data) {
-        if (data && data.fatal) {
-          console.warn('HLS stream fatal error:', data);
-          if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-            showStreamMixedNotice(false);
-          }
-        }
-      });
-    } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-      videoElement.src = url;
-      videoElement.addEventListener('loadedmetadata', function() {
-        if (standby) standby.style.display = 'none';
-        videoElement.style.display = 'block';
-        videoElement.play().catch(function() {});
-      });
-      videoElement.addEventListener('error', function() {
-        showStreamMixedNotice(false);
-      });
-    } else {
-      videoElement.src = url;
-    }
-  }
-
-  // ==============================================
-  // MINI LIVE TV & MINI LIVE RADIO SCREEN IN VIDEO TAB
-  // ==============================================
-  let miniLiveHlsInstance = null;
-
-  function initMiniLiveTv() {
-    const miniWidget = document.getElementById('videoTabLiveTvWidget');
-    if (!miniWidget || miniWidget.style.display === 'none') return;
-
-    if (miniStreamMode === 'radio') {
-      showMiniRadio();
-      return;
-    }
-
-    const miniVideo = document.getElementById('kvMiniTvVideo');
-    const miniStandby = document.getElementById('kvMiniTvStandby');
-    const miniRadioScreen = document.getElementById('kvMiniRadioScreen');
-    const sideLivetvBody = document.getElementById('sideLivetvBody');
-    const btnMiniToggleRadio = document.getElementById('btnMiniToggleRadio');
-
-    if (btnMiniToggleRadio) {
-      btnMiniToggleRadio.textContent = '📻 Radio';
-      btnMiniToggleRadio.title = 'Switch to Live Radio mode';
-    }
-    if (miniRadioScreen) miniRadioScreen.style.display = 'none';
-
-    if (sideLivetvBody) {
-      sideLivetvBody.classList.remove('collapsed');
-      sideLivetvBody.style.display = 'block';
-    }
-
-    const streamUrl = getSavedLiveStreamUrl();
-    if (miniVideo) {
-      miniVideo.style.display = 'block';
-      miniVideo.muted = true;
-      if (miniStandby) miniStandby.style.display = 'none';
-      if (streamUrl && streamUrl.trim()) {
-        playMiniHlsStream(miniVideo, streamUrl.trim());
-      }
-    }
-  }
-
-  function showMiniRadio() {
-    miniStreamMode = 'radio';
-    const miniVideo = document.getElementById('kvMiniTvVideo');
-    const miniStandby = document.getElementById('kvMiniTvStandby');
-    const miniRadioScreen = document.getElementById('kvMiniRadioScreen');
-    const btnMiniToggleRadio = document.getElementById('btnMiniToggleRadio');
-    const miniLogo = document.getElementById('kvMiniRadioLogoImg');
-    const miniEq = document.getElementById('miniRadioEqBars');
-    const sideLivetvBody = document.getElementById('sideLivetvBody');
-
-    if (sideLivetvBody) {
-      sideLivetvBody.classList.remove('collapsed');
-      sideLivetvBody.style.display = 'block';
-    }
-    if (miniLogo && typeof OFFICIAL_LOGO_B64 !== 'undefined') miniLogo.src = OFFICIAL_LOGO_B64;
-    if (btnMiniToggleRadio) {
-      btnMiniToggleRadio.textContent = '📺 TV';
-      btnMiniToggleRadio.title = 'Switch to Live TV mode';
-    }
-    if (miniStandby) miniStandby.style.display = 'none';
-    if (miniRadioScreen) miniRadioScreen.style.display = 'block';
-
-    const radioUrl = getSavedRadioStreamUrl();
-    if (radioUrl && radioUrl.trim()) {
-      if (miniEq) miniEq.classList.remove('paused');
-      if (miniVideo) {
-        miniVideo.style.display = 'none'; // Audio only
-        playMiniHlsStream(miniVideo, radioUrl.trim());
-      }
-    } else {
-      if (miniVideo) {
-        miniVideo.pause();
-        miniVideo.style.display = 'none';
-      }
-      if (miniEq) miniEq.classList.add('paused');
-    }
-  }
-
-  function showMiniTv() {
-    miniStreamMode = 'tv';
-    initMiniLiveTv();
-  }
-
-  function showStreamInsecureGuide(container) {
-    if (!container) return;
-    let guide = container.querySelector('.stream-insecure-guide');
-    if (!guide) {
-      guide = document.createElement('div');
-      guide.className = 'stream-insecure-guide';
-      guide.style.cssText = 'position:absolute; inset:0; background:rgba(3,7,18,0.94); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px; text-align:center; z-index:10;';
-      guide.innerHTML = `
-        <div style="font-size:22px; filter:drop-shadow(0 0 8px rgba(56,189,248,0.7));">📺</div>
-        <div style="font-size:11px; font-weight:900; color:#fff; letter-spacing:0.5px; margin:2px 0;">KOZHIKODE VISION LIVE</div>
-        <div style="font-size:9px; color:#fbbf24; background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.35); border-radius:6px; padding:5px 8px; line-height:1.35; max-width:250px; margin:4px 0;">
-          🔒 <b>To play right here in browser:</b><br>
-          Click <b>🔒 icon</b> in address bar → <b>Site settings</b> → set <b>Insecure content</b> to <b>Allow</b> & reload!
-        </div>
-        <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap; justify-content:center;">
-          <a href="http://103.146.174.75/watch" target="_blank" rel="noopener noreferrer" class="btn-tactile" style="font-size:9.5px; font-weight:800; background:linear-gradient(135deg, #ef4444, #b91c1c); color:#fff; padding:4px 10px; border-radius:6px; text-decoration:none; display:inline-flex; align-items:center; gap:4px; box-shadow:0 2px 8px rgba(239,68,68,0.4); border:1px solid #f87171;">
-            <span>🔴 Kozhikode Vision Player ↗</span>
-          </a>
-          <a href="http://103.146.174.75:8888/out/c2-social/" target="_blank" rel="noopener noreferrer" class="btn-tactile" style="font-size:9.5px; font-weight:800; background:linear-gradient(135deg, #0284c7, #0369a1); color:#fff; padding:4px 10px; border-radius:6px; text-decoration:none; display:inline-flex; align-items:center; gap:4px; box-shadow:0 2px 8px rgba(2,132,199,0.4); border:1px solid #38bdf8;">
-            <span>📺 MediaMTX Player ↗</span>
-          </a>
-        </div>
-        <div style="font-size:8px; color:#94a3b8; margin-top:4px;">
-          (Plays automatically in Android App & Offline Studio)
-        </div>
-      `;
-      container.appendChild(guide);
-    } else {
-      guide.style.display = 'flex';
-    }
-  }
-
-  function playMiniHlsStream(videoEl, url) {
-    if (miniLiveHlsInstance) {
-      miniLiveHlsInstance.destroy();
-      miniLiveHlsInstance = null;
-    }
-    const miniStandby = document.getElementById('kvMiniTvStandby');
-    if (miniStandby) {
-      const g = miniStandby.querySelector('.stream-insecure-guide');
-      if (g) g.style.display = 'none';
-    }
-    videoEl.muted = true;
-    videoEl.setAttribute('playsinline', '');
-    videoEl.setAttribute('muted', '');
-
-    if (typeof Hls !== 'undefined' && Hls.isSupported()) {
-      miniLiveHlsInstance = new Hls({
-        enableWorker: true,
-        lowLatencyMode: true,
-        backBufferLength: 30
-      });
-      miniLiveHlsInstance.loadSource(url);
-      miniLiveHlsInstance.attachMedia(videoEl);
-      miniLiveHlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
-        if (miniStandby) miniStandby.style.display = 'none';
-        videoEl.style.display = 'block';
-        videoEl.play().catch(function(e) { console.warn('Play interrupted:', e); });
-      });
-      miniLiveHlsInstance.on(Hls.Events.ERROR, function(event, data) {
-        if (data && data.fatal) {
-          console.warn('Mini HLS stream fatal error:', data);
-          if (data.type === Hls.ErrorTypes.NETWORK_ERROR && window.location.protocol === 'https:') {
-            videoEl.style.display = 'none';
-            if (miniStandby) {
-              miniStandby.style.display = 'flex';
-              showStreamInsecureGuide(miniStandby);
-            }
-          }
-        }
-      });
-    } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
-      videoEl.src = url;
-      videoEl.addEventListener('loadedmetadata', function() {
-        if (miniStandby) miniStandby.style.display = 'none';
-        videoEl.style.display = 'block';
-        videoEl.play().catch(function() {});
-      });
-      videoEl.addEventListener('error', function() {
-        if (window.location.protocol === 'https:') {
-          videoEl.style.display = 'none';
-          if (miniStandby) {
-            miniStandby.style.display = 'flex';
-            showStreamInsecureGuide(miniStandby);
-          }
-        }
-      });
-    } else {
-      videoEl.src = url;
-    }
-  }
-
-  function stopMiniLiveTv() {
-    const miniVideo = document.getElementById('kvMiniTvVideo');
-    if (miniVideo) {
-      miniVideo.pause();
-      miniVideo.removeAttribute('src');
-      miniVideo.load();
-    }
-    if (miniLiveHlsInstance) {
-      miniLiveHlsInstance.destroy();
-      miniLiveHlsInstance = null;
-    }
-  }
-
-  // Mini TV / Radio Button Listeners
-  const btnMiniToggleRadio = document.getElementById('btnMiniToggleRadio');
-  const btnMiniTvMute = document.getElementById('btnMiniTvMute');
-  const btnMiniTvExpand = document.getElementById('btnMiniTvExpand');
-  const btnMiniTvOpenModal = document.getElementById('btnMiniTvOpenModal');
-  const btnMiniTvCollapse = document.getElementById('btnMiniTvCollapse');
-  const sideLivetvBody = document.getElementById('sideLivetvBody');
-  const kvMiniRadioScreen = document.getElementById('kvMiniRadioScreen');
-
-  if (btnMiniToggleRadio) {
-    btnMiniToggleRadio.addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (miniStreamMode === 'radio') {
-        showMiniTv();
-      } else {
-        showMiniRadio();
-      }
-    });
-  }
-
-  if (kvMiniRadioScreen) {
-    kvMiniRadioScreen.addEventListener('click', function() {
-      openLiveTvPlayer('radio');
-    });
-  }
-
-  if (btnMiniTvCollapse && sideLivetvBody) {
-    btnMiniTvCollapse.addEventListener('click', function() {
-      const isCollapsed = sideLivetvBody.classList.toggle('collapsed');
-      btnMiniTvCollapse.textContent = isCollapsed ? '▾ Show' : '▴ Hide';
-      btnMiniTvCollapse.title = isCollapsed ? 'Show Live TV' : 'Hide Live TV';
-    });
-  }
-
-  if (btnMiniTvMute) {
-    btnMiniTvMute.addEventListener('click', function() {
-      const v = document.getElementById('kvMiniTvVideo');
-      if (v) {
-        v.muted = !v.muted;
-        btnMiniTvMute.textContent = v.muted ? '🔇' : '🔊';
-        btnMiniTvMute.title = v.muted ? 'Unmute Audio' : 'Mute Audio';
-      }
-    });
-  }
-  if (btnMiniTvExpand) {
-    btnMiniTvExpand.addEventListener('click', function() {
-      openLiveTvPlayer(miniStreamMode);
-    });
-  }
-  if (btnMiniTvOpenModal) {
-    btnMiniTvOpenModal.addEventListener('click', function() {
-      openLiveTvPlayer(miniStreamMode);
-    });
-  }
-
-  // Modal Mode Switchers: TV vs Radio
-  const btnModalModeTv = document.getElementById('btnModalModeTv');
-  const btnModalModeRadio = document.getElementById('btnModalModeRadio');
-  if (btnModalModeTv) {
-    btnModalModeTv.addEventListener('click', function() {
-      setModalStreamMode('tv');
-    });
-  }
-  if (btnModalModeRadio) {
-    btnModalModeRadio.addEventListener('click', function() {
-      setModalStreamMode('radio');
-    });
-  }
-
-  // Radio Controls inside Modal
-  const btnRadioPlayPause = document.getElementById('btnRadioPlayPause');
-  const btnRadioMute = document.getElementById('btnRadioMute');
-  const lblRadioPlayIcon = document.getElementById('lblRadioPlayIcon');
-  const lblRadioPlayText = document.getElementById('lblRadioPlayText');
-  const lblRadioMuteIcon = document.getElementById('lblRadioMuteIcon');
-  const radioEqBars = document.getElementById('radioEqBars');
-
-  if (btnRadioPlayPause) {
-    btnRadioPlayPause.addEventListener('click', function() {
-      const video = document.getElementById('kvLiveTvVideo');
-      if (!video) return;
-      if (video.paused) {
-        video.play().then(function() {
-          if (lblRadioPlayIcon) lblRadioPlayIcon.textContent = '⏸️';
-          if (lblRadioPlayText) lblRadioPlayText.textContent = 'Pause';
-          if (radioEqBars) radioEqBars.classList.remove('paused');
-        }).catch(function(){});
-      } else {
-        video.pause();
-        if (lblRadioPlayIcon) lblRadioPlayIcon.textContent = '▶️';
-        if (lblRadioPlayText) lblRadioPlayText.textContent = 'Play';
-        if (radioEqBars) radioEqBars.classList.add('paused');
-      }
-    });
-  }
-
-  if (btnRadioMute) {
-    btnRadioMute.addEventListener('click', function() {
-      const video = document.getElementById('kvLiveTvVideo');
-      if (!video) return;
-      video.muted = !video.muted;
-      if (lblRadioMuteIcon) lblRadioMuteIcon.textContent = video.muted ? '🔇' : '🔊';
-    });
-  }
-
-  // Button Listeners for Live TV Modal
-  const btnOpenLiveTv = document.getElementById('kvBtnOpenLiveTv');
-  const btnCloseLiveTv = document.getElementById('btnCloseLiveTv');
-  const btnOpenAdminFromLive = document.getElementById('btnOpenAdminFromLiveTv');
-
-  if (btnOpenLiveTv) {
-    btnOpenLiveTv.addEventListener('click', function() {
-      openLiveTvPlayer('tv');
-    });
-  }
-  if (btnCloseLiveTv) btnCloseLiveTv.addEventListener('click', closeLiveTvPlayer);
-  if (btnOpenAdminFromLive) {
-    btnOpenAdminFromLive.addEventListener('click', function() {
-      closeLiveTvPlayer();
-      if (btnOpenAdmin) btnOpenAdmin.click();
-    });
-  }
-
-  // Admin Live Stream URL inputs & buttons
-  const inpLiveStreamUrl = document.getElementById('kvInpLiveStreamUrl');
-  const inpRadioStreamUrl = document.getElementById('kvInpRadioStreamUrl');
-  const btnSaveLiveStream = document.getElementById('kvBtnSaveLiveStreamUrl');
-  const btnClearLiveStream = document.getElementById('kvBtnClearLiveStreamUrl');
-  const btnPreviewLiveTv = document.getElementById('kvBtnPreviewLiveTv');
-
-  const curSavedStream = getSavedLiveStreamUrl();
-  if (inpLiveStreamUrl) inpLiveStreamUrl.value = curSavedStream;
-  if (inpRadioStreamUrl) {
-    try {
-      inpRadioStreamUrl.value = localStorage.getItem(LIVE_RADIO_STORAGE_KEY) || '';
-    } catch(e) {}
-  }
-  updateLiveStreamBadge(curSavedStream);
-
-  if (btnSaveLiveStream && inpLiveStreamUrl) {
-    btnSaveLiveStream.addEventListener('click', function() {
-      const url = inpLiveStreamUrl.value.trim();
-      const radioUrl = inpRadioStreamUrl ? inpRadioStreamUrl.value.trim() : '';
-      if (!url && !radioUrl) {
-        alert('⚠️ Please enter a valid .m3u8 or radio stream URL.');
-        return;
-      }
+  if (btnSaveLiveStreamUrl) {
+    btnSaveLiveStreamUrl.addEventListener('click', function() {
+      const streamVal = (inpLiveStreamUrl ? inpLiveStreamUrl.value : '').trim();
+      const radioVal = (inpRadioStreamUrl ? inpRadioStreamUrl.value : '').trim();
       try {
-        if (url) {
-          localStorage.setItem(LIVE_STREAM_STORAGE_KEY, url);
+        if (streamVal) {
+          localStorage.setItem('kv_live_tv_stream_url', streamVal);
         } else {
-          localStorage.removeItem(LIVE_STREAM_STORAGE_KEY);
+          localStorage.removeItem('kv_live_tv_stream_url');
         }
-        if (radioUrl) {
-          localStorage.setItem(LIVE_RADIO_STORAGE_KEY, radioUrl);
+
+        if (radioVal) {
+          localStorage.setItem('kv_liveradio_stream_url', radioVal);
         } else {
-          localStorage.removeItem(LIVE_RADIO_STORAGE_KEY);
+          localStorage.removeItem('kv_liveradio_stream_url');
         }
-        updateLiveStreamBadge(url || radioUrl);
-        // Sync to Firestore if live
+
         if (firebaseDb && isFirebaseLive) {
           firebaseDb.collection('kv_settings').doc('live_stream').set({
-            url: url || '',
-            radioUrl: radioUrl || '',
-            updatedAt: new Date().toISOString()
+            url: streamVal,
+            radioUrl: radioVal,
+            updatedAt: Date.now()
           }, { merge: true }).catch(function(){});
         }
-        showAdminStatus('✅ Live stream settings saved! Live TV & Radio are ready.', false);
-        if (typeof showToast === 'function') {
-          showToast('✅ Live stream links saved!');
-        }
-        if (typeof initMiniLiveTv === 'function') {
-          initMiniLiveTv();
-        }
-      } catch (e) {
+
+        updateLiveStreamBadge(streamVal);
+        showAdminStatus('ðŸ’¾ Live stream links saved successfully!', false);
+        if (typeof showToast === 'function') showToast('ðŸ“º Live stream settings updated!');
+      } catch(e) {
         alert('Save failed: ' + e.message);
       }
     });
   }
 
-  if (btnClearLiveStream && inpLiveStreamUrl) {
-    btnClearLiveStream.addEventListener('click', function() {
-      if (confirm('Remove Live TV & Radio stream links and reset to Standby mode?')) {
-        try {
-          localStorage.removeItem(LIVE_STREAM_STORAGE_KEY);
-          localStorage.removeItem(LIVE_RADIO_STORAGE_KEY);
-          inpLiveStreamUrl.value = '';
-          if (inpRadioStreamUrl) inpRadioStreamUrl.value = '';
-          updateLiveStreamBadge('');
-          if (firebaseDb && isFirebaseLive) {
-            firebaseDb.collection('kv_settings').doc('live_stream').set({
-              url: '',
-              radioUrl: '',
-              updatedAt: new Date().toISOString()
-            }, { merge: true }).catch(function(){});
-          }
-          showAdminStatus('🗑️ Stream links removed (Standby Mode).', false);
-          if (typeof initMiniLiveTv === 'function') {
-            initMiniLiveTv();
-          }
-        } catch (e) {}
-      }
+  if (btnClearLiveStreamUrl) {
+    btnClearLiveStreamUrl.addEventListener('click', function() {
+      try {
+        localStorage.removeItem('kv_live_tv_stream_url');
+        localStorage.removeItem('kv_liveradio_stream_url');
+        if (inpLiveStreamUrl) inpLiveStreamUrl.value = '';
+        if (inpRadioStreamUrl) inpRadioStreamUrl.value = '';
+        updateLiveStreamBadge('');
+        if (firebaseDb && isFirebaseLive) {
+          firebaseDb.collection('kv_settings').doc('live_stream').set({
+            url: '',
+            radioUrl: '',
+            updatedAt: Date.now()
+          }, { merge: true }).catch(function(){});
+        }
+        showAdminStatus('Stream reset to standby.', false);
+      } catch(e) {}
     });
   }
 
-  if (btnPreviewLiveTv) {
-    btnPreviewLiveTv.addEventListener('click', function() {
-      if (adminModal) adminModal.classList.add('kv-hidden');
-      openLiveTvPlayer('tv');
-    });
-  }
+  // Live TV Modal Controls
+  const liveTvModal = document.getElementById('kvLiveTvModal');
+  const liveTvVideo = document.getElementById('kvLiveTvVideo');
+  const liveTvAudio = document.getElementById('kvLiveTvAudio');
+  const liveTvStandby = document.getElementById('kvLiveTvStandby');
+  const btnCloseLiveTv = document.getElementById('kvBtnCloseLiveTv');
+  const btnOpenLiveTv = document.getElementById('kvBtnOpenLiveTv');
+  const tabBtnWatchTv = document.getElementById('kvTabBtnWatchTv');
+  const tabBtnListenRadio = document.getElementById('kvTabBtnListenRadio');
+  const tabPaneWatchTv = document.getElementById('kvTabPaneWatchTv');
+  const tabPaneListenRadio = document.getElementById('kvTabPaneListenRadio');
+  const btnRadioPlayPause = document.getElementById('kvBtnRadioPlayPause');
+  const radioWaveBox = document.getElementById('kvRadioWaveBox');
+  const radioPlayStatusText = document.getElementById('kvRadioPlayStatusText');
 
-  // Restore saved session if exists (checks both localStorage and sessionStorage!)
-  try {
-    const savedUid = localStorage.getItem('kv_saved_session_uid') || sessionStorage.getItem(SESSION_USER_KEY);
-    if (savedUid) {
-      const found = getDemoUsers().find(function(u) { return u.uid === savedUid && u.active !== false && !u.deleted; });
-      if (found) {
-        unlockApp(found);
-      }
+  let currentLiveTab = 'tv';
+
+  function playLiveStream(url) {
+    if (!liveTvVideo) return;
+    if (liveHlsInstance) {
+      liveHlsInstance.destroy();
+      liveHlsInstance = null;
     }
-  } catch (e) {}
 
-  // Wire up 1-Click Quick Admin Button
-  const btnQuickAdmin = document.getElementById('kvBtnQuickAdmin');
-  if (btnQuickAdmin) {
-    btnQuickAdmin.addEventListener('click', function(e) {
-      e.preventDefault();
-      const users = getDemoUsers();
-      const admin = users.find(function(u) { return u.role === 'admin' && !u.deleted; }) || users[0];
-      if (admin) {
-        try {
-          localStorage.setItem('kv_saved_session_uid', admin.uid);
-          sessionStorage.setItem(SESSION_USER_KEY, admin.uid);
-        } catch (e) {}
-        unlockApp(admin);
-      }
-    });
-  }
-
-  // Login form submit
-  authForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    showAuthError('');
-    const typed = norm(inpUser.value);
-    const pass = String(inpPass.value || '').trim();
-
-    const users = getDemoUsers();
-    const match = users.find(function(u) {
-      const matchUser = u.username && norm(u.username) === typed;
-      const matchName = u.name && norm(u.name) === typed;
-      const matchEmail = u.email && norm(u.email) === typed;
-      return (matchUser || matchName || matchEmail) && String(u.password || '').trim() === pass;
-    });
-
-    if (!match) {
-      showAuthError('❌ Invalid username or password.');
-      return;
-    }
-    if (match.deleted || match.active === false) {
-      showAuthError('🚫 Your account has been blocked by Admin.');
+    if (!url) {
+      if (liveTvVideo) liveTvVideo.style.display = 'none';
+      if (liveTvStandby) liveTvStandby.style.display = 'flex';
       return;
     }
 
-    try { localStorage.setItem('kv_saved_session_uid', match.uid); sessionStorage.setItem(SESSION_USER_KEY, match.uid); } catch (e) {}
-    unlockApp(match);
-  });
+    if (liveTvStandby) liveTvStandby.style.display = 'none';
+    if (liveTvVideo) liveTvVideo.style.display = 'block';
 
-  btnLogout.addEventListener('click', function() {
-    try { localStorage.removeItem('kv_saved_session_uid'); sessionStorage.removeItem(SESSION_USER_KEY); } catch (e) {}
-    lockApp();
-  });
+    if (window.Hls && Hls.isSupported()) {
+      liveHlsInstance = new Hls({ enableWorker: true, lowLatencyMode: true });
+      liveHlsInstance.loadSource(url);
+      liveHlsInstance.attachMedia(liveTvVideo);
+      liveHlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
+        liveTvVideo.play().catch(function(){});
+      });
+      liveHlsInstance.on(Hls.Events.ERROR, function(event, data) {
+        if (data.fatal) {
+          console.warn('HLS Fatal Error, fallback to standby:', data.type);
+          if (liveTvStandby) liveTvStandby.style.display = 'flex';
+          if (liveTvVideo) liveTvVideo.style.display = 'none';
+        }
+      });
+    } else if (liveTvVideo.canPlayType('application/vnd.apple.mpegurl')) {
+      liveTvVideo.src = url;
+      liveTvVideo.addEventListener('loadedmetadata', function() {
+        liveTvVideo.play().catch(function(){});
+      });
+    } else {
+      liveTvVideo.src = url;
+      liveTvVideo.play().catch(function(){});
+    }
+  }
+
+  function stopLiveStream() {
+    if (liveHlsInstance) {
+      liveHlsInstance.destroy();
+      liveHlsInstance = null;
+    }
+    if (liveTvVideo) {
+      liveTvVideo.pause();
+      liveTvVideo.src = '';
+    }
+    if (liveTvAudio) {
+      liveTvAudio.pause();
+      liveTvAudio.src = '';
+    }
+    if (radioWaveBox) radioWaveBox.classList.remove('playing');
+    if (btnRadioPlayPause) btnRadioPlayPause.innerHTML = 'â–¶ Start Radio Audio';
+    if (radioPlayStatusText) radioPlayStatusText.textContent = 'Audio Standby';
+  }
+
+  function openLiveTvModal() {
+    if (!liveTvModal) return;
+    liveTvModal.classList.remove('kv-hidden');
+    switchLiveTab('tv');
+    const streamUrl = getSavedLiveStreamUrl();
+    playLiveStream(streamUrl);
+  }
+
+  function closeLiveTvModal() {
+    if (!liveTvModal) return;
+    stopLiveStream();
+    liveTvModal.classList.add('kv-hidden');
+  }
+
+  function switchLiveTab(tab) {
+    currentLiveTab = tab;
+    if (tab === 'tv') {
+      if (tabBtnWatchTv) tabBtnWatchTv.classList.add('active');
+      if (tabBtnListenRadio) tabBtnListenRadio.classList.remove('active');
+      if (tabPaneWatchTv) tabPaneWatchTv.classList.add('active');
+      if (tabPaneListenRadio) tabPaneListenRadio.classList.remove('active');
+      if (liveTvAudio) liveTvAudio.pause();
+      if (radioWaveBox) radioWaveBox.classList.remove('playing');
+      const streamUrl = getSavedLiveStreamUrl();
+      playLiveStream(streamUrl);
+    } else {
+      if (tabBtnListenRadio) tabBtnListenRadio.classList.add('active');
+      if (tabBtnWatchTv) tabBtnWatchTv.classList.remove('active');
+      if (tabPaneListenRadio) tabPaneListenRadio.classList.add('active');
+      if (tabPaneWatchTv) tabPaneWatchTv.classList.remove('active');
+      if (liveTvVideo) liveTvVideo.pause();
+    }
+  }
+
+  if (btnOpenLiveTv) btnOpenLiveTv.addEventListener('click', openLiveTvModal);
+  if (btnPreviewLiveTv) btnPreviewLiveTv.addEventListener('click', openLiveTvModal);
+  if (btnCloseLiveTv) btnCloseLiveTv.addEventListener('click', closeLiveTvModal);
+
+  if (tabBtnWatchTv) {
+    tabBtnWatchTv.addEventListener('click', function() { switchLiveTab('tv'); });
+  }
+  if (tabBtnListenRadio) {
+    tabBtnListenRadio.addEventListener('click', function() { switchLiveTab('radio'); });
+  }
+
+  if (btnRadioPlayPause && liveTvAudio) {
+    btnRadioPlayPause.addEventListener('click', function() {
+      if (!liveTvAudio.paused) {
+        liveTvAudio.pause();
+        radioWaveBox.classList.remove('playing');
+        btnRadioPlayPause.innerHTML = 'â–¶ Start Radio Audio';
+        radioPlayStatusText.textContent = 'Audio Paused';
+      } else {
+        const radUrl = getSavedRadioStreamUrl() || getSavedLiveStreamUrl();
+        if (!radUrl) {
+          alert('No stream link provided. Please configure a stream link in Admin Console.');
+          return;
+        }
+        liveTvAudio.src = radUrl;
+        liveTvAudio.play().then(function() {
+          radioWaveBox.classList.add('playing');
+          btnRadioPlayPause.innerHTML = 'â¸ Pause Radio Audio';
+          radioPlayStatusText.textContent = 'Broadcasting Live Audio ðŸŸ¢';
+        }).catch(function(e) {
+          console.warn('Radio audio play failed:', e);
+          radioPlayStatusText.textContent = 'Playback error: Check Stream URL';
+        });
+      }
+    });
+  }
 
   // =========================================================================
-  // USER PROFILE SETTINGS LOGIC (Change Name, Username, Password, Photo)
+  // 7. USER PROFILE SETTINGS LOGIC (Change Name, Username, Password, Photo)
   // =========================================================================
   const btnOpenProfile = document.getElementById('kvBtnOpenProfile');
   const headerUserPill = document.getElementById('kvHeaderUserPill');
@@ -9448,22 +8085,20 @@ let selectedHeadlineFont = 'Anek Malayalam';
     const errDiv = document.getElementById('kvProfileErrorMsg');
 
     if (nameInp) nameInp.value = user.name || '';
-    if (userInp) userInp.value = user.username || '';
-    if (passInp) passInp.value = '';
-    if (confPassInp) confPassInp.value = '';
-    if (errDiv) { errDiv.style.display = 'none'; errDiv.textContent = ''; }
+    if (userInp) userInp.value = user.username || extractUsername(user.email) || '';
+    if (passInp) passInp.value = user.password || '';
+    if (confPassInp) confPassInp.value = user.password || '';
+    if (errDiv) errDiv.textContent = '';
 
     tempProfilePhotoData = user.photo || '';
-    if (photoPrev && photoPlh) {
-      if (tempProfilePhotoData && tempProfilePhotoData.trim()) {
-        photoPrev.src = tempProfilePhotoData;
-        photoPrev.style.display = 'block';
-        photoPlh.style.display = 'none';
-      } else {
-        photoPrev.src = '';
-        photoPrev.style.display = 'none';
-        photoPlh.style.display = 'block';
-      }
+    if (tempProfilePhotoData) {
+      if (photoPrev) { photoPrev.src = tempProfilePhotoData; photoPrev.style.display = 'block'; }
+      if (photoPlh) photoPlh.style.display = 'none';
+      if (btnRemovePhoto) btnRemovePhoto.style.display = 'inline-block';
+    } else {
+      if (photoPrev) photoPrev.style.display = 'none';
+      if (photoPlh) photoPlh.style.display = 'block';
+      if (btnRemovePhoto) btnRemovePhoto.style.display = 'none';
     }
   }
 
@@ -9477,46 +8112,54 @@ let selectedHeadlineFont = 'Anek Malayalam';
   if (btnCloseProfile) btnCloseProfile.addEventListener('click', closeUserProfileModal);
   if (btnCancelProfile) btnCancelProfile.addEventListener('click', closeUserProfileModal);
 
-  // Toggle Password Visibility
   if (btnToggleNewPass) {
     btnToggleNewPass.addEventListener('click', function() {
-      const passInp = document.getElementById('kvProfileNewPassInput');
-      if (passInp) {
-        passInp.type = passInp.type === 'password' ? 'text' : 'password';
-        btnToggleNewPass.textContent = passInp.type === 'password' ? '👁️' : '🙈';
-      }
+      const pInp = document.getElementById('kvProfileNewPassInput');
+      const cInp = document.getElementById('kvProfileConfirmPassInput');
+      if (!pInp) return;
+      const isPwd = pInp.type === 'password';
+      pInp.type = isPwd ? 'text' : 'password';
+      if (cInp) cInp.type = isPwd ? 'text' : 'password';
+      btnToggleNewPass.textContent = isPwd ? 'ðŸ™ˆ Hide' : 'ðŸ‘ï¸ Show';
     });
   }
 
-  // Profile Photo File Picker with Auto Compression
+  // Profile Photo Upload & Client-side compression
   if (photoFileInput) {
     photoFileInput.addEventListener('change', function(e) {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
+
       const reader = new FileReader();
       reader.onload = function(evt) {
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement('canvas');
-          const maxDim = 320;
-          let w = img.width, h = img.height;
-          if (w > maxDim || h > maxDim) {
-            if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
-            else { w = Math.round((w * maxDim) / h); h = maxDim; }
+          const maxDim = 320; // 320x320 optimal avatar size
+          let w = img.width;
+          let h = img.height;
+          if (w > h) {
+            if (w > maxDim) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            }
+          } else {
+            if (h > maxDim) {
+              w = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
           }
           canvas.width = w;
           canvas.height = h;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, w, h);
-          tempProfilePhotoData = canvas.toDataURL('image/jpeg', 0.85);
+          tempProfilePhotoData = canvas.toDataURL('image/jpeg', 0.82);
 
           const photoPrev = document.getElementById('kvProfilePhotoPreview');
           const photoPlh = document.getElementById('kvProfilePhotoPlaceholder');
-          if (photoPrev && photoPlh) {
-            photoPrev.src = tempProfilePhotoData;
-            photoPrev.style.display = 'block';
-            photoPlh.style.display = 'none';
-          }
+          if (photoPrev) { photoPrev.src = tempProfilePhotoData; photoPrev.style.display = 'block'; }
+          if (photoPlh) photoPlh.style.display = 'none';
+          if (btnRemovePhoto) btnRemovePhoto.style.display = 'inline-block';
         };
         img.src = evt.target.result;
       };
@@ -9524,22 +8167,18 @@ let selectedHeadlineFont = 'Anek Malayalam';
     });
   }
 
-  // Remove Photo
   if (btnRemovePhoto) {
     btnRemovePhoto.addEventListener('click', function() {
       tempProfilePhotoData = '';
       const photoPrev = document.getElementById('kvProfilePhotoPreview');
       const photoPlh = document.getElementById('kvProfilePhotoPlaceholder');
-      if (photoPrev && photoPlh) {
-        photoPrev.src = '';
-        photoPrev.style.display = 'none';
-        photoPlh.style.display = 'block';
-      }
+      if (photoPrev) photoPrev.style.display = 'none';
+      if (photoPlh) photoPlh.style.display = 'block';
+      btnRemovePhoto.style.display = 'none';
       if (photoFileInput) photoFileInput.value = '';
     });
   }
 
-  // Save Profile Changes
   if (btnSaveProfile) {
     btnSaveProfile.addEventListener('click', function() {
       const user = window.KV_ACTIVE_USER || currentProfile;
@@ -9551,328 +8190,134 @@ let selectedHeadlineFont = 'Anek Malayalam';
       const confPassInp = document.getElementById('kvProfileConfirmPassInput');
       const errDiv = document.getElementById('kvProfileErrorMsg');
 
-      function showProfErr(msg) {
-        if (errDiv) {
-          errDiv.textContent = msg;
-          errDiv.style.display = 'block';
-        }
-      }
-
       const newName = (nameInp ? nameInp.value : '').trim();
-      const newUsername = (userInp ? userInp.value : '').trim();
-      const newPass = passInp ? passInp.value : '';
-      const confPass = confPassInp ? confPassInp.value : '';
+      const newUname = (userInp ? userInp.value : '').trim().toLowerCase();
+      const newPass = (passInp ? passInp.value : '').trim();
+      const confPass = (confPassInp ? confPassInp.value : '').trim();
 
-      if (!newUsername) {
-        showProfErr('⚠️ യൂസർനെയിം ഒഴിവാക്കാൻ പാടില്ല.');
+      if (!newName) {
+        if (errDiv) errDiv.textContent = 'âš ï¸ Display Name is required.';
+        return;
+      }
+      if (!newUname) {
+        if (errDiv) errDiv.textContent = 'âš ï¸ Username is required.';
+        return;
+      }
+      if (!newPass) {
+        if (errDiv) errDiv.textContent = 'âš ï¸ Password cannot be empty.';
+        return;
+      }
+      if (newPass !== confPass) {
+        if (errDiv) errDiv.textContent = 'âŒ Passwords do not match!';
         return;
       }
 
-      const allUsers = getDemoUsers();
-      const collision = allUsers.find(function(u) {
-        return u.uid !== user.uid && u.username && u.username.toLowerCase() === newUsername.toLowerCase();
+      // Check username collision
+      const list = getDemoUsers();
+      const duplicate = list.find(function(u) {
+        return u.uid !== user.uid && norm(u.username) === norm(newUname);
       });
-      if (collision) {
-        showProfErr('⚠️ ഈ യൂസർനെയിം ("' + newUsername + '") മറ്റൊരാൾ ഉപയോഗിക്കുന്നുണ്ട്. മറ്റൊന്ന് നൽകുക.');
+      if (duplicate) {
+        if (errDiv) errDiv.textContent = 'âŒ Username "@' + newUname + '" is already taken!';
         return;
       }
 
-      if (newPass) {
-        if (newPass.length < 4) {
-          showProfErr('⚠️ പാസ്‌വേഡിന് കുറഞ്ഞത് 4 അക്ഷരങ്ങൾ വേണം.');
-          return;
+      // Apply changes
+      user.name = newName;
+      user.username = newUname;
+      user.email = normalizeEmail(newUname);
+      user.password = newPass;
+      user.photo = tempProfilePhotoData;
+
+      // Update in list
+      const idx = list.findIndex(function(u) { return u.uid === user.uid; });
+      if (idx !== -1) {
+        list[idx] = user;
+      } else {
+        list.push(user);
+      }
+      saveDemoUsers(list);
+
+      // Sync to cloud Firestore
+      if (firebaseDb && isFirebaseLive) {
+        firebaseDb.collection('kv_users').doc(user.uid).set(user, { merge: true }).catch(function(){});
+      }
+
+      // Update active session & header UI
+      currentProfile = user;
+      window.KV_ACTIVE_USER = user;
+      if (lblUserName) lblUserName.textContent = user.name || user.username;
+
+      const headerPhotoImg = document.getElementById('kvHeaderUserPhoto');
+      const headerUserIcon = document.getElementById('kvHeaderUserIcon');
+      if (headerPhotoImg && headerUserIcon) {
+        if (user.photo && user.photo.trim()) {
+          headerPhotoImg.src = user.photo;
+          headerPhotoImg.style.display = 'inline-block';
+          headerUserIcon.style.display = 'none';
+        } else {
+          headerPhotoImg.style.display = 'none';
+          headerUserIcon.style.display = 'inline-block';
         }
-        if (newPass !== confPass) {
-          showProfErr('⚠️ പാസ്‌വേഡുകൾ പരസ്പരം പൊരുത്തപ്പെടുന്നില്ല (Passwords do not match).');
-          return;
-        }
       }
 
-      // Apply updates to user object
-      user.name = newName || newUsername;
-      user.username = newUsername;
-      if (newPass) user.password = newPass;
-      user.photo = tempProfilePhotoData || '';
-
-      // Update in persistence list
-      const targetIdx = allUsers.findIndex(function(u) { return u.uid === user.uid; });
-      if (targetIdx !== -1) {
-        allUsers[targetIdx] = Object.assign({}, allUsers[targetIdx], user);
-        saveDemoUsers(allUsers);
-      }
-
-      // Sync to Firestore if live
-      if (firebaseDb && isFirebaseLive && user.uid) {
-        firebaseDb.collection('kv_users').doc(user.uid).set({
-          name: user.name,
-          username: user.username,
-          password: user.password,
-          photo: user.photo,
-          updatedAt: new Date().toISOString()
-        }, { merge: true }).catch(function(){});
-      }
-
-      // Update UI & active user state
-      unlockApp(user);
+      window.dispatchEvent(new CustomEvent('kv-auth-changed'));
+      refreshDemoAdminList();
+      renderQuickUserPills();
       closeUserProfileModal();
 
       if (typeof showToast === 'function') {
-        showToast('✅ പ്രൊഫൈൽ വിവരങ്ങൾ വിജയകരമായി സേവ് ചെയ്തു!');
-      }
-    });
-  }
-
-  let adminPresenceRefreshTimer = null;
-
-  btnOpenAdmin.addEventListener('click', function() {
-    if (!currentProfile || currentProfile.role !== 'admin') return;
-    adminModal.classList.remove('kv-hidden');
-    refreshDemoAdminList();
-    renderQuickUserPills();
-
-  // =========================================================================
-  // 5b. MALAYALAM VOICE TYPING ENGINE
-  // =========================================================================
-  function initVoiceTyping(btnId, targetInputId, labelName) {
-    const btn = document.getElementById(btnId);
-    const input = document.getElementById(targetInputId);
-    if (!btn || !input) return;
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      btn.title = 'Speech recognition not supported in this browser';
-      btn.addEventListener('click', function() {
-        alert('⚠️ Malayalam Voice Typing requires Google Chrome, Edge, or the Android app.');
-      });
-      return;
-    }
-
-    let recognition = null;
-    let isListening = false;
-
-    btn.addEventListener('click', function() {
-      if (isListening) {
-        if (recognition) recognition.stop();
-        return;
-      }
-
-      try {
-        recognition = new SpeechRecognition();
-        recognition.lang = 'ml-IN'; // Malayalam India
-        recognition.continuous = false;
-        recognition.interimResults = false;
-
-        recognition.onstart = function() {
-          isListening = true;
-          btn.classList.add('listening');
-          btn.innerHTML = '🔴 കേൾക്കുന്നു... (Stop)';
-          if (typeof showToast === 'function') showToast('🎙️ സംസാരിക്കൂ... (Listening in Malayalam)');
-        };
-
-        recognition.onresult = function(event) {
-          if (event.results && event.results[0] && event.results[0][0]) {
-            const text = event.results[0][0].transcript;
-            const currentVal = input.value.trim();
-            input.value = currentVal ? currentVal + ' ' + text : text;
-            input.dispatchEvent(new Event('input'));
-            if (typeof renderCard === 'function') renderCard();
-            if (typeof showToast === 'function') showToast('✅ ടൈപ്പ് ചെയ്തു: ' + text);
-          }
-        };
-
-        recognition.onerror = function(err) {
-          console.warn('Speech recognition error:', err);
-          isListening = false;
-          btn.classList.remove('listening');
-          btn.innerHTML = '🎙️ സംസാരിക്കുക';
-          if (err.error === 'not-allowed') {
-            alert('⚠️ Microphone permission required for voice typing.');
-          }
-        };
-
-        recognition.onend = function() {
-          isListening = false;
-          btn.classList.remove('listening');
-          btn.innerHTML = '🎙️ സംസാരിക്കുക';
-        };
-
-        recognition.start();
-      } catch (e) {
-        console.warn('Voice typing start error:', e);
-        isListening = false;
-        btn.classList.remove('listening');
-        btn.innerHTML = '🎙️ സംസാരിക്കുക';
-      }
-    });
-  }
-
-  // Initialize Voice Typing for Headline & Summary
-  initVoiceTyping('btnVoiceHeadline', 'txtHeadline', 'Headline');
-  initVoiceTyping('btnVoiceSummary', 'txtSummary', 'Summary');
-
-  // =========================================================================
-  // 5c. PHOTO CLARITY FILTER PILLS WIRE-UP
-  // =========================================================================
-  const filterPills = document.querySelectorAll('.btn-filter-pill');
-  const lblFilter = document.getElementById('lblActiveFilter');
-  filterPills.forEach(function(pill) {
-    pill.addEventListener('click', function() {
-      filterPills.forEach(function(p) { p.classList.remove('active'); });
-      pill.classList.add('active');
-      activePhotoFilter = pill.getAttribute('data-filter') || 'normal';
-      if (lblFilter) lblFilter.textContent = pill.textContent.trim();
-      if (typeof renderCard === 'function') renderCard();
-      if (typeof showToast === 'function') showToast('✨ Filter: ' + pill.textContent.trim());
-    });
-  });
-
-  // =========================================================================
-  // 5d. REPORTER BYLINE AUTO-SYNC
-  // =========================================================================
-  const btnSyncByline = document.getElementById('btnSyncMyByline');
-  const txtReporterInput = document.getElementById('txtReporter');
-  if (btnSyncByline && txtReporterInput) {
-    btnSyncByline.addEventListener('click', function() {
-      const activeUser = window.KV_ACTIVE_USER || currentProfile;
-      if (activeUser) {
-        const uName = activeUser.name || activeUser.username || 'Reporter';
-        txtReporterInput.value = 'റിപ്പോർട്ട്: ' + uName + ' (കോഴിക്കോട് വിഷൻ)';
-        txtReporterInput.dispatchEvent(new Event('input'));
-        if (typeof renderCard === 'function') renderCard();
-        if (typeof showToast === 'function') showToast('🏷️ Byline updated: ' + txtReporterInput.value);
-      } else {
-        alert('Please log in first to use your reporter name.');
+        showToast('âœ… Profile & Password updated successfully!');
       }
     });
   }
 
   // =========================================================================
-  // 5e. NEWSROOM BROADCAST FLASH TICKER (REALTIME CLOUD & LOCAL)
+  // 8. LOGIN FORM SUBMISSION & ACCOUNT DROPDOWN HANDLER
   // =========================================================================
-  const noticeBar = document.getElementById('kvNewsroomNoticeBar');
-  const noticeTextSpan = document.getElementById('kvNoticeMarqueeText');
-  const btnDismissNotice = document.getElementById('btnDismissNotice');
-  const inpAdminNotice = document.getElementById('kvInpAdminNotice');
-  const btnPublishNotice = document.getElementById('kvBtnPublishNotice');
-  const btnClearNotice = document.getElementById('kvBtnClearNotice');
-
-  function updateNewsroomNoticeUI(text) {
-    if (!noticeBar || !noticeTextSpan) return;
-    const clean = (text || '').trim();
-    if (clean) {
-      noticeTextSpan.textContent = clean;
-      noticeBar.classList.remove('kv-hidden');
-    } else {
-      noticeBar.classList.add('kv-hidden');
-    }
-  }
-
-  // Check saved notice on load
-  try {
-    const savedNotice = localStorage.getItem('kv_newsroom_notice');
-    if (savedNotice) updateNewsroomNoticeUI(savedNotice);
-  } catch(e) {}
-
-  if (btnDismissNotice && noticeBar) {
-    btnDismissNotice.addEventListener('click', function() {
-      noticeBar.classList.add('kv-hidden');
-    });
-  }
-
-  if (btnPublishNotice && inpAdminNotice) {
-    btnPublishNotice.addEventListener('click', function() {
-      const val = inpAdminNotice.value.trim();
-      if (!val) {
-        alert('Please enter announcement text to broadcast.');
-        return;
-      }
-      try { localStorage.setItem('kv_newsroom_notice', val); } catch(e){}
-      updateNewsroomNoticeUI(val);
-
-      if (firebaseDb && isFirebaseLive) {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
-          text: val,
-          postedBy: (currentProfile && currentProfile.name) || 'Admin',
-          timestamp: Date.now()
-        }, { merge: true }).catch(function(){});
-      }
-      showAdminStatus('📢 Notice broadcasted to all staff successfully!', false);
-      if (typeof showToast === 'function') showToast('📢 Notice broadcasted live!');
-    });
-  }
-
-  if (btnClearNotice) {
-    btnClearNotice.addEventListener('click', function() {
-      try { localStorage.removeItem('kv_newsroom_notice'); } catch(e){}
-      if (inpAdminNotice) inpAdminNotice.value = '';
-      updateNewsroomNoticeUI('');
-      if (firebaseDb && isFirebaseLive) {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
-          text: '',
-          timestamp: Date.now()
-        }, { merge: true }).catch(function(){});
-      }
-      showAdminStatus('🗑️ Notice cleared.', false);
-      if (typeof showToast === 'function') showToast('🗑️ Notice cleared.');
-    });
-  }
-
-  // Realtime Cloud listener for Newsroom Notice from Firestore
-  window.addEventListener('load', function() {
-    if (firebaseDb && isFirebaseLive) {
-      try {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').onSnapshot(function(doc) {
-          if (doc && doc.exists) {
-            const data = doc.data();
-            if (data && data.text !== undefined) {
-              try { localStorage.setItem('kv_newsroom_notice', data.text); } catch(e){}
-              updateNewsroomNoticeUI(data.text);
-              if (inpAdminNotice) inpAdminNotice.value = data.text;
-            }
-          }
-        }, function(){});
-      } catch(e) {}
-    }
-  });
-    if (!adminPresenceRefreshTimer) {
-      adminPresenceRefreshTimer = setInterval(function() {
-        if (adminModal && !adminModal.classList.contains('kv-hidden')) {
-          refreshDemoAdminList();
-        } else {
-          clearInterval(adminPresenceRefreshTimer);
-          adminPresenceRefreshTimer = null;
-        }
-      }, 8000);
-    }
-  });
-
-  btnCloseAdmin.addEventListener('click', function() {
-    adminModal.classList.add('kv-hidden');
-    if (adminPresenceRefreshTimer) {
-      clearInterval(adminPresenceRefreshTimer);
-      adminPresenceRefreshTimer = null;
-    }
-  });
-
-  if (btnAddUser) {
-    btnAddUser.addEventListener('click', function(e) {
+  if (authForm) {
+    authForm.addEventListener('submit', function(e) {
       e.preventDefault();
-      executeAddUserAction();
+      showAuthError('');
+      const typed = norm(inpUser ? inpUser.value : '');
+      const pass = String(inpPass ? inpPass.value : '').trim();
+
+      const users = getDemoUsers();
+      const match = users.find(function(u) {
+        const matchUser = u.username && norm(u.username) === typed;
+        const matchName = u.name && norm(u.name) === typed;
+        const matchEmail = u.email && norm(u.email) === typed;
+        return (matchUser || matchName || matchEmail) && String(u.password || '').trim() === pass;
+      });
+
+      if (!match) {
+        showAuthError('âŒ Invalid username or password.');
+        return;
+      }
+      if (match.deleted || match.active === false) {
+        showAuthError('ðŸš« Your account has been blocked by Admin.');
+        return;
+      }
+
+      try {
+        localStorage.setItem('kv_saved_session_uid', match.uid);
+        sessionStorage.setItem(SESSION_USER_KEY, match.uid);
+      } catch (e) {}
+
+      unlockApp(match);
     });
   }
 
-  [inpNewName, inpNewUser, inpNewPass].forEach(function(inp) {
-    if (inp) {
-      inp.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          executeAddUserAction();
-        }
-      });
-    }
-  });
+  if (btnLogout) {
+    btnLogout.addEventListener('click', function() {
+      try {
+        localStorage.removeItem('kv_saved_session_uid');
+        sessionStorage.removeItem(SESSION_USER_KEY);
+      } catch (e) {}
+      lockApp();
+    });
+  }
 
-    // Dropdown Account Selection Handler
   const userSelectDropdown = document.getElementById('kvUserSelectDropdown');
   if (userSelectDropdown) {
     userSelectDropdown.addEventListener('change', function() {
@@ -9891,222 +8336,55 @@ let selectedHeadlineFont = 'Anek Malayalam';
         if (inpUser) inpUser.value = match.username || extractUsername(match.email);
         if (inpPass) inpPass.value = match.password || '1234';
         showAuthError('');
-        if (btnLogin) {
-          btnLogin.focus();
-        }
+        if (btnLogin) btnLogin.focus();
       }
     });
   }
 
-  // Initial render of user pills on page startup
+  // Cross-tab synchronization via storage event
+  window.addEventListener('storage', function(e) {
+    if (e.key && (e.key.startsWith('kv_') || e.key.includes('user'))) {
+      inMemoryUsers = null;
+      renderQuickUserPills();
+      if (adminModal && !adminModal.classList.contains('kv-hidden')) {
+        refreshDemoAdminList();
+      }
+    }
+  });
+
+  // =========================================================================
+  // 9. STARTUP & INITIAL SESSION RESTORE
+  // =========================================================================
   renderQuickUserPills();
+  initFirebaseDatabase();
 
-  // =========================================================================
-  // 5b. MALAYALAM VOICE TYPING ENGINE
-  // =========================================================================
-  function initVoiceTyping(btnId, targetInputId, labelName) {
-    const btn = document.getElementById(btnId);
-    const input = document.getElementById(targetInputId);
-    if (!btn || !input) return;
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      btn.title = 'Speech recognition not supported in this browser';
-      btn.addEventListener('click', function() {
-        alert('⚠️ Malayalam Voice Typing requires Google Chrome, Edge, or the Android app.');
-      });
-      return;
-    }
-
-    let recognition = null;
-    let isListening = false;
-
-    btn.addEventListener('click', function() {
-      if (isListening) {
-        if (recognition) recognition.stop();
-        return;
-      }
-
-      try {
-        recognition = new SpeechRecognition();
-        recognition.lang = 'ml-IN'; // Malayalam India
-        recognition.continuous = false;
-        recognition.interimResults = false;
-
-        recognition.onstart = function() {
-          isListening = true;
-          btn.classList.add('listening');
-          btn.innerHTML = '🔴 കേൾക്കുന്നു... (Stop)';
-          if (typeof showToast === 'function') showToast('🎙️ സംസാരിക്കൂ... (Listening in Malayalam)');
-        };
-
-        recognition.onresult = function(event) {
-          if (event.results && event.results[0] && event.results[0][0]) {
-            const text = event.results[0][0].transcript;
-            const currentVal = input.value.trim();
-            input.value = currentVal ? currentVal + ' ' + text : text;
-            input.dispatchEvent(new Event('input'));
-            if (typeof renderCard === 'function') renderCard();
-            if (typeof showToast === 'function') showToast('✅ ടൈപ്പ് ചെയ്തു: ' + text);
-          }
-        };
-
-        recognition.onerror = function(err) {
-          console.warn('Speech recognition error:', err);
-          isListening = false;
-          btn.classList.remove('listening');
-          btn.innerHTML = '🎙️ സംസാരിക്കുക';
-          if (err.error === 'not-allowed') {
-            alert('⚠️ Microphone permission required for voice typing.');
-          }
-        };
-
-        recognition.onend = function() {
-          isListening = false;
-          btn.classList.remove('listening');
-          btn.innerHTML = '🎙️ സംസാരിക്കുക';
-        };
-
-        recognition.start();
-      } catch (e) {
-        console.warn('Voice typing start error:', e);
-        isListening = false;
-        btn.classList.remove('listening');
-        btn.innerHTML = '🎙️ സംസാരിക്കുക';
-      }
-    });
-  }
-
-  // Initialize Voice Typing for Headline & Summary
-  initVoiceTyping('btnVoiceHeadline', 'txtHeadline', 'Headline');
-  initVoiceTyping('btnVoiceSummary', 'txtSummary', 'Summary');
-
-  // =========================================================================
-  // 5c. PHOTO CLARITY FILTER PILLS WIRE-UP
-  // =========================================================================
-  const filterPills = document.querySelectorAll('.btn-filter-pill');
-  const lblFilter = document.getElementById('lblActiveFilter');
-  filterPills.forEach(function(pill) {
-    pill.addEventListener('click', function() {
-      filterPills.forEach(function(p) { p.classList.remove('active'); });
-      pill.classList.add('active');
-      activePhotoFilter = pill.getAttribute('data-filter') || 'normal';
-      if (lblFilter) lblFilter.textContent = pill.textContent.trim();
-      if (typeof renderCard === 'function') renderCard();
-      if (typeof showToast === 'function') showToast('✨ Filter: ' + pill.textContent.trim());
-    });
-  });
-
-  // =========================================================================
-  // 5d. REPORTER BYLINE AUTO-SYNC
-  // =========================================================================
-  const btnSyncByline = document.getElementById('btnSyncMyByline');
-  const txtReporterInput = document.getElementById('txtReporter');
-  if (btnSyncByline && txtReporterInput) {
-    btnSyncByline.addEventListener('click', function() {
-      const activeUser = window.KV_ACTIVE_USER || currentProfile;
-      if (activeUser) {
-        const uName = activeUser.name || activeUser.username || 'Reporter';
-        txtReporterInput.value = 'റിപ്പോർട്ട്: ' + uName + ' (കോഴിക്കോട് വിഷൻ)';
-        txtReporterInput.dispatchEvent(new Event('input'));
-        if (typeof renderCard === 'function') renderCard();
-        if (typeof showToast === 'function') showToast('🏷️ Byline updated: ' + txtReporterInput.value);
-      } else {
-        alert('Please log in first to use your reporter name.');
-      }
-    });
-  }
-
-  // =========================================================================
-  // 5e. NEWSROOM BROADCAST FLASH TICKER (REALTIME CLOUD & LOCAL)
-  // =========================================================================
-  const noticeBar = document.getElementById('kvNewsroomNoticeBar');
-  const noticeTextSpan = document.getElementById('kvNoticeMarqueeText');
-  const btnDismissNotice = document.getElementById('btnDismissNotice');
-  const inpAdminNotice = document.getElementById('kvInpAdminNotice');
-  const btnPublishNotice = document.getElementById('kvBtnPublishNotice');
-  const btnClearNotice = document.getElementById('kvBtnClearNotice');
-
-  function updateNewsroomNoticeUI(text) {
-    if (!noticeBar || !noticeTextSpan) return;
-    const clean = (text || '').trim();
-    if (clean) {
-      noticeTextSpan.textContent = clean;
-      noticeBar.classList.remove('kv-hidden');
-    } else {
-      noticeBar.classList.add('kv-hidden');
-    }
-  }
-
-  // Check saved notice on load
+  // Attempt auto-login if saved session exists
   try {
-    const savedNotice = localStorage.getItem('kv_newsroom_notice');
-    if (savedNotice) updateNewsroomNoticeUI(savedNotice);
-  } catch(e) {}
-
-  if (btnDismissNotice && noticeBar) {
-    btnDismissNotice.addEventListener('click', function() {
-      noticeBar.classList.add('kv-hidden');
-    });
-  }
-
-  if (btnPublishNotice && inpAdminNotice) {
-    btnPublishNotice.addEventListener('click', function() {
-      const val = inpAdminNotice.value.trim();
-      if (!val) {
-        alert('Please enter announcement text to broadcast.');
-        return;
+    const savedUid = sessionStorage.getItem(SESSION_USER_KEY) || localStorage.getItem('kv_saved_session_uid');
+    if (savedUid) {
+      const list = getDemoUsers();
+      const found = list.find(function(u) { return u.uid === savedUid; });
+      if (found && !found.deleted && found.active !== false) {
+        unlockApp(found);
+      } else {
+        lockApp();
       }
-      try { localStorage.setItem('kv_newsroom_notice', val); } catch(e){}
-      updateNewsroomNoticeUI(val);
-
-      if (firebaseDb && isFirebaseLive) {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
-          text: val,
-          postedBy: (currentProfile && currentProfile.name) || 'Admin',
-          timestamp: Date.now()
-        }, { merge: true }).catch(function(){});
-      }
-      showAdminStatus('📢 Notice broadcasted to all staff successfully!', false);
-      if (typeof showToast === 'function') showToast('📢 Notice broadcasted live!');
-    });
-  }
-
-  if (btnClearNotice) {
-    btnClearNotice.addEventListener('click', function() {
-      try { localStorage.removeItem('kv_newsroom_notice'); } catch(e){}
-      if (inpAdminNotice) inpAdminNotice.value = '';
-      updateNewsroomNoticeUI('');
-      if (firebaseDb && isFirebaseLive) {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').set({
-          text: '',
-          timestamp: Date.now()
-        }, { merge: true }).catch(function(){});
-      }
-      showAdminStatus('🗑️ Notice cleared.', false);
-      if (typeof showToast === 'function') showToast('🗑️ Notice cleared.');
-    });
-  }
-
-  // Realtime Cloud listener for Newsroom Notice from Firestore
-  window.addEventListener('load', function() {
-    if (firebaseDb && isFirebaseLive) {
-      try {
-        firebaseDb.collection('kv_settings').doc('newsroom_notice').onSnapshot(function(doc) {
-          if (doc && doc.exists) {
-            const data = doc.data();
-            if (data && data.text !== undefined) {
-              try { localStorage.setItem('kv_newsroom_notice', data.text); } catch(e){}
-              updateNewsroomNoticeUI(data.text);
-              if (inpAdminNotice) inpAdminNotice.value = data.text;
-            }
-          }
-        }, function(){});
-      } catch(e) {}
+    } else {
+      lockApp();
     }
-  });
+  } catch (e) {
+    lockApp();
+  }
+
+  // Expose useful utilities globally
+  window.getKVUsers = getDemoUsers;
+  window.refreshKVAdmin = refreshDemoAdminList;
+  window.renderKVUserPills = renderQuickUserPills;
+  window.syncKVUsersToFirestore = syncUsersToFirestore;
 
 })();
+
+
 </script>
 </body>
 </html>
