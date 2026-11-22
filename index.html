@@ -12,7 +12,7 @@
   <!-- Google Fonts for Malayalam -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@300;400;500;600;700;800;900&family=Manjari:wght@700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@300;400;500;600;700;800;900&family=Baloo+Chettan+2:wght@500;600;700;800&family=Gayathri:wght@400;700&family=Manjari:wght@400;700;900&family=Noto+Sans+Malayalam:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
   <style>
     * {
@@ -1867,36 +1867,68 @@
       }
     }
 
-    /* Floating Time-Based Welcome Greeting Banner / Toast */
-    #kvWelcomeToast {
+    /* Grand Center-Screen Welcome Greeting Modal */
+    #kvWelcomeOverlay {
       position: fixed;
-      top: 18px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-140%);
-      z-index: 999999;
+      inset: 0;
+      background: rgba(4, 8, 18, 0.78);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 999998;
       opacity: 0;
       pointer-events: none;
-      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
-      max-width: 94vw;
-      width: 500px;
+      transition: opacity 0.4s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
-    #kvWelcomeToast.show {
-      transform: translateX(-50%) translateY(0);
+    #kvWelcomeOverlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #kvWelcomeToast {
+      position: relative;
+      transform: scale(0.85) translateY(20px);
+      opacity: 0;
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+      max-width: 550px;
+      width: 100%;
+      pointer-events: none;
+      z-index: 999999;
+    }
+    #kvWelcomeOverlay.show #kvWelcomeToast {
+      transform: scale(1) translateY(0);
       opacity: 1;
       pointer-events: auto;
     }
     .kv-welcome-card {
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.96));
-      border: 1.5px solid rgba(56, 189, 248, 0.5);
-      border-radius: 14px;
-      padding: 12px 16px;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 25px rgba(56, 189, 248, 0.25);
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.97));
+      border: 2px solid rgba(56, 189, 248, 0.6);
+      border-radius: 20px;
+      padding: 24px 22px 20px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(56, 189, 248, 0.25);
       display: flex;
       align-items: center;
-      gap: 13px;
-      backdrop-filter: blur(14px);
+      gap: 18px;
+      backdrop-filter: blur(16px);
       position: relative;
       overflow: hidden;
+      cursor: pointer;
+    }
+    .kv-welcome-progress-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #38bdf8, #10b981, #fbbf24);
+      width: 100%;
+      transform-origin: left;
+      animation: kvWelcomeTimer 4s linear forwards;
+    }
+    @keyframes kvWelcomeTimer {
+      0% { transform: scaleX(1); }
+      100% { transform: scaleX(0); }
     }
     .kv-welcome-card::before {
       content: '';
@@ -1913,16 +1945,30 @@
       100% { filter: hue-rotate(360deg); }
     }
     .kv-welcome-icon-box {
-      font-size: 26px;
-      min-width: 44px;
-      height: 44px;
-      border-radius: 10px;
+      font-size: 38px;
+      min-width: 60px;
+      height: 60px;
+      border-radius: 16px;
       background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
       flex-shrink: 0;
+    }
+    .kv-welcome-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: #34d399;
+      font-weight: 700;
+      margin-top: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
     }
     .kv-welcome-body {
       flex: 1;
@@ -2894,6 +2940,21 @@
                 </div>
               </div>
 
+              <!-- Malayalam Broadcast Font Selector -->
+              <div class="form-group" style="margin-bottom: 12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                  <label class="form-label" style="margin-bottom:0; font-size:12px; font-weight:800; color:#38bdf8;">🔤 Headline Font (മലയാളം ഫോണ്ട്):</label>
+                  <span style="font-size:10px; color:#10b981; font-weight:700;">⚡ Live Change</span>
+                </div>
+                <select id="selHeadlineFont" class="form-input" style="cursor:pointer; font-weight:700; font-size:13px; background:#0f172a; border:1.5px solid #38bdf8; color:#f8fafc; padding:8px 12px;">
+                  <option value="Anek Malayalam" selected>🅰️ Anek Malayalam (Modern Broadcast - ഡിഫോൾട്ട്)</option>
+                  <option value="Baloo Chettan 2">💥 Baloo Chettan 2 (Ultra Heavy / Breaking News)</option>
+                  <option value="Gayathri">📰 Gayathri (Classic News Editorial)</option>
+                  <option value="Manjari">✒️ Manjari (Elegant Curved Style)</option>
+                  <option value="Noto Sans Malayalam">🌐 Noto Sans Malayalam (Universal Sharp)</option>
+                </select>
+              </div>
+
               <!-- Headline -->
               <div class="form-group">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
@@ -3719,6 +3780,7 @@
     let locationText = 'കോഴിക്കോട്';
     let reporterText = 'വിഷൻ ന്യൂസ് കോഴിക്കോട്';
     let headlineFontSize = 54;
+let selectedHeadlineFont = 'Anek Malayalam';
     let summaryFontSize = 26;
     let headlineOffsetX = 0;
     let headlineOffsetY = 0;
@@ -4762,6 +4824,17 @@
 
     txtCardDate.addEventListener('input', (e) => { cardDateText = e.target.value; renderCard(); });
     txtHeadline.addEventListener('input', (e) => { headlineText = e.target.value; renderCard(); });
+    const selHeadlineFont = document.getElementById('selHeadlineFont');
+    if (selHeadlineFont) {
+      selHeadlineFont.addEventListener('change', (e) => {
+        selectedHeadlineFont = e.target.value || 'Anek Malayalam';
+        if (document.fonts && document.fonts.load) {
+          document.fonts.load('800 48px "' + selectedHeadlineFont + '"').then(() => renderCard()).catch(() => renderCard());
+        } else {
+          renderCard();
+        }
+      });
+    }
     txtSummary.addEventListener('input', (e) => { summaryText = e.target.value; renderCard(); });
     txtLocation.addEventListener('input', (e) => { locationText = e.target.value; renderCard(); });
     txtReporter.addEventListener('input', (e) => { reporterText = e.target.value; renderCard(); });
@@ -5557,7 +5630,7 @@
       ctx.fillRect(dateBadgeX, badgeY + 48, 6, strapH * 0.65);
 
       // Main Headline in Malayalam
-      ctx.font = '800 ' + headlineFontSize + 'px "Anek Malayalam", sans-serif';
+      ctx.font = '800 ' + headlineFontSize + 'px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
       ctx.fillStyle = '#ffffff';
       ctx.shadowColor = 'rgba(0,0,0,0.85)';
       ctx.shadowBlur = 10;
@@ -5572,7 +5645,7 @@
 
       // Summary / Ticker text
       if (summaryText) {
-        ctx.font = '500 ' + summaryFontSize + 'px "Anek Malayalam", sans-serif';
+        ctx.font = '500 ' + summaryFontSize + 'px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
         ctx.fillStyle = '#e2e8f0';
         const summaryX = textStartX + summaryOffsetX;
         const summaryY = nextY + 14 + summaryOffsetY;
@@ -5582,7 +5655,7 @@
 
       // Reporter Byline
       if (reporterText) {
-        ctx.font = '600 20px "Anek Malayalam", sans-serif';
+        ctx.font = '600 20px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
         ctx.fillStyle = '#f87171';
         ctx.fillText('Report: ' + reporterText, textStartX, H - 65);
       }
@@ -5736,7 +5809,7 @@
         ctx.fillRect(badgeX, badgeY + 20, 6, H * 0.28);
 
         // Main Headline
-        ctx.font = '800 ' + headlineFontSize + 'px "Anek Malayalam", sans-serif';
+        ctx.font = '800 ' + headlineFontSize + 'px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
         ctx.fillStyle = '#ffffff';
         ctx.shadowColor = 'rgba(0,0,0,0.85)';
         ctx.shadowBlur = 10;
@@ -5752,7 +5825,7 @@
 
         // Summary Text (Enhanced Multiline, Next-Line & Spacing Control!)
         if (summaryText) {
-          ctx.font = '500 ' + summaryFontSize + 'px "Anek Malayalam", sans-serif';
+          ctx.font = '500 ' + summaryFontSize + 'px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
           ctx.fillStyle = '#e2e8f0';
           const summaryX = textStartX + summaryOffsetX;
           const summaryY = nextY + 14 + summaryOffsetY;
@@ -5762,7 +5835,7 @@
 
         // Reporter Byline
         if (reporterText) {
-          ctx.font = '600 20px "Anek Malayalam", sans-serif';
+          ctx.font = '600 20px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
           ctx.fillStyle = '#f87171';
           ctx.fillText('Report: ' + reporterText, textStartX, H - 75 + headlineOffsetY);
         }
@@ -5794,7 +5867,7 @@
         const tribY = (H * 0.18) + tributePosY;
 
         ctx.save();
-        ctx.font = '900 64px "Anek Malayalam", "Manjari", serif';
+        ctx.font = '900 64px "' + selectedHeadlineFont + '", "Anek Malayalam", "Manjari", serif';
         ctx.fillStyle = '#fbbf24';
         ctx.textAlign = 'center';
         ctx.shadowColor = 'rgba(0,0,0,0.9)';
@@ -5886,7 +5959,7 @@
         ctx.textAlign = 'center';
 
         // Deceased Name
-        ctx.font = '800 50px "Anek Malayalam", sans-serif';
+        ctx.font = '800 50px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
         ctx.fillStyle = '#ffffff';
         ctx.shadowColor = 'rgba(0,0,0,0.9)';
         ctx.shadowBlur = 10;
@@ -6420,14 +6493,16 @@
     }
   }
 
-  function showTimeBasedWelcome(profile) {
+    function showTimeBasedWelcome(profile) {
     if (!profile) return;
-    let toast = document.getElementById('kvWelcomeToast');
-    if (!toast) {
-      toast = document.createElement('div');
-      toast.id = 'kvWelcomeToast';
-      document.body.appendChild(toast);
+    let overlay = document.getElementById('kvWelcomeOverlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'kvWelcomeOverlay';
+      overlay.innerHTML = '<div id=\"kvWelcomeToast\"></div>';
+      document.body.appendChild(overlay);
     }
+    let toast = overlay.querySelector('#kvWelcomeToast') || document.getElementById('kvWelcomeToast');
 
     const greeting = getTimeGreetingInfo();
     const displayName = profile.name || profile.username || 'User';
@@ -6436,19 +6511,27 @@
     const roleClass = isAdm ? 'admin' : 'staff';
 
     toast.innerHTML =
-      '<div class="kv-welcome-card">' +
-        '<div class="kv-welcome-icon-box">' + greeting.icon + '</div>' +
-        '<div class="kv-welcome-body">' +
-          '<div class="kv-welcome-title">' +
-            greeting.text + ', <span class="kv-welcome-name">' + escapeHtml(displayName) + '</span> ' + greeting.emoji +
-            '<span class="kv-welcome-role-badge ' + roleClass + '">' + roleTag + '</span>' +
+      '<div class=\"kv-welcome-card\">' +
+        '<div class=\"kv-welcome-icon-box\">' + greeting.icon + '</div>' +
+        '<div class=\"kv-welcome-body\">' +
+          '<div class=\"kv-welcome-title\">' +
+            greeting.text + ', <span class=\"kv-welcome-name\">' + escapeHtml(displayName) + '</span> ' + greeting.emoji +
+            '<span class=\"kv-welcome-role-badge ' + roleClass + '\">' + roleTag + '</span>' +
           '</div>' +
-          '<div class="kv-welcome-tagline">' +
-            'Kozhikode Vision News Studio • ' + greeting.message +
+          '<div class=\"kv-welcome-tagline\">' +
+            greeting.message +
+          '</div>' +
+          '<div class=\"kv-welcome-status\">' +
+            '🟢 Verified Active Session • Ready to craft broadcast cards' +
           '</div>' +
         '</div>' +
-        '<button type="button" class="kv-welcome-close" id="kvBtnCloseWelcome" title="Dismiss">✕</button>' +
+        '<button type=\"button\" class=\"kv-welcome-close\" id=\"kvBtnCloseWelcome\" title=\"Dismiss\">✕</button>' +
+        '<div class=\"kv-welcome-progress-bar\"></div>' +
       '</div>';
+
+    overlay.onclick = function() {
+      hideWelcomeToast();
+    };
 
     const btnClose = toast.querySelector('#kvBtnCloseWelcome');
     if (btnClose) {
@@ -6458,25 +6541,21 @@
       });
     }
 
-    toast.onclick = function() {
-      hideWelcomeToast();
-    };
-
-    // Animate in
     clearTimeout(welcomeToastTimer);
-    toast.classList.add('show');
+    overlay.classList.add('show');
 
-    // Auto dismiss after 4.5 seconds
+    // Auto dismiss after 3.8 seconds
     welcomeToastTimer = setTimeout(function() {
       hideWelcomeToast();
-    }, 4500);
+    }, 3800);
   }
 
   function hideWelcomeToast() {
-    const toast = document.getElementById('kvWelcomeToast');
-    if (toast) {
-      toast.classList.remove('show');
+    const overlay = document.getElementById('kvWelcomeOverlay');
+    if (overlay) {
+      overlay.classList.remove('show');
     }
+  }
   }
 
   // -------------------------------------------------------------------------
