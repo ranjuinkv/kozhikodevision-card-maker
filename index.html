@@ -6499,7 +6499,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
     if (!overlay) {
       overlay = document.createElement('div');
       overlay.id = 'kvWelcomeOverlay';
-      overlay.innerHTML = '<div id=\"kvWelcomeToast\"></div>';
+      overlay.innerHTML = '<div id="kvWelcomeToast"></div>';
       document.body.appendChild(overlay);
     }
     let toast = overlay.querySelector('#kvWelcomeToast') || document.getElementById('kvWelcomeToast');
@@ -6511,22 +6511,22 @@ let selectedHeadlineFont = 'Anek Malayalam';
     const roleClass = isAdm ? 'admin' : 'staff';
 
     toast.innerHTML =
-      '<div class=\"kv-welcome-card\">' +
-        '<div class=\"kv-welcome-icon-box\">' + greeting.icon + '</div>' +
-        '<div class=\"kv-welcome-body\">' +
-          '<div class=\"kv-welcome-title\">' +
-            greeting.text + ', <span class=\"kv-welcome-name\">' + escapeHtml(displayName) + '</span> ' + greeting.emoji +
-            '<span class=\"kv-welcome-role-badge ' + roleClass + '\">' + roleTag + '</span>' +
+      '<div class="kv-welcome-card">' +
+        '<div class="kv-welcome-icon-box">' + greeting.icon + '</div>' +
+        '<div class="kv-welcome-body">' +
+          '<div class="kv-welcome-title">' +
+            greeting.text + ', <span class="kv-welcome-name">' + escapeHtml(displayName) + '</span> ' + greeting.emoji +
+            '<span class="kv-welcome-role-badge ' + roleClass + '\">' + roleTag + '</span>' +
           '</div>' +
-          '<div class=\"kv-welcome-tagline\">' +
+          '<div class="kv-welcome-tagline">' +
             greeting.message +
           '</div>' +
-          '<div class=\"kv-welcome-status\">' +
+          '<div class="kv-welcome-status">' +
             '🟢 Verified Active Session • Ready to craft broadcast cards' +
           '</div>' +
         '</div>' +
-        '<button type=\"button\" class=\"kv-welcome-close\" id=\"kvBtnCloseWelcome\" title=\"Dismiss\">✕</button>' +
-        '<div class=\"kv-welcome-progress-bar\"></div>' +
+        '<button type="button" class="kv-welcome-close" id="kvBtnCloseWelcome" title="Dismiss">✕</button>' +
+        '<div class="kv-welcome-progress-bar"></div>' +
       '</div>';
 
     overlay.onclick = function() {
@@ -6555,7 +6555,6 @@ let selectedHeadlineFont = 'Anek Malayalam';
     if (overlay) {
       overlay.classList.remove('show');
     }
-  }
   }
 
   // -------------------------------------------------------------------------
