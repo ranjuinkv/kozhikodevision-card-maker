@@ -3507,6 +3507,9 @@
         <!-- Live Video Element -->
         <video id="kvLiveTvVideo" playsinline controls style="display:none;width:100%;height:100%;border-radius:12px;background:#000;"></video>
 
+        <!-- Embedded Live Web Player Frame (Used in offline HTML / Android App) -->
+        <iframe id="kvLiveTvIframe" src="" style="display:none;width:100%;height:100%;border:none;border-radius:12px;background:#000;" allow="autoplay; fullscreen" allowfullscreen></iframe>
+
         <!-- Live Radio Screen (Kozhikode Vision Radio Chassis & Visualizer) -->
         <div id="kvLiveRadioScreen" class="kv-radio-screen" style="display:none;">
           <div class="radio-top-bar">
@@ -3613,13 +3616,23 @@
 
       <!-- Action Footer -->
       <div class="kv-live-tv-actions" style="justify-content: space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-        <a id="btnDirectWatchLink" href="http://103.146.174.75:8888/out/c2-social/index.m3u8" target="_blank" rel="noopener noreferrer" class="btn-tactile" style="font-size:11px; font-weight:800; background:linear-gradient(135deg, #ef4444, #b91c1c); color:#ffffff; padding:7px 14px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 10px rgba(239,68,68,0.4); border:1px solid #f87171;">
-          <span>📺 Direct Live Stream Player</span>
-          <span>↗</span>
-        </a>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <a id="btnDirectWatchLink" href="http://103.146.174.75/watch" target="_blank" rel="noopener noreferrer" class="btn-tactile" style="font-size:11px; font-weight:800; background:linear-gradient(135deg, #ef4444, #b91c1c); color:#ffffff; padding:7px 13px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:5px; box-shadow:0 3px 10px rgba(239,68,68,0.4); border:1px solid #f87171;">
+            <span>🔴 Kozhikode Vision Player</span>
+            <span>↗</span>
+          </a>
+          <a id="btnMediaMtxLink" href="http://103.146.174.75:8888/out/c2-social/" target="_blank" rel="noopener noreferrer" class="btn-tactile" style="font-size:11px; font-weight:800; background:linear-gradient(135deg, #0284c7, #0369a1); color:#ffffff; padding:7px 13px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:5px; box-shadow:0 3px 10px rgba(2,132,199,0.4); border:1px solid #38bdf8;">
+            <span>📺 MediaMTX Player</span>
+            <span>↗</span>
+          </a>
+          <a id="btnYtLiveLink" href="https://www.youtube.com/@keralavisionnews24x7/live" target="_blank" rel="noopener noreferrer" class="btn-tactile" style="font-size:11px; font-weight:800; background:linear-gradient(135deg, #dc2626, #7f1d1d); color:#ffffff; padding:7px 13px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:5px; box-shadow:0 3px 10px rgba(220,38,38,0.4); border:1px solid #fca5a5;">
+            <span>▶ YouTube 24x7 Live</span>
+            <span>↗</span>
+          </a>
+        </div>
         <div style="font-size:11px;color:#94a3b8;display:flex;align-items:center;gap:6px;">
           <span class="live-pulse" style="width:7px;height:7px;background:#22c55e;"></span>
-          <span>🌐 Kozhikode Vision 24x7 Broadcast</span>
+          <span>🌐 24x7 Live Broadcast</span>
         </div>
       </div>
     </div>
@@ -8471,8 +8484,11 @@ let selectedHeadlineFont = 'Anek Malayalam';
 
   function getSavedLiveStreamUrl() {
     try {
-      const saved = localStorage.getItem(LIVE_STREAM_STORAGE_KEY);
-      if (saved && saved.trim()) return saved.trim();
+      let saved = localStorage.getItem(LIVE_STREAM_STORAGE_KEY);
+      if (saved && saved.trim()) {
+        saved = saved.replace(/^ffplay\s+-i\s+/i, '').trim();
+        return saved;
+      }
       return DEFAULT_LIVE_STREAM_URL;
     } catch (e) {
       return DEFAULT_LIVE_STREAM_URL;
@@ -8498,17 +8514,30 @@ let selectedHeadlineFont = 'Anek Malayalam';
         if (!noticeEl) {
           noticeEl = document.createElement('div');
           noticeEl.className = 'mixed-stream-notice';
-          noticeEl.style.cssText = 'position:absolute; inset:0; background:rgba(3,7,18,0.92); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px; text-align:center; z-index:10; backdrop-filter:blur(4px);';
+          noticeEl.style.cssText = 'position:absolute; inset:0; background:rgba(3,7,18,0.94); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px; text-align:center; z-index:10; backdrop-filter:blur(6px);';
           noticeEl.innerHTML = `
             <div style="font-size:24px; filter:drop-shadow(0 0 8px rgba(56,189,248,0.7));">📺</div>
-            <div style="font-size:12px; font-weight:900; color:#fff; letter-spacing:0.5px; margin-top:2px;">KOZHIKODE VISION LIVE</div>
-            <div style="font-size:10px; color:#fbbf24; margin:5px 0 10px 0; line-height:1.4; max-width:280px;">
-              Live stream is broadcasting over HTTP (MediaMTX). Click below to watch the stream directly in full player or new tab:
+            <div style="font-size:13px; font-weight:900; color:#fff; letter-spacing:0.5px; margin-top:2px;">KOZHIKODE VISION LIVE BROADCAST</div>
+            <div style="font-size:11px; color:#cbd5e1; margin:6px 0 12px 0; line-height:1.45; max-width:320px;">
+              HTTPS ബ്രൗസറിലെ സുരക്ഷാ പോളിസി കാരണം സ്ട്രീം തടസ്സമില്ലാതെ പ്ലേ ചെയ്യാൻ താഴെയുള്ള പ്ലെയർ ഓപ്ഷനുകൾ ഉപയോഗിക്കുക:
             </div>
-            <a href="http://103.146.174.75:8888/out/c2-social/index.m3u8" target="_blank" rel="noopener noreferrer" class="btn-tactile" style="font-size:11px; font-weight:800; background:linear-gradient(135deg, #ef4444, #b91c1c); color:#fff; padding:7px 16px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; box-shadow:0 3px 12px rgba(239,68,68,0.45); border:1px solid #f87171;">
-              <span>▶ Watch Live Stream (Direct Window / Player)</span>
-              <span>↗</span>
-            </a>
+            <div style="display:flex; flex-direction:column; gap:8px; width:100%; max-width:300px;">
+              <a href="http://103.146.174.75/watch" target="_blank" rel="noopener noreferrer" class="btn-tactile" style="font-size:12px; font-weight:800; background:linear-gradient(135deg, #ef4444, #b91c1c); color:#fff; padding:8px 16px; border-radius:8px; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 3px 12px rgba(239,68,68,0.45); border:1px solid #f87171;">
+                <span>🔴 Official Kozhikode Vision Player</span>
+                <span>↗</span>
+              </a>
+              <a href="http://103.146.174.75:8888/out/c2-social/" target="_blank" rel="noopener noreferrer" class="btn-tactile" style="font-size:11.5px; font-weight:800; background:linear-gradient(135deg, #0284c7, #0369a1); color:#fff; padding:8px 16px; border-radius:8px; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 3px 12px rgba(2,132,199,0.4); border:1px solid #38bdf8;">
+                <span>📺 MediaMTX Full HD Player</span>
+                <span>↗</span>
+              </a>
+              <a href="https://www.youtube.com/@keralavisionnews24x7/live" target="_blank" rel="noopener noreferrer" class="btn-tactile" style="font-size:11.5px; font-weight:800; background:linear-gradient(135deg, #dc2626, #7f1d1d); color:#fff; padding:8px 16px; border-radius:8px; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 3px 12px rgba(220,38,38,0.4); border:1px solid #fca5a5;">
+                <span>▶ YouTube 24x7 Live Stream</span>
+                <span>↗</span>
+              </a>
+            </div>
+            <div style="font-size:10px; color:#38bdf8; margin-top:10px;">
+              📱 Kozhikode Vision Android APK-യിൽ ഇൻ-ആപ്പായി നേരിട്ട് ലഭ്യമാണ്.
+            </div>
           `;
           standbyMsg.appendChild(noticeEl);
         } else {
@@ -8627,11 +8656,16 @@ let selectedHeadlineFont = 'Anek Malayalam';
   function closeLiveTvPlayer() {
     const modal = document.getElementById('kvLiveTvModal');
     const video = document.getElementById('kvLiveTvVideo');
+    const iframe = document.getElementById('kvLiveTvIframe');
     if (modal) modal.classList.add('kv-hidden');
     if (video) {
       video.pause();
       video.removeAttribute('src');
       video.load();
+    }
+    if (iframe) {
+      iframe.src = '';
+      iframe.style.display = 'none';
     }
     if (liveHlsInstance) {
       liveHlsInstance.destroy();
@@ -8653,7 +8687,23 @@ let selectedHeadlineFont = 'Anek Malayalam';
       liveHlsInstance = null;
     }
     const standby = document.getElementById('kvLiveTvStandbyScreen');
+    const iframe = document.getElementById('kvLiveTvIframe');
     hideStreamMixedNotice(false);
+
+    // If on HTTPS, modern browsers block insecure HTTP HLS XHR without CORS:
+    if (window.location.protocol === 'https:') {
+      showStreamMixedNotice(false);
+      return;
+    }
+
+    // In Android APK (file://) or HTTP local server, the embedded MediaMTX player iframe plays directly!
+    if (iframe && (window.location.protocol === 'file:' || window.location.protocol === 'http:')) {
+      iframe.src = 'http://103.146.174.75:8888/out/c2-social/';
+      iframe.style.display = 'block';
+      if (videoElement) videoElement.style.display = 'none';
+      if (standby) standby.style.display = 'none';
+      return;
+    }
 
     if (typeof Hls !== 'undefined' && Hls.isSupported()) {
       liveHlsInstance = new Hls({ enableWorker: true });
@@ -8786,9 +8836,12 @@ let selectedHeadlineFont = 'Anek Malayalam';
           🔒 <b>To play right here in browser:</b><br>
           Click <b>🔒 icon</b> in address bar → <b>Site settings</b> → set <b>Insecure content</b> to <b>Allow</b> & reload!
         </div>
-        <div style="margin-top:6px;">
-          <a href="http://103.146.174.75:8888/out/c2-social/index.m3u8" target="_blank" rel="noopener noreferrer" class="btn-tactile" style="font-size:9.5px; font-weight:800; background:linear-gradient(135deg, #ef4444, #b91c1c); color:#fff; padding:4px 12px; border-radius:6px; text-decoration:none; display:inline-flex; align-items:center; gap:4px; box-shadow:0 2px 8px rgba(239,68,68,0.4); border:1px solid #f87171;">
-            <span>▶ Watch Direct Stream ↗</span>
+        <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap; justify-content:center;">
+          <a href="http://103.146.174.75/watch" target="_blank" rel="noopener noreferrer" class="btn-tactile" style="font-size:9.5px; font-weight:800; background:linear-gradient(135deg, #ef4444, #b91c1c); color:#fff; padding:4px 10px; border-radius:6px; text-decoration:none; display:inline-flex; align-items:center; gap:4px; box-shadow:0 2px 8px rgba(239,68,68,0.4); border:1px solid #f87171;">
+            <span>🔴 Kozhikode Vision Player ↗</span>
+          </a>
+          <a href="http://103.146.174.75:8888/out/c2-social/" target="_blank" rel="noopener noreferrer" class="btn-tactile" style="font-size:9.5px; font-weight:800; background:linear-gradient(135deg, #0284c7, #0369a1); color:#fff; padding:4px 10px; border-radius:6px; text-decoration:none; display:inline-flex; align-items:center; gap:4px; box-shadow:0 2px 8px rgba(2,132,199,0.4); border:1px solid #38bdf8;">
+            <span>📺 MediaMTX Player ↗</span>
           </a>
         </div>
         <div style="font-size:8px; color:#94a3b8; margin-top:4px;">
