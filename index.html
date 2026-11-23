@@ -24,7 +24,7 @@
         }
       } catch (e) {}
 
-      var KV_LATEST_BUILD = '7.7.0';
+      var KV_LATEST_BUILD = '7.7.1';
       if (window.location.hostname.indexOf('github.io') !== -1) {
         var sp = new URLSearchParams(window.location.search);
         var curVer = sp.get('v');
@@ -6567,7 +6567,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
         }
 
         // DATE BADGE IN PLACE OF CATEGORY
-        const badgeY = (isDuo ? (H * 0.15) : (H * 0.58)) + headlineOffsetY;
+        const badgeY = (isDuo ? Math.max(240, Math.floor(H * 0.22)) : (H * 0.58)) + headlineOffsetY;
         ctx.font = 'bold 24px "Anek Malayalam", sans-serif';
         const displayDate = '📅 ' + (cardDateText || getSystemFormattedDate());
         const badgeMetrics = ctx.measureText(displayDate);
