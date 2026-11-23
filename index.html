@@ -24,7 +24,7 @@
         }
       } catch (e) {}
 
-      var KV_LATEST_BUILD = '7.7.1';
+      var KV_LATEST_BUILD = '7.7.2';
       if (window.location.hostname.indexOf('github.io') !== -1) {
         var sp = new URLSearchParams(window.location.search);
         var curVer = sp.get('v');
@@ -3291,31 +3291,67 @@
                 <textarea id="txtHeadline" class="form-textarea" rows="2">കോഴിക്കോട് ബീച്ചിൽ പുതിയ ടൂറിസം പദ്ധതിക്ക് തുടക്കമായി</textarea>
               </div>
 
-              <!-- Headline Box Backdrop Feature (Reporter Cutout Style) -->
-              <div style="margin-top:8px; margin-bottom:10px; padding:10px; background:#0f172a; border:1px solid #334155; border-radius:10px;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin:0; font-weight:800; font-size:12px; color:#facc15;">
+              <!-- 📦 Headline Box & Styling Controls Panel -->
+              <div style="margin-top:10px; margin-bottom:12px; padding:12px; background:#0f172a; border:1.5px solid #334155; border-radius:12px;">
+                <!-- Main Toggles Row: Box ON/OFF & Vertical Line ON/OFF -->
+                <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; align-items:center;">
+                  <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin:0; font-weight:800; font-size:12.5px; color:#facc15;">
                     <input id="chkHeadlineBox" type="checkbox" style="width:18px; height:18px; cursor:pointer; accent-color:#facc15;">
-                    <span>📦 ടെക്സ്റ്റ് ബോക്സ് ബാക്ക്ഗ്രൗണ്ട് (Reporter Cutout Box)</span>
+                    <span>📦 ടെക്സ്റ്റ് ബോക്സ് (Text Box)</span>
                   </label>
-                  <span style="font-size:10px; color:#94a3b8; font-weight:600;">Text Pop Effect</span>
+                  <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin:0; font-weight:700; font-size:11.5px; color:#cbd5e1;">
+                    <input id="chkVerticalBar" type="checkbox" checked style="width:17px; height:17px; cursor:pointer; accent-color:#ef4444;">
+                    <span>▎ വെർട്ടിക്കൽ ലൈൻ (Vertical Line)</span>
+                  </label>
                 </div>
-                <div id="headlineBoxSettings" style="display:none; margin-top:8px; padding-top:8px; border-top:1px dashed #334155;">
-                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                    <div>
-                      <span style="font-size:11px; color:#cbd5e1; font-weight:700;">ബോക്സ് സ്റ്റൈൽ:</span>
-                      <select id="selHeadlineBoxStyle" class="form-input" style="padding:6px; font-size:12px; background:#1e293b; color:#fff; border:1px solid #475569; width:100%; border-radius:6px; cursor:pointer;">
-                        <option value="cutout">📐 Reporter Cutout Patch (റഫറൻസ് സ്റ്റൈൽ)</option>
-                        <option value="rounded">🔲 Rounded Box (ക്ലാസിക് ബോക്സ്)</option>
-                      </select>
+
+                <!-- Box Settings & Shape Presets -->
+                <div id="headlineBoxSettings" style="display:none; margin-top:10px; padding-top:10px; border-top:1px dashed #334155;">
+                  <!-- Box Shape Preset Selector -->
+                  <div style="margin-bottom:10px;">
+                    <span style="font-size:11px; color:#94a3b8; font-weight:700; display:block; margin-bottom:5px;">📐 ബോക്സ് ഷേപ്പ് മോഡൽ (Box Shape Presets):</span>
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px;">
+                      <button type="button" class="btn-tactile btn-box-shape active" data-shape="cutout" style="padding:6px 4px; font-size:10.5px; font-weight:700; border-radius:6px; background:#1e293b; border:1.5px solid #38bdf8; color:#fff; cursor:pointer;">📐 Cutout Patch</button>
+                      <button type="button" class="btn-tactile btn-box-shape" data-shape="square" style="padding:6px 4px; font-size:10.5px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">⏹️ Sharp Square</button>
+                      <button type="button" class="btn-tactile btn-box-shape" data-shape="rounded" style="padding:6px 4px; font-size:10.5px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">🔲 Rounded Box</button>
+                      <button type="button" class="btn-tactile btn-box-shape" data-shape="pill" style="padding:6px 4px; font-size:10.5px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">💊 Capsule Round</button>
+                      <button type="button" class="btn-tactile btn-box-shape" data-shape="ribbon" style="padding:6px 4px; font-size:10.5px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">🎀 Strip Ribbon</button>
+                      <button type="button" class="btn-tactile btn-box-shape" data-shape="glass" style="padding:6px 4px; font-size:10.5px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">🪟 Soft Glass</button>
                     </div>
-                    <div>
-                      <span style="font-size:11px; color:#cbd5e1; font-weight:700;">ടെക്സ്റ്റ് കളർ:</span>
-                      <select id="selHeadlineTextColor" class="form-input" style="padding:6px; font-size:12px; background:#1e293b; color:#fff; border:1px solid #475569; width:100%; border-radius:6px; cursor:pointer;">
-                        <option value="#ffd700">💛 Vibrant Yellow (മഞ്ഞ)</option>
-                        <option value="#ffffff">🤍 Pure White (വെള്ള)</option>
-                        <option value="#38bdf8">💙 Cyan Blue (നീല)</option>
-                      </select>
+                  </div>
+
+                  <!-- Colors: Box Color & Text Color side by side -->
+                  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <!-- Box Color -->
+                    <div style="background:rgba(30, 41, 59, 0.6); padding:8px; border-radius:8px; border:1px solid #334155;">
+                      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                        <span style="font-size:11px; color:#38bdf8; font-weight:700;">🎨 ബോക്സ് കളർ:</span>
+                        <input id="colBoxBg" type="color" value="#061129" style="width:24px; height:24px; border:none; border-radius:4px; cursor:pointer; background:none;">
+                      </div>
+                      <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                        <button type="button" class="btn-box-col-pill" data-col="#061129" style="width:22px; height:22px; border-radius:50%; background:#061129; border:2px solid #38bdf8; cursor:pointer;" title="Navy Blue"></button>
+                        <button type="button" class="btn-box-col-pill" data-col="#000000" style="width:22px; height:22px; border-radius:50%; background:#000000; border:1px solid #64748b; cursor:pointer;" title="Pure Black"></button>
+                        <button type="button" class="btn-box-col-pill" data-col="#7f1d1d" style="width:22px; height:22px; border-radius:50%; background:#7f1d1d; border:1px solid #64748b; cursor:pointer;" title="Crimson Red"></button>
+                        <button type="button" class="btn-box-col-pill" data-col="#064e3b" style="width:22px; height:22px; border-radius:50%; background:#064e3b; border:1px solid #64748b; cursor:pointer;" title="Forest Green"></button>
+                        <button type="button" class="btn-box-col-pill" data-col="#4c0519" style="width:22px; height:22px; border-radius:50%; background:#4c0519; border:1px solid #64748b; cursor:pointer;" title="Deep Maroon"></button>
+                        <button type="button" class="btn-box-col-pill" data-col="#1e1b4b" style="width:22px; height:22px; border-radius:50%; background:#1e1b4b; border:1px solid #64748b; cursor:pointer;" title="Midnight"></button>
+                      </div>
+                    </div>
+
+                    <!-- Text Color -->
+                    <div style="background:rgba(30, 41, 59, 0.6); padding:8px; border-radius:8px; border:1px solid #334155;">
+                      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                        <span style="font-size:11px; color:#facc15; font-weight:700;">🔤 ടെക്സ്റ്റ് കളർ:</span>
+                        <input id="colTextColor" type="color" value="#ffd700" style="width:24px; height:24px; border:none; border-radius:4px; cursor:pointer; background:none;">
+                      </div>
+                      <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                        <button type="button" class="btn-txt-col-pill" data-col="#ffd700" style="width:22px; height:22px; border-radius:50%; background:#ffd700; border:2px solid #fff; cursor:pointer;" title="Vibrant Yellow"></button>
+                        <button type="button" class="btn-txt-col-pill" data-col="#ffffff" style="width:22px; height:22px; border-radius:50%; background:#ffffff; border:1px solid #64748b; cursor:pointer;" title="Pure White"></button>
+                        <button type="button" class="btn-txt-col-pill" data-col="#38bdf8" style="width:22px; height:22px; border-radius:50%; background:#38bdf8; border:1px solid #64748b; cursor:pointer;" title="Cyan Blue"></button>
+                        <button type="button" class="btn-txt-col-pill" data-col="#a3e635" style="width:22px; height:22px; border-radius:50%; background:#a3e635; border:1px solid #64748b; cursor:pointer;" title="Lime Green"></button>
+                        <button type="button" class="btn-txt-col-pill" data-col="#fb923c" style="width:22px; height:22px; border-radius:50%; background:#fb923c; border:1px solid #64748b; cursor:pointer;" title="Warm Orange"></button>
+                        <button type="button" class="btn-txt-col-pill" data-col="#fca5a5" style="width:22px; height:22px; border-radius:50%; background:#fca5a5; border:1px solid #64748b; cursor:pointer;" title="Light Coral"></button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -4145,10 +4181,12 @@
     let photo2PosY = 0;
     let photo2Flipped = false;
 
-    // Headline Cutout Box & Punchline state
+    // Headline Box & Styling state
     let enableHeadlineBox = false;
-    let headlineBoxStyle = 'cutout'; // 'cutout' or 'rounded'
+    let headlineBoxStyle = 'cutout'; // 'cutout', 'square', 'rounded', 'pill', 'ribbon', 'glass'
+    let headlineBoxBgColor = '#061129';
     let headlineTextColor = '#ffd700'; // Vibrant Yellow (Reporter Style)
+    let showVerticalAccentBar = true;
     let punchlineText = '';
 
     function getSystemFormattedDate() {
@@ -4608,10 +4646,10 @@ let selectedHeadlineFont = 'Anek Malayalam';
         // Auto-enable headline cutout box & yellow text
         const chkHeadlineBox = document.getElementById('chkHeadlineBox');
         const headlineBoxSettings = document.getElementById('headlineBoxSettings');
-        const selHeadlineTextColor = document.getElementById('selHeadlineTextColor');
+        const colTextColor = document.getElementById('colTextColor');
         if (chkHeadlineBox) chkHeadlineBox.checked = true;
         if (headlineBoxSettings) headlineBoxSettings.style.display = 'block';
-        if (selHeadlineTextColor) selHeadlineTextColor.value = '#ffd700';
+        if (colTextColor) colTextColor.value = '#ffd700';
         enableHeadlineBox = true;
         headlineTextColor = '#ffd700';
 
@@ -5286,38 +5324,81 @@ let selectedHeadlineFont = 'Anek Malayalam';
     }
 
     // ==========================================
-    // HEADLINE CUTOUT BOX & PUNCHLINE HANDLERS
+    // HEADLINE BOX, VERTICAL BAR & STYLING HANDLERS
     // ==========================================
     const chkHeadlineBox = document.getElementById('chkHeadlineBox');
+    const chkVerticalBar = document.getElementById('chkVerticalBar');
     const headlineBoxSettings = document.getElementById('headlineBoxSettings');
-    const selHeadlineBoxStyle = document.getElementById('selHeadlineBoxStyle');
-    const selHeadlineTextColor = document.getElementById('selHeadlineTextColor');
+    const colBoxBg = document.getElementById('colBoxBg');
+    const colTextColor = document.getElementById('colTextColor');
     const txtPunchline = document.getElementById('txtPunchline');
 
     if (chkHeadlineBox) {
       chkHeadlineBox.addEventListener('change', () => {
         enableHeadlineBox = chkHeadlineBox.checked;
         if (headlineBoxSettings) headlineBoxSettings.style.display = enableHeadlineBox ? 'block' : 'none';
-        if (enableHeadlineBox && selHeadlineTextColor) {
-          headlineTextColor = selHeadlineTextColor.value || '#ffd700';
-        }
         renderCard();
       });
     }
 
-    if (selHeadlineBoxStyle) {
-      selHeadlineBoxStyle.addEventListener('change', () => {
-        headlineBoxStyle = selHeadlineBoxStyle.value;
+    if (chkVerticalBar) {
+      chkVerticalBar.addEventListener('change', () => {
+        showVerticalAccentBar = chkVerticalBar.checked;
         renderCard();
       });
     }
 
-    if (selHeadlineTextColor) {
-      selHeadlineTextColor.addEventListener('change', () => {
-        headlineTextColor = selHeadlineTextColor.value;
+    // Shape Preset Buttons
+    document.querySelectorAll('.btn-box-shape').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.btn-box-shape').forEach(b => {
+          b.classList.remove('active');
+          b.style.borderColor = '#475569';
+          b.style.color = '#cbd5e1';
+          b.style.background = '#1e293b';
+        });
+        btn.classList.add('active');
+        btn.style.borderColor = '#38bdf8';
+        btn.style.color = '#ffffff';
+        btn.style.background = '#0284c7';
+        headlineBoxStyle = btn.dataset.shape || 'cutout';
+        renderCard();
+      });
+    });
+
+    // Box Color Picker & Quick Pills
+    if (colBoxBg) {
+      colBoxBg.addEventListener('input', (e) => {
+        headlineBoxBgColor = e.target.value;
         renderCard();
       });
     }
+    document.querySelectorAll('.btn-box-col-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.btn-box-col-pill').forEach(b => b.style.borderColor = '#64748b');
+        btn.style.borderColor = '#38bdf8';
+        headlineBoxBgColor = btn.dataset.col || '#061129';
+        if (colBoxBg) colBoxBg.value = headlineBoxBgColor;
+        renderCard();
+      });
+    });
+
+    // Text Color Picker & Quick Pills
+    if (colTextColor) {
+      colTextColor.addEventListener('input', (e) => {
+        headlineTextColor = e.target.value;
+        renderCard();
+      });
+    }
+    document.querySelectorAll('.btn-txt-col-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.btn-txt-col-pill').forEach(b => b.style.borderColor = '#64748b');
+        btn.style.borderColor = '#ffffff';
+        headlineTextColor = btn.dataset.col || '#ffd700';
+        if (colTextColor) colTextColor.value = headlineTextColor;
+        renderCard();
+      });
+    });
 
     if (txtPunchline) {
       txtPunchline.addEventListener('input', () => {
@@ -6087,17 +6168,19 @@ let selectedHeadlineFont = 'Anek Malayalam';
       return lines;
     }
 
-    function drawHeadlineCutoutBox(ctx, x, y, w, h, style, color) {
+    function drawHeadlineCutoutBox(ctx, x, y, w, h, style, color, lines, lineHeight) {
       ctx.save();
+      const baseColor = color || '#061129';
+
       ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
       ctx.shadowBlur = 18;
       ctx.shadowOffsetX = 3;
       ctx.shadowOffsetY = 6;
 
-      ctx.fillStyle = color || '#061129';
-      ctx.beginPath();
       if (style === 'cutout') {
-        // Jagged / Torn-paper cutout patch (Reporter Style)
+        // 📐 1. Jagged / Torn-paper cutout patch (Reporter Style)
+        ctx.fillStyle = baseColor;
+        ctx.beginPath();
         const pad = 14;
         const left = x - pad;
         const top = y - pad;
@@ -6118,21 +6201,86 @@ let selectedHeadlineFont = 'Anek Malayalam';
         ctx.lineTo(left - 4, bottom - 8);
         ctx.lineTo(left + 2, top + h * 0.5);
         ctx.closePath();
+        ctx.fill();
+
+        ctx.shadowColor = 'transparent';
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+      } else if (style === 'square') {
+        // ⏹️ 2. Sharp Square / Crisp Rectangle
+        ctx.fillStyle = baseColor;
+        ctx.fillRect(x - 14, y - 8, w + 28, h + 16);
+
+        ctx.shadowColor = 'transparent';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(x - 14, y - 8, w + 28, h + 16);
+
+      } else if (style === 'pill') {
+        // 💊 3. Capsule / Stadium Full Round
+        ctx.fillStyle = baseColor;
+        ctx.beginPath();
+        const rPill = Math.min(32, Math.floor((h + 20) / 2));
+        if (ctx.roundRect) {
+          ctx.roundRect(x - 16, y - 10, w + 32, h + 20, rPill);
+        } else {
+          ctx.rect(x - 16, y - 10, w + 32, h + 20);
+        }
+        ctx.fill();
+
+        ctx.shadowColor = 'transparent';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+      } else if (style === 'ribbon') {
+        // 🎀 4. Per-Line Ribbon Strips
+        ctx.fillStyle = baseColor;
+        if (lines && lines.length > 0) {
+          for (let i = 0; i < lines.length; i++) {
+            const lw = ctx.measureText(lines[i]).width;
+            const lineY = y + (i * lineHeight);
+            ctx.beginPath();
+            if (ctx.roundRect) ctx.roundRect(x - 12, lineY, lw + 24, lineHeight * 0.94, 6);
+            else ctx.rect(x - 12, lineY, lw + 24, lineHeight * 0.94);
+            ctx.fill();
+          }
+        } else {
+          ctx.fillRect(x - 12, y - 8, w + 24, h + 16);
+        }
+
+      } else if (style === 'glass') {
+        // 🪟 5. Soft Translucent Glassmorphism
+        const rgb = hexToRgb(baseColor);
+        ctx.fillStyle = 'rgba(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ', 0.65)';
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(x - 14, y - 10, w + 28, h + 20, 12);
+        else ctx.rect(x - 14, y - 10, w + 28, h + 20);
+        ctx.fill();
+
+        ctx.shadowColor = 'transparent';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
       } else {
-        // Classic Rounded Rect
+        // 🔲 6. Default Smooth Rounded Box
+        ctx.fillStyle = baseColor;
+        ctx.beginPath();
         if (ctx.roundRect) {
           ctx.roundRect(x - 14, y - 10, w + 28, h + 20, 14);
         } else {
           ctx.rect(x - 14, y - 10, w + 28, h + 20);
         }
-      }
-      ctx.fill();
+        ctx.fill();
 
-      // Subtle cyan border highlight
-      ctx.shadowColor = 'transparent';
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
+        ctx.shadowColor = 'transparent';
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
 
       ctx.restore();
     }
@@ -6591,9 +6739,11 @@ let selectedHeadlineFont = 'Anek Malayalam';
           ctx.fillText('📍 ' + locationText, badgeX + badgeW + 16, badgeY);
         }
 
-        // Red Accent Vertical Bar
-        ctx.fillStyle = (overlayStyle === 'custom') ? (customNewsColor || '#dc2626') : '#dc2626';
-        ctx.fillRect(badgeX, badgeY + 20, 6, isDuo ? (H * 0.22) : (H * 0.28));
+        // Red Accent Vertical Bar (Toggleable ON/OFF)
+        if (showVerticalAccentBar) {
+          ctx.fillStyle = (overlayStyle === 'custom') ? (customNewsColor || '#dc2626') : '#dc2626';
+          ctx.fillRect(badgeX, badgeY + 20, 6, isDuo ? (H * 0.22) : (H * 0.28));
+        }
 
         // Main Headline
         ctx.font = '800 ' + headlineFontSize + 'px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
@@ -6604,8 +6754,8 @@ let selectedHeadlineFont = 'Anek Malayalam';
 
         const hlLines = getHeadlineLines(ctx, headlineText || 'KOZHIKODE VISION NEWS', maxTextWidth, 4);
 
-        // Draw Headline Cutout Box if enabled
-        if ((enableHeadlineBox || isDuo) && hlLines.length > 0) {
+        // Draw Headline Box if enabled (Toggleable ON/OFF)
+        if (enableHeadlineBox && hlLines.length > 0) {
           let maxLineW = 0;
           for (let i = 0; i < hlLines.length; i++) {
             const lw = ctx.measureText(hlLines[i]).width;
@@ -6614,10 +6764,10 @@ let selectedHeadlineFont = 'Anek Malayalam';
           const totalBoxH = hlLines.length * headlineLineHeight;
           const boxX = textStartX;
           const boxY = headlineY - headlineFontSize * 0.9;
-          drawHeadlineCutoutBox(ctx, boxX, boxY, maxLineW, totalBoxH, headlineBoxStyle, '#061129');
+          drawHeadlineCutoutBox(ctx, boxX, boxY, maxLineW, totalBoxH, headlineBoxStyle, headlineBoxBgColor, hlLines, headlineLineHeight);
         }
 
-        ctx.fillStyle = (enableHeadlineBox || isDuo) ? (headlineTextColor || '#ffd700') : '#ffffff';
+        ctx.fillStyle = headlineTextColor || (enableHeadlineBox ? '#ffd700' : '#ffffff');
         ctx.shadowColor = 'rgba(0,0,0,0.85)';
         ctx.shadowBlur = 10;
         ctx.shadowOffsetX = 2;
