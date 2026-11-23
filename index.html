@@ -24,7 +24,7 @@
         }
       } catch (e) {}
 
-      var KV_LATEST_BUILD = '7.7.2';
+      var KV_LATEST_BUILD = '7.7.3';
       if (window.location.hostname.indexOf('github.io') !== -1) {
         var sp = new URLSearchParams(window.location.search);
         var curVer = sp.get('v');
@@ -2878,12 +2878,9 @@
           <!-- Left Column: Type & Size -->
           <div class="col-card">
             <span class="col-title">Select card type</span>
-            <div class="type-radio-grid" style="grid-template-columns: repeat(4, 1fr); gap: 4px;">
+            <div class="type-radio-grid" style="grid-template-columns: repeat(3, 1fr); gap: 6px;">
               <button id="optTypeNews" type="button" class="btn-tactile type-pill active">
                 <span>📰 News</span>
-              </button>
-              <button id="optTypeDuo" type="button" class="btn-tactile type-pill" style="border:1.5px solid #38bdf8;">
-                <span>👥 Duo Cutout</span>
               </button>
               <button id="optTypeObit" type="button" class="btn-tactile type-pill">
                 <span>🕯️ Obit</span>
@@ -2928,7 +2925,7 @@
               <input id="photoInp" type="file" accept="image/*" style="display:none;">
               <button id="btnUploadPhoto" type="button" class="btn-tactile upload-action-btn blue">
                 <span style="font-size:16px;">📁</span>
-                <span id="lblUploadPhoto1">Upload Photo (ഫോട്ടോ 1)</span>
+                <span id="lblUploadPhoto1">Upload Photo</span>
                 <span class="sub">Choose from Gallery</span>
               </button>
 
@@ -2940,7 +2937,7 @@
             </div>
 
             <!-- Secondary Photo (Photo 2) for Duo Cutout / Multi-Person -->
-            <div id="secPhotoBox" style="margin-top:10px; margin-bottom:12px; padding:10px; background:rgba(30, 41, 59, 0.7); border:1.5px dashed #38bdf8; border-radius:10px;">
+            <div id="secPhotoBox" style="display:none !important;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                 <span style="font-size:12px; font-weight:800; color:#38bdf8;">👥 രണ്ടാമത്തെ ഫോട്ടോ (Photo 2 - Right Person):</span>
                 <button id="btnRemovePhoto2" type="button" class="btn-tactile" style="display:none; background:#ef4444; color:#fff; border:none; padding:2px 8px; border-radius:6px; font-size:11px; cursor:pointer;">❌ കളയുക</button>
@@ -4607,7 +4604,6 @@ let selectedHeadlineFont = 'Anek Malayalam';
     // STEP 1: CARD TYPE & SIZE & PHOTO CONTROLS
     // ==========================================
     const optTypeNews = document.getElementById('optTypeNews');
-    const optTypeDuo = document.getElementById('optTypeDuo');
     const optTypeObit = document.getElementById('optTypeObit');
     const newsDetailsWrap = document.getElementById('newsDetailsWrap');
     const obitDetailsWrap = document.getElementById('obitDetailsWrap');
@@ -4616,7 +4612,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
 
     optTypeNews.addEventListener('click', () => {
       cardType = 'news';
-      [optTypeNews, optTypeDuo, optTypeObit, optTypeVideo].forEach(b => { if (b) b.classList.remove('active'); });
+      [optTypeNews, optTypeObit, optTypeVideo].forEach(b => { if (b) b.classList.remove('active'); });
       optTypeNews.classList.add('active');
       if (photoUploadCol) photoUploadCol.style.display = 'flex';
       if (videoUploadCol) videoUploadCol.style.display = 'none';
@@ -4628,39 +4624,9 @@ let selectedHeadlineFont = 'Anek Malayalam';
       renderCard();
     });
 
-    if (optTypeDuo) {
-      optTypeDuo.addEventListener('click', () => {
-        cardType = 'duo';
-        [optTypeNews, optTypeDuo, optTypeObit, optTypeVideo].forEach(b => { if (b) b.classList.remove('active'); });
-        optTypeDuo.classList.add('active');
-
-        if (photoUploadCol) photoUploadCol.style.display = 'flex';
-        if (videoUploadCol) videoUploadCol.style.display = 'none';
-        if (videoUploadWrap) videoUploadWrap.style.display = 'none';
-
-        if (newsDetailsWrap) newsDetailsWrap.style.display = 'flex';
-        if (obitDetailsWrap) obitDetailsWrap.style.display = 'none';
-        if (newsTextAdjustWrap) newsTextAdjustWrap.style.display = 'flex';
-        if (obitShapeAdjustWrap) obitShapeAdjustWrap.style.display = 'none';
-
-        // Auto-enable headline cutout box & yellow text
-        const chkHeadlineBox = document.getElementById('chkHeadlineBox');
-        const headlineBoxSettings = document.getElementById('headlineBoxSettings');
-        const colTextColor = document.getElementById('colTextColor');
-        if (chkHeadlineBox) chkHeadlineBox.checked = true;
-        if (headlineBoxSettings) headlineBoxSettings.style.display = 'block';
-        if (colTextColor) colTextColor.value = '#ffd700';
-        enableHeadlineBox = true;
-        headlineTextColor = '#ffd700';
-
-        renderCard();
-        showToast('📺 Duo Cutout / Reporter Layout Enabled!');
-      });
-    }
-
     optTypeObit.addEventListener('click', () => {
       cardType = 'obituary';
-      [optTypeNews, optTypeDuo, optTypeObit, optTypeVideo].forEach(b => { if (b) b.classList.remove('active'); });
+      [optTypeNews, optTypeObit, optTypeVideo].forEach(b => { if (b) b.classList.remove('active'); });
       optTypeObit.classList.add('active');
       if (photoUploadCol) photoUploadCol.style.display = 'flex';
       if (videoUploadCol) videoUploadCol.style.display = 'none';
@@ -4693,7 +4659,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
     if (optTypeVideo) {
       optTypeVideo.addEventListener('click', () => {
         cardType = 'video';
-        [optTypeNews, optTypeDuo, optTypeObit, optTypeVideo].forEach(b => { if (b) b.classList.remove('active'); });
+        [optTypeNews, optTypeObit, optTypeVideo].forEach(b => { if (b) b.classList.remove('active'); });
         optTypeVideo.classList.add('active');
 
         // Toggle UI Panels
