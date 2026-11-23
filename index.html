@@ -24,7 +24,7 @@
         }
       } catch (e) {}
 
-      var KV_LATEST_BUILD = '7.6.1';
+      var KV_LATEST_BUILD = '7.7.0';
       if (window.location.hostname.indexOf('github.io') !== -1) {
         var sp = new URLSearchParams(window.location.search);
         var curVer = sp.get('v');
@@ -2878,12 +2878,15 @@
           <!-- Left Column: Type & Size -->
           <div class="col-card">
             <span class="col-title">Select card type</span>
-            <div class="type-radio-grid" style="grid-template-columns: repeat(3, 1fr); gap: 6px;">
+            <div class="type-radio-grid" style="grid-template-columns: repeat(4, 1fr); gap: 4px;">
               <button id="optTypeNews" type="button" class="btn-tactile type-pill active">
                 <span>📰 News</span>
               </button>
+              <button id="optTypeDuo" type="button" class="btn-tactile type-pill" style="border:1.5px solid #38bdf8;">
+                <span>👥 Duo Cutout</span>
+              </button>
               <button id="optTypeObit" type="button" class="btn-tactile type-pill">
-                <span>🕯️ Obituary</span>
+                <span>🕯️ Obit</span>
               </button>
               <button id="optTypeVideo" type="button" class="btn-tactile type-pill" style="border:1px solid #8b5cf6;">
                 <span>🎥 Video</span>
@@ -2925,7 +2928,7 @@
               <input id="photoInp" type="file" accept="image/*" style="display:none;">
               <button id="btnUploadPhoto" type="button" class="btn-tactile upload-action-btn blue">
                 <span style="font-size:16px;">📁</span>
-                <span>Upload Photo</span>
+                <span id="lblUploadPhoto1">Upload Photo (ഫോട്ടോ 1)</span>
                 <span class="sub">Choose from Gallery</span>
               </button>
 
@@ -2934,6 +2937,53 @@
                 <span>Sample Image</span>
                 <span class="sub">Load Test Photo</span>
               </button>
+            </div>
+
+            <!-- Secondary Photo (Photo 2) for Duo Cutout / Multi-Person -->
+            <div id="secPhotoBox" style="margin-top:10px; margin-bottom:12px; padding:10px; background:rgba(30, 41, 59, 0.7); border:1.5px dashed #38bdf8; border-radius:10px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <span style="font-size:12px; font-weight:800; color:#38bdf8;">👥 രണ്ടാമത്തെ ഫോട്ടോ (Photo 2 - Right Person):</span>
+                <button id="btnRemovePhoto2" type="button" class="btn-tactile" style="display:none; background:#ef4444; color:#fff; border:none; padding:2px 8px; border-radius:6px; font-size:11px; cursor:pointer;">❌ കളയുക</button>
+              </div>
+              <input id="photo2Inp" type="file" accept="image/*" style="display:none;">
+              <div style="display:flex; gap:6px;">
+                <button id="btnUploadPhoto2" type="button" class="btn-tactile upload-action-btn teal" style="flex:1; justify-content:center; padding:8px 10px;">
+                  <span style="font-size:15px;">👤➕</span>
+                  <span id="lblUploadPhoto2">Photo 2 ചേർക്കുക</span>
+                </button>
+                <button id="btnSamplePhoto2" type="button" class="btn-tactile upload-action-btn blue" style="width:auto; padding:8px 12px;" title="Sample Photo 2">
+                  <span>🖼️ Sample 2</span>
+                </button>
+              </div>
+
+              <!-- Photo 2 Sliders -->
+              <div id="photo2Controls" style="display:none; margin-top:8px;">
+                <div class="slider-item">
+                  <div class="slider-head">
+                    <span>🔍 Photo 2 Zoom:</span>
+                    <span id="zoom2Val" class="val">1.0×</span>
+                  </div>
+                  <input id="zoom2Range" type="range" min="0.5" max="3" step="0.05" value="1">
+                </div>
+                <div class="slider-item">
+                  <div class="slider-head">
+                    <span>↔ Photo 2 Position X:</span>
+                    <span id="pos2XVal" class="val">0px</span>
+                  </div>
+                  <input id="pos2XRange" type="range" min="-500" max="500" step="5" value="0">
+                </div>
+                <div class="slider-item">
+                  <div class="slider-head">
+                    <span>↕ Photo 2 Position Y:</span>
+                    <span id="pos2YVal" class="val">0px</span>
+                  </div>
+                  <input id="pos2YRange" type="range" min="-500" max="500" step="5" value="0">
+                </div>
+                <div style="display:flex; gap:6px; margin-top:6px;">
+                  <button id="btnFlipPhoto2" type="button" class="btn-tactile dpad-pill" style="flex:1;">🔄 Flip Horizontal</button>
+                  <button id="btnResetPhoto2" type="button" class="btn-tactile dpad-pill" style="flex:1;">🎯 Reset Pos</button>
+                </div>
+              </div>
             </div>
 
             <!-- Sliders -->
@@ -3239,6 +3289,42 @@
                   <button id="btnVoiceHeadline" type="button" class="btn-voice-mic" title="സംസാരിച്ച് മലയാളത്തിൽ ടൈപ്പ് ചെയ്യുക">🎙️ സംസാരിക്കുക</button>
                 </div>
                 <textarea id="txtHeadline" class="form-textarea" rows="2">കോഴിക്കോട് ബീച്ചിൽ പുതിയ ടൂറിസം പദ്ധതിക്ക് തുടക്കമായി</textarea>
+              </div>
+
+              <!-- Headline Box Backdrop Feature (Reporter Cutout Style) -->
+              <div style="margin-top:8px; margin-bottom:10px; padding:10px; background:#0f172a; border:1px solid #334155; border-radius:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin:0; font-weight:800; font-size:12px; color:#facc15;">
+                    <input id="chkHeadlineBox" type="checkbox" style="width:18px; height:18px; cursor:pointer; accent-color:#facc15;">
+                    <span>📦 ടെക്സ്റ്റ് ബോക്സ് ബാക്ക്ഗ്രൗണ്ട് (Reporter Cutout Box)</span>
+                  </label>
+                  <span style="font-size:10px; color:#94a3b8; font-weight:600;">Text Pop Effect</span>
+                </div>
+                <div id="headlineBoxSettings" style="display:none; margin-top:8px; padding-top:8px; border-top:1px dashed #334155;">
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                    <div>
+                      <span style="font-size:11px; color:#cbd5e1; font-weight:700;">ബോക്സ് സ്റ്റൈൽ:</span>
+                      <select id="selHeadlineBoxStyle" class="form-input" style="padding:6px; font-size:12px; background:#1e293b; color:#fff; border:1px solid #475569; width:100%; border-radius:6px; cursor:pointer;">
+                        <option value="cutout">📐 Reporter Cutout Patch (റഫറൻസ് സ്റ്റൈൽ)</option>
+                        <option value="rounded">🔲 Rounded Box (ക്ലാസിക് ബോക്സ്)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <span style="font-size:11px; color:#cbd5e1; font-weight:700;">ടെക്സ്റ്റ് കളർ:</span>
+                      <select id="selHeadlineTextColor" class="form-input" style="padding:6px; font-size:12px; background:#1e293b; color:#fff; border:1px solid #475569; width:100%; border-radius:6px; cursor:pointer;">
+                        <option value="#ffd700">💛 Vibrant Yellow (മഞ്ഞ)</option>
+                        <option value="#ffffff">🤍 Pure White (വെള്ള)</option>
+                        <option value="#38bdf8">💙 Cyan Blue (നീല)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Optional Punchline / Decision Tag (like 'തീരുമാനം ഉടൻ') -->
+              <div class="form-group" style="margin-top:6px; margin-bottom:10px;">
+                <label class="form-label" style="font-size:11px; color:#94a3b8; margin-bottom:2px;">🎯 Punchline / Decision Tag (Optional - e.g. തീരുമാനം ഉടൻ):</label>
+                <input id="txtPunchline" type="text" class="form-input" placeholder="തീരുമാനം ഉടൻ" style="font-size:13px; font-weight:700; padding:6px 10px;">
               </div>
 
               <!-- Headline Position Slider -->
@@ -4052,6 +4138,19 @@
     let photoPosX = 0;
     let photoPosY = 0;
 
+    // Photo 2 (Secondary / Dual Cutout) state
+    let userImg2 = null;
+    let photo2Zoom = 1.0;
+    let photo2PosX = 0;
+    let photo2PosY = 0;
+    let photo2Flipped = false;
+
+    // Headline Cutout Box & Punchline state
+    let enableHeadlineBox = false;
+    let headlineBoxStyle = 'cutout'; // 'cutout' or 'rounded'
+    let headlineTextColor = '#ffd700'; // Vibrant Yellow (Reporter Style)
+    let punchlineText = '';
+
     function getSystemFormattedDate() {
       const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
       const now = new Date();
@@ -4470,6 +4569,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
     // STEP 1: CARD TYPE & SIZE & PHOTO CONTROLS
     // ==========================================
     const optTypeNews = document.getElementById('optTypeNews');
+    const optTypeDuo = document.getElementById('optTypeDuo');
     const optTypeObit = document.getElementById('optTypeObit');
     const newsDetailsWrap = document.getElementById('newsDetailsWrap');
     const obitDetailsWrap = document.getElementById('obitDetailsWrap');
@@ -4478,8 +4578,11 @@ let selectedHeadlineFont = 'Anek Malayalam';
 
     optTypeNews.addEventListener('click', () => {
       cardType = 'news';
+      [optTypeNews, optTypeDuo, optTypeObit, optTypeVideo].forEach(b => { if (b) b.classList.remove('active'); });
       optTypeNews.classList.add('active');
-      optTypeObit.classList.remove('active');
+      if (photoUploadCol) photoUploadCol.style.display = 'flex';
+      if (videoUploadCol) videoUploadCol.style.display = 'none';
+      if (videoUploadWrap) videoUploadWrap.style.display = 'none';
       newsDetailsWrap.style.display = 'flex';
       obitDetailsWrap.style.display = 'none';
       newsTextAdjustWrap.style.display = 'flex';
@@ -4487,10 +4590,43 @@ let selectedHeadlineFont = 'Anek Malayalam';
       renderCard();
     });
 
+    if (optTypeDuo) {
+      optTypeDuo.addEventListener('click', () => {
+        cardType = 'duo';
+        [optTypeNews, optTypeDuo, optTypeObit, optTypeVideo].forEach(b => { if (b) b.classList.remove('active'); });
+        optTypeDuo.classList.add('active');
+
+        if (photoUploadCol) photoUploadCol.style.display = 'flex';
+        if (videoUploadCol) videoUploadCol.style.display = 'none';
+        if (videoUploadWrap) videoUploadWrap.style.display = 'none';
+
+        if (newsDetailsWrap) newsDetailsWrap.style.display = 'flex';
+        if (obitDetailsWrap) obitDetailsWrap.style.display = 'none';
+        if (newsTextAdjustWrap) newsTextAdjustWrap.style.display = 'flex';
+        if (obitShapeAdjustWrap) obitShapeAdjustWrap.style.display = 'none';
+
+        // Auto-enable headline cutout box & yellow text
+        const chkHeadlineBox = document.getElementById('chkHeadlineBox');
+        const headlineBoxSettings = document.getElementById('headlineBoxSettings');
+        const selHeadlineTextColor = document.getElementById('selHeadlineTextColor');
+        if (chkHeadlineBox) chkHeadlineBox.checked = true;
+        if (headlineBoxSettings) headlineBoxSettings.style.display = 'block';
+        if (selHeadlineTextColor) selHeadlineTextColor.value = '#ffd700';
+        enableHeadlineBox = true;
+        headlineTextColor = '#ffd700';
+
+        renderCard();
+        showToast('📺 Duo Cutout / Reporter Layout Enabled!');
+      });
+    }
+
     optTypeObit.addEventListener('click', () => {
       cardType = 'obituary';
+      [optTypeNews, optTypeDuo, optTypeObit, optTypeVideo].forEach(b => { if (b) b.classList.remove('active'); });
       optTypeObit.classList.add('active');
-      optTypeNews.classList.remove('active');
+      if (photoUploadCol) photoUploadCol.style.display = 'flex';
+      if (videoUploadCol) videoUploadCol.style.display = 'none';
+      if (videoUploadWrap) videoUploadWrap.style.display = 'none';
       newsDetailsWrap.style.display = 'none';
       obitDetailsWrap.style.display = 'flex';
       newsTextAdjustWrap.style.display = 'none';
@@ -4519,7 +4655,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
     if (optTypeVideo) {
       optTypeVideo.addEventListener('click', () => {
         cardType = 'video';
-        [optTypeNews, optTypeObit, optTypeVideo].forEach(b => { if (b) b.classList.remove('active'); });
+        [optTypeNews, optTypeDuo, optTypeObit, optTypeVideo].forEach(b => { if (b) b.classList.remove('active'); });
         optTypeVideo.classList.add('active');
 
         // Toggle UI Panels
@@ -5004,6 +5140,191 @@ let selectedHeadlineFont = 'Anek Malayalam';
       renderCard();
       showToast('Photo removed');
     });
+
+    // ==========================================
+    // PHOTO 2 (DUAL CUTOUT / MULTI-PERSON) HANDLERS
+    // ==========================================
+    const photo2Inp = document.getElementById('photo2Inp');
+    const btnUploadPhoto2 = document.getElementById('btnUploadPhoto2');
+    const btnSamplePhoto2 = document.getElementById('btnSamplePhoto2');
+    const btnRemovePhoto2 = document.getElementById('btnRemovePhoto2');
+    const photo2Controls = document.getElementById('photo2Controls');
+    const lblUploadPhoto2 = document.getElementById('lblUploadPhoto2');
+    const zoom2Range = document.getElementById('zoom2Range');
+    const zoom2Val = document.getElementById('zoom2Val');
+    const pos2XRange = document.getElementById('pos2XRange');
+    const pos2XVal = document.getElementById('pos2XVal');
+    const pos2YRange = document.getElementById('pos2YRange');
+    const pos2YVal = document.getElementById('pos2YVal');
+    const btnFlipPhoto2 = document.getElementById('btnFlipPhoto2');
+    const btnResetPhoto2 = document.getElementById('btnResetPhoto2');
+
+    function applyLoadedPhoto2(img) {
+      userImg2 = img;
+      photo2Zoom = 1.0;
+      photo2PosX = 0;
+      photo2PosY = 0;
+      photo2Flipped = false;
+      if (photo2Controls) photo2Controls.style.display = 'block';
+      if (btnRemovePhoto2) btnRemovePhoto2.style.display = 'inline-block';
+      if (lblUploadPhoto2) lblUploadPhoto2.textContent = 'Change Photo 2';
+      if (zoom2Range) zoom2Range.value = 1;
+      if (zoom2Val) zoom2Val.textContent = '1.0×';
+      if (pos2XRange) pos2XRange.value = 0;
+      if (pos2XVal) pos2XVal.textContent = '0px';
+      if (pos2YRange) pos2YRange.value = 0;
+      if (pos2YVal) pos2YVal.textContent = '0px';
+      renderCard();
+      showToast('✅ Photo 2 added successfully!');
+    }
+
+    if (btnUploadPhoto2 && photo2Inp) {
+      btnUploadPhoto2.addEventListener('click', (e) => {
+        e.preventDefault();
+        photo2Inp.value = '';
+        photo2Inp.click();
+      });
+
+      photo2Inp.addEventListener('change', () => {
+        const file = photo2Inp.files && photo2Inp.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            const img = new Image();
+            img.onload = () => { applyLoadedPhoto2(img); };
+            img.onerror = () => { showToast('Failed to load Photo 2'); };
+            img.src = evt.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    if (btnSamplePhoto2) {
+      btnSamplePhoto2.addEventListener('click', () => {
+        const c2 = document.createElement('canvas');
+        c2.width = 600;
+        c2.height = 800;
+        const ctx2 = c2.getContext('2d');
+        const grad2 = ctx2.createLinearGradient(0, 0, 600, 800);
+        grad2.addColorStop(0, '#dc2626');
+        grad2.addColorStop(1, '#7f1d1d');
+        ctx2.fillStyle = grad2;
+        ctx2.beginPath();
+        if (ctx2.roundRect) ctx2.roundRect(50, 100, 500, 650, [150, 150, 20, 20]);
+        else ctx2.rect(50, 100, 500, 650);
+        ctx2.fill();
+        ctx2.fillStyle = '#ffffff';
+        ctx2.font = 'bold 44px sans-serif';
+        ctx2.textAlign = 'center';
+        ctx2.fillText('PERSON 2', 300, 400);
+        ctx2.font = '24px sans-serif';
+        ctx2.fillText('Cutout Sample', 300, 460);
+
+        const img2 = new Image();
+        img2.onload = () => { applyLoadedPhoto2(img2); };
+        img2.src = c2.toDataURL('image/png');
+      });
+    }
+
+    if (btnRemovePhoto2) {
+      btnRemovePhoto2.addEventListener('click', () => {
+        userImg2 = null;
+        if (photo2Controls) photo2Controls.style.display = 'none';
+        btnRemovePhoto2.style.display = 'none';
+        if (lblUploadPhoto2) lblUploadPhoto2.textContent = 'Photo 2 ചേർക്കുക';
+        renderCard();
+        showToast('Photo 2 removed');
+      });
+    }
+
+    if (zoom2Range) {
+      zoom2Range.addEventListener('input', () => {
+        photo2Zoom = parseFloat(zoom2Range.value);
+        if (zoom2Val) zoom2Val.textContent = photo2Zoom.toFixed(2) + '×';
+        renderCard();
+      });
+    }
+
+    if (pos2XRange) {
+      pos2XRange.addEventListener('input', () => {
+        photo2PosX = parseInt(pos2XRange.value, 10);
+        if (pos2XVal) pos2XVal.textContent = photo2PosX + 'px';
+        renderCard();
+      });
+    }
+
+    if (pos2YRange) {
+      pos2YRange.addEventListener('input', () => {
+        photo2PosY = parseInt(pos2YRange.value, 10);
+        if (pos2YVal) pos2YVal.textContent = photo2PosY + 'px';
+        renderCard();
+      });
+    }
+
+    if (btnFlipPhoto2) {
+      btnFlipPhoto2.addEventListener('click', () => {
+        photo2Flipped = !photo2Flipped;
+        renderCard();
+      });
+    }
+
+    if (btnResetPhoto2) {
+      btnResetPhoto2.addEventListener('click', () => {
+        photo2Zoom = 1.0;
+        photo2PosX = 0;
+        photo2PosY = 0;
+        photo2Flipped = false;
+        if (zoom2Range) zoom2Range.value = 1;
+        if (zoom2Val) zoom2Val.textContent = '1.0×';
+        if (pos2XRange) pos2XRange.value = 0;
+        if (pos2XVal) pos2XVal.textContent = '0px';
+        if (pos2YRange) pos2YRange.value = 0;
+        if (pos2YVal) pos2YVal.textContent = '0px';
+        renderCard();
+      });
+    }
+
+    // ==========================================
+    // HEADLINE CUTOUT BOX & PUNCHLINE HANDLERS
+    // ==========================================
+    const chkHeadlineBox = document.getElementById('chkHeadlineBox');
+    const headlineBoxSettings = document.getElementById('headlineBoxSettings');
+    const selHeadlineBoxStyle = document.getElementById('selHeadlineBoxStyle');
+    const selHeadlineTextColor = document.getElementById('selHeadlineTextColor');
+    const txtPunchline = document.getElementById('txtPunchline');
+
+    if (chkHeadlineBox) {
+      chkHeadlineBox.addEventListener('change', () => {
+        enableHeadlineBox = chkHeadlineBox.checked;
+        if (headlineBoxSettings) headlineBoxSettings.style.display = enableHeadlineBox ? 'block' : 'none';
+        if (enableHeadlineBox && selHeadlineTextColor) {
+          headlineTextColor = selHeadlineTextColor.value || '#ffd700';
+        }
+        renderCard();
+      });
+    }
+
+    if (selHeadlineBoxStyle) {
+      selHeadlineBoxStyle.addEventListener('change', () => {
+        headlineBoxStyle = selHeadlineBoxStyle.value;
+        renderCard();
+      });
+    }
+
+    if (selHeadlineTextColor) {
+      selHeadlineTextColor.addEventListener('change', () => {
+        headlineTextColor = selHeadlineTextColor.value;
+        renderCard();
+      });
+    }
+
+    if (txtPunchline) {
+      txtPunchline.addEventListener('input', () => {
+        punchlineText = txtPunchline.value.trim();
+        renderCard();
+      });
+    }
 
     zoomRange.addEventListener('input', (e) => {
       photoZoom = parseFloat(e.target.value);
@@ -5582,7 +5903,7 @@ let selectedHeadlineFont = 'Anek Malayalam';
     function downloadHDCard() {
       try {
         renderCard();
-        const baseName = cardType === 'news' ? 'KozhikodeVision-NewsCard' : 'KozhikodeVision-ObituaryCard';
+        const baseName = (cardType === 'news' || cardType === 'duo') ? 'KozhikodeVision-NewsCard' : 'KozhikodeVision-ObituaryCard';
         const pngFilename = baseName + '.png';
         const jpgFilename = baseName + '.jpg';
 
@@ -5730,6 +6051,103 @@ let selectedHeadlineFont = 'Anek Malayalam';
 
     function wrapText(context, text, x, y, maxWidth, lineHeight, maxLines = 4) {
       return wrapMultilineText(context, text, x, y, maxWidth, lineHeight, maxLines);
+    }
+
+    function getHeadlineLines(context, text, maxWidth, maxLines) {
+      if (!text) return [];
+      const paragraphs = String(text).replace(/\r\n/g, '\n').split('\n');
+      const lines = [];
+      const limit = maxLines || 4;
+
+      for (let p = 0; p < paragraphs.length; p++) {
+        if (lines.length >= limit) break;
+        const pText = paragraphs[p].trim();
+        if (!pText) continue;
+
+        const words = pText.split(/\s+/);
+        let currentLine = '';
+
+        for (let w = 0; w < words.length; w++) {
+          const word = words[w];
+          const testLine = currentLine ? (currentLine + ' ' + word) : word;
+          const metrics = context.measureText(testLine);
+
+          if (metrics.width > maxWidth && currentLine) {
+            lines.push(currentLine);
+            if (lines.length >= limit) return lines;
+            currentLine = word;
+          } else {
+            currentLine = testLine;
+          }
+        }
+        if (currentLine && lines.length < limit) {
+          lines.push(currentLine);
+        }
+      }
+      return lines;
+    }
+
+    function drawHeadlineCutoutBox(ctx, x, y, w, h, style, color) {
+      ctx.save();
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
+      ctx.shadowBlur = 18;
+      ctx.shadowOffsetX = 3;
+      ctx.shadowOffsetY = 6;
+
+      ctx.fillStyle = color || '#061129';
+      ctx.beginPath();
+      if (style === 'cutout') {
+        // Jagged / Torn-paper cutout patch (Reporter Style)
+        const pad = 14;
+        const left = x - pad;
+        const top = y - pad;
+        const right = x + w + pad;
+        const bottom = y + h + pad;
+
+        ctx.moveTo(left, top + 10);
+        ctx.lineTo(left + w * 0.25, top - 3);
+        ctx.lineTo(left + w * 0.5, top + 4);
+        ctx.lineTo(left + w * 0.75, top - 2);
+        ctx.lineTo(right, top + 8);
+        ctx.lineTo(right + 4, top + h * 0.35);
+        ctx.lineTo(right - 2, top + h * 0.7);
+        ctx.lineTo(right + 5, bottom - 6);
+        ctx.lineTo(left + w * 0.8, bottom + 5);
+        ctx.lineTo(left + w * 0.45, bottom - 3);
+        ctx.lineTo(left + w * 0.15, bottom + 4);
+        ctx.lineTo(left - 4, bottom - 8);
+        ctx.lineTo(left + 2, top + h * 0.5);
+        ctx.closePath();
+      } else {
+        // Classic Rounded Rect
+        if (ctx.roundRect) {
+          ctx.roundRect(x - 14, y - 10, w + 28, h + 20, 14);
+        } else {
+          ctx.rect(x - 14, y - 10, w + 28, h + 20);
+        }
+      }
+      ctx.fill();
+
+      // Subtle cyan border highlight
+      ctx.shadowColor = 'transparent';
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function drawPunchlineBadge(ctx, x, y, text) {
+      if (!text) return;
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,0.9)';
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 3;
+      ctx.font = '700 24px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(text, x, y);
+      ctx.restore();
     }
 
         // ==========================================
@@ -6010,67 +6428,146 @@ let selectedHeadlineFont = 'Anek Malayalam';
       }
 
       // =====================================
-      // 2. NEWS CARD MODE
+      // 2. NEWS & DUO CUTOUT CARD MODE
       // =====================================
-      if (cardType === 'news') {
-        
-        // Background photo or sleek studio background
-        if (userImg) {
-          ctx.save();
-          applyPhotoClarityFilter(ctx);
-          const baseScale = Math.max(W / userImg.width, H / userImg.height);
-          const finalScale = baseScale * photoZoom;
-          const dw = userImg.width * finalScale;
-          const dh = userImg.height * finalScale;
-          const dx = (W - dw) / 2 + photoPosX;
-          const dy = (H - dh) / 2 + photoPosY;
-          ctx.drawImage(userImg, dx, dy, dw, dh);
-          ctx.restore();
-        } else {
-          const grad = ctx.createLinearGradient(0, 0, W, H);
-          grad.addColorStop(0, '#0a1026');
-          grad.addColorStop(0.5, '#070b18');
-          grad.addColorStop(1, '#1e0508');
-          ctx.fillStyle = grad;
+      if (cardType === 'news' || cardType === 'duo') {
+        const isDuo = (cardType === 'duo');
+
+        // BACKGROUND & PHOTOS RENDERING
+        if (isDuo) {
+          // Deep Royal Blue Studio Gradient (Reporter TV style)
+          const duoGrad = ctx.createLinearGradient(0, 0, 0, H);
+          duoGrad.addColorStop(0, '#003a8c');
+          duoGrad.addColorStop(0.35, '#00225c');
+          duoGrad.addColorStop(0.7, '#001236');
+          duoGrad.addColorStop(1, '#00081c');
+          ctx.fillStyle = duoGrad;
           ctx.fillRect(0, 0, W, H);
 
-          // Subtle tech grid
-          ctx.strokeStyle = 'rgba(56, 189, 248, 0.05)';
-          ctx.lineWidth = 1;
-          for (let x = 0; x < W; x += 80) {
-            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-          }
-          for (let y = 0; y < H; y += 80) {
-            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-          }
-        }
+          // Subtle background glow behind the cutout figures
+          const glow = ctx.createRadialGradient(W * 0.5, H * 0.42, 20, W * 0.5, H * 0.42, W * 0.75);
+          glow.addColorStop(0, 'rgba(56, 189, 248, 0.14)');
+          glow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+          ctx.fillStyle = glow;
+          ctx.fillRect(0, 0, W, H);
 
-        // Bottom gradient for readability
-        const overlayGrad = ctx.createLinearGradient(0, H * 0.35, 0, H);
-        if (overlayStyle === 'red') {
-          overlayGrad.addColorStop(0, 'rgba(0,0,0,0)');
-          overlayGrad.addColorStop(0.5, 'rgba(127, 29, 29, 0.85)');
-          overlayGrad.addColorStop(1, 'rgba(15, 23, 42, 0.98)');
-        } else if (overlayStyle === 'solid') {
-          overlayGrad.addColorStop(0, 'rgba(0,0,0,0)');
-          overlayGrad.addColorStop(0.4, 'rgba(0, 0, 0, 0.88)');
-          overlayGrad.addColorStop(1, 'rgba(0, 0, 0, 0.98)');
-        } else if (overlayStyle === 'custom') {
-          const rgb = hexToRgb(customNewsColor || '#1e3a8a');
-          overlayGrad.addColorStop(0, 'rgba(0,0,0,0)');
-          overlayGrad.addColorStop(0.45, 'rgba(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ', 0.82)');
-          overlayGrad.addColorStop(0.75, 'rgba(' + Math.floor(rgb.r * 0.35) + ', ' + Math.floor(rgb.g * 0.35) + ', ' + Math.floor(rgb.b * 0.45) + ', 0.95)');
-          overlayGrad.addColorStop(1, 'rgba(4, 7, 18, 0.98)');
+          // Photo 1 (Person on Left - e.g. Rahul Gandhi style)
+          if (userImg) {
+            ctx.save();
+            applyPhotoClarityFilter(ctx);
+            const p1Scale = (H * 0.54 / userImg.height) * photoZoom;
+            const dw = userImg.width * p1Scale;
+            const dh = userImg.height * p1Scale;
+            const dx = (userImg2 ? (W * 0.28 - dw / 2) : ((W - dw) / 2)) + photoPosX;
+            const dy = (H - dh) + photoPosY;
+            ctx.drawImage(userImg, dx, dy, dw, dh);
+            ctx.restore();
+          }
+
+          // Photo 2 (Person on Right - e.g. Akhilesh Yadav style)
+          if (userImg2) {
+            ctx.save();
+            applyPhotoClarityFilter(ctx);
+            const p2Scale = (H * 0.54 / userImg2.height) * photo2Zoom;
+            const dw2 = userImg2.width * p2Scale;
+            const dh2 = userImg2.height * p2Scale;
+            const dx2 = (W * 0.72 - dw2 / 2) + photo2PosX;
+            const dy2 = (H - dh2) + photo2PosY;
+            if (photo2Flipped) {
+              ctx.translate(dx2 + dw2 / 2, dy2 + dh2 / 2);
+              ctx.scale(-1, 1);
+              ctx.drawImage(userImg2, -dw2 / 2, -dh2 / 2, dw2, dh2);
+            } else {
+              ctx.drawImage(userImg2, dx2, dy2, dw2, dh2);
+            }
+            ctx.restore();
+          }
+
+          // Subtle bottom fade so cut edges blend smoothly
+          const botFade = ctx.createLinearGradient(0, H * 0.85, 0, H);
+          botFade.addColorStop(0, 'rgba(0, 8, 28, 0)');
+          botFade.addColorStop(1, 'rgba(0, 8, 28, 0.96)');
+          ctx.fillStyle = botFade;
+          ctx.fillRect(0, H * 0.85, W, H * 0.15);
+
         } else {
-          overlayGrad.addColorStop(0, 'rgba(0,0,0,0)');
-          overlayGrad.addColorStop(0.45, 'rgba(5, 10, 24, 0.75)');
-          overlayGrad.addColorStop(1, 'rgba(5, 10, 24, 0.97)');
+          // Standard Single Photo or Studio Background
+          if (userImg) {
+            ctx.save();
+            applyPhotoClarityFilter(ctx);
+            const baseScale = Math.max(W / userImg.width, H / userImg.height);
+            const finalScale = baseScale * photoZoom;
+            const dw = userImg.width * finalScale;
+            const dh = userImg.height * finalScale;
+            const dx = (userImg2 ? (W * 0.35 - dw / 2) : ((W - dw) / 2)) + photoPosX;
+            const dy = (H - dh) / 2 + photoPosY;
+            ctx.drawImage(userImg, dx, dy, dw, dh);
+            ctx.restore();
+          } else {
+            const grad = ctx.createLinearGradient(0, 0, W, H);
+            grad.addColorStop(0, '#0a1026');
+            grad.addColorStop(0.5, '#070b18');
+            grad.addColorStop(1, '#1e0508');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, W, H);
+
+            // Subtle tech grid
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.05)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < W; x += 80) {
+              ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+            }
+            for (let y = 0; y < H; y += 80) {
+              ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+            }
+          }
+
+          // If Photo 2 is uploaded in standard news mode, render it on right side
+          if (userImg2) {
+            ctx.save();
+            applyPhotoClarityFilter(ctx);
+            const p2Scale = (H * 0.52 / userImg2.height) * photo2Zoom;
+            const dw2 = userImg2.width * p2Scale;
+            const dh2 = userImg2.height * p2Scale;
+            const dx2 = (W * 0.72 - dw2 / 2) + photo2PosX;
+            const dy2 = (H - dh2) + photo2PosY;
+            if (photo2Flipped) {
+              ctx.translate(dx2 + dw2 / 2, dy2 + dh2 / 2);
+              ctx.scale(-1, 1);
+              ctx.drawImage(userImg2, -dw2 / 2, -dh2 / 2, dw2, dh2);
+            } else {
+              ctx.drawImage(userImg2, dx2, dy2, dw2, dh2);
+            }
+            ctx.restore();
+          }
+
+          // Bottom gradient for readability
+          const overlayGrad = ctx.createLinearGradient(0, H * 0.35, 0, H);
+          if (overlayStyle === 'red') {
+            overlayGrad.addColorStop(0, 'rgba(0,0,0,0)');
+            overlayGrad.addColorStop(0.5, 'rgba(127, 29, 29, 0.85)');
+            overlayGrad.addColorStop(1, 'rgba(15, 23, 42, 0.98)');
+          } else if (overlayStyle === 'solid') {
+            overlayGrad.addColorStop(0, 'rgba(0,0,0,0)');
+            overlayGrad.addColorStop(0.4, 'rgba(0, 0, 0, 0.88)');
+            overlayGrad.addColorStop(1, 'rgba(0, 0, 0, 0.98)');
+          } else if (overlayStyle === 'custom') {
+            const rgb = hexToRgb(customNewsColor || '#1e3a8a');
+            overlayGrad.addColorStop(0, 'rgba(0,0,0,0)');
+            overlayGrad.addColorStop(0.45, 'rgba(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ', 0.82)');
+            overlayGrad.addColorStop(0.75, 'rgba(' + Math.floor(rgb.r * 0.35) + ', ' + Math.floor(rgb.g * 0.35) + ', ' + Math.floor(rgb.b * 0.45) + ', 0.95)');
+            overlayGrad.addColorStop(1, 'rgba(4, 7, 18, 0.98)');
+          } else {
+            overlayGrad.addColorStop(0, 'rgba(0,0,0,0)');
+            overlayGrad.addColorStop(0.45, 'rgba(5, 10, 24, 0.75)');
+            overlayGrad.addColorStop(1, 'rgba(5, 10, 24, 0.97)');
+          }
+          ctx.fillStyle = overlayGrad;
+          ctx.fillRect(0, 0, W, H);
         }
-        ctx.fillStyle = overlayGrad;
-        ctx.fillRect(0, 0, W, H);
 
         // DATE BADGE IN PLACE OF CATEGORY
-        const badgeY = H * 0.58 + headlineOffsetY;
+        const badgeY = (isDuo ? (H * 0.15) : (H * 0.58)) + headlineOffsetY;
         ctx.font = 'bold 24px "Anek Malayalam", sans-serif';
         const displayDate = '📅 ' + (cardDateText || getSystemFormattedDate());
         const badgeMetrics = ctx.measureText(displayDate);
@@ -6096,21 +6593,42 @@ let selectedHeadlineFont = 'Anek Malayalam';
 
         // Red Accent Vertical Bar
         ctx.fillStyle = (overlayStyle === 'custom') ? (customNewsColor || '#dc2626') : '#dc2626';
-        ctx.fillRect(badgeX, badgeY + 20, 6, H * 0.28);
+        ctx.fillRect(badgeX, badgeY + 20, 6, isDuo ? (H * 0.22) : (H * 0.28));
 
         // Main Headline
         ctx.font = '800 ' + headlineFontSize + 'px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
-        ctx.fillStyle = '#ffffff';
+        const textStartX = 72 + headlineOffsetX;
+        const maxTextWidth = W - 140;
+        const headlineY = badgeY + 34 + headlineFontSize;
+        const headlineLineHeight = headlineFontSize * 1.25;
+
+        const hlLines = getHeadlineLines(ctx, headlineText || 'KOZHIKODE VISION NEWS', maxTextWidth, 4);
+
+        // Draw Headline Cutout Box if enabled
+        if ((enableHeadlineBox || isDuo) && hlLines.length > 0) {
+          let maxLineW = 0;
+          for (let i = 0; i < hlLines.length; i++) {
+            const lw = ctx.measureText(hlLines[i]).width;
+            if (lw > maxLineW) maxLineW = lw;
+          }
+          const totalBoxH = hlLines.length * headlineLineHeight;
+          const boxX = textStartX;
+          const boxY = headlineY - headlineFontSize * 0.9;
+          drawHeadlineCutoutBox(ctx, boxX, boxY, maxLineW, totalBoxH, headlineBoxStyle, '#061129');
+        }
+
+        ctx.fillStyle = (enableHeadlineBox || isDuo) ? (headlineTextColor || '#ffd700') : '#ffffff';
         ctx.shadowColor = 'rgba(0,0,0,0.85)';
         ctx.shadowBlur = 10;
         ctx.shadowOffsetX = 2;
         ctx.shadowOffsetY = 3;
 
-        const textStartX = 72 + headlineOffsetX;
-        const maxTextWidth = W - 120;
-        const headlineY = badgeY + 34 + headlineFontSize;
-        const nextY = wrapText(ctx, headlineText, textStartX, headlineY, maxTextWidth, headlineFontSize * 1.25, 3);
-
+        let curHY = headlineY;
+        for (let i = 0; i < hlLines.length; i++) {
+          ctx.fillText(hlLines[i], textStartX, curHY);
+          curHY += headlineLineHeight;
+        }
+        const nextY = curHY;
         ctx.shadowColor = 'transparent';
 
         // Summary Text (Enhanced Multiline, Next-Line & Spacing Control!)
@@ -6128,6 +6646,11 @@ let selectedHeadlineFont = 'Anek Malayalam';
           ctx.font = '600 20px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
           ctx.fillStyle = '#f87171';
           ctx.fillText('Report: ' + reporterText, textStartX, H - 75 + headlineOffsetY);
+        }
+
+        // Optional Punchline Badge (e.g. 'തീരുമാനം ഉടൻ')
+        if (punchlineText) {
+          drawPunchlineBadge(ctx, W - 260, H - 90, punchlineText);
         }
 
       }
