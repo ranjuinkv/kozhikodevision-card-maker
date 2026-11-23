@@ -5,9 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>KOZHIKODE VISION NEWS - Card Maker</title>
   <meta name="theme-color" content="#060913">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
+  <script>
+    // === AUTO-UPDATE & CACHE-PURGE ENGINE ===
+    (function() {
+      try {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            for (var i = 0; i < regs.length; i++) { regs[i].unregister(); }
+          }).catch(function() {});
+        }
+        if ('caches' in window) {
+          caches.keys().then(function(names) {
+            for (var j = 0; j < names.length; j++) { caches.delete(names[j]); }
+          }).catch(function() {});
+        }
+      } catch (e) {}
+
+      var KV_LATEST_BUILD = '7.6.0';
+      if (window.location.hostname.indexOf('github.io') !== -1) {
+        var sp = new URLSearchParams(window.location.search);
+        var curVer = sp.get('v');
+        if (!curVer || curVer !== KV_LATEST_BUILD) {
+          sp.set('v', KV_LATEST_BUILD);
+          var target = window.location.pathname + '?' + sp.toString() + window.location.hash;
+          window.location.replace(target);
+        }
+      }
+    })();
+  </script>
 
   <!-- Google Fonts for Malayalam -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2414,24 +2442,35 @@
       <div id="kvAuthError" class="kv-auth-error"></div>
 
       <form id="kvAuthForm" autocomplete="off">
-        <div class="kv-auth-field">
-          <label for="kvAuthUsername">Username:</label>
-          <input id="kvAuthUsername" type="text" class="kv-auth-input" placeholder="e.g. admin or reporter1" required autofocus>
+        <!-- Quick Account Selection Dropdown -->
+        <div class="kv-auth-field" style="margin-bottom:14px;">
+          <label for="kvUserSelectDropdown" style="font-size:12px;font-weight:700;color:#38bdf8;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span>👥 അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക (Quick Account Select):</span>
+            <span style="font-size:10px;color:#94a3b8;font-weight:400;">ഓട്ടോഫിൽ</span>
+          </label>
+          <select id="kvUserSelectDropdown" class="kv-auth-input" style="cursor:pointer;background:#0f172a;color:#f8fafc;border:1px solid #0284c7;border-radius:10px;padding:9px 12px;font-weight:600;font-size:13px;">
+            <option value="">-- അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക (Select Account) --</option>
+          </select>
         </div>
 
         <div class="kv-auth-field">
-          <label for="kvAuthPassword">Password:</label>
+          <label for="kvAuthUsername">Username (യൂസർനെയിം):</label>
+          <input id="kvAuthUsername" type="text" class="kv-auth-input" placeholder="e.g. admin or ranju" required autofocus>
+        </div>
+
+        <div class="kv-auth-field">
+          <label for="kvAuthPassword">Password (പാസ്‌വേഡ്):</label>
           <div class="kv-auth-input-wrap">
             <input id="kvAuthPassword" type="password" class="kv-auth-input" placeholder="••••••" required style="padding-right:38px;">
             <button id="kvTogglePass" type="button" class="kv-pass-toggle" title="Show/Hide Password">👁️</button>
           </div>
         </div>
 
-                <button id="kvBtnLogin" type="submit" class="kv-auth-btn">🔐 Login</button>
+        <button id="kvBtnLogin" type="submit" class="kv-auth-btn">🔐 ലോഗിൻ ചെയ്യുക (Login)</button>
 
         <!-- One-Click Instant Login for Quick Access -->
-        <button id="kvBtnQuickAdmin" type="button" class="btn-tactile" style="width:100%;margin-top:10px;padding:10px;background:linear-gradient(135deg, #1e293b, #0f172a);color:#38bdf8;border:1px solid #0284c7;border-radius:10px;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;box-shadow:0 2px 10px rgba(2,132,199,0.25);">
-          <span>👑 1-Click Admin Login</span>
+        <button id="kvBtnQuickAdmin" type="button" class="btn-tactile" style="width:100%;margin-top:10px;padding:12px;background:linear-gradient(135deg, #0284c7, #0369a1);color:#ffffff;border:none;border-radius:10px;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;box-shadow:0 4px 14px rgba(2,132,199,0.35);transition:all 0.2s;">
+          <span>👑 1-ക്ലിക്ക് അഡ്മിൻ ലോഗിൻ (Instant Admin Access)</span>
         </button>
       </form>
 
@@ -2439,6 +2478,11 @@
         <div>🔒 Authorized Kozhikode Vision Staff Access Only</div>
         <div style="margin-top:8px;font-size:12px;font-weight:800;color:#38bdf8;">
           ⚡ Developed by <span style="color:#ffffff;text-shadow:0 0 8px #38bdf8;">Ranju</span>
+        </div>
+        <div style="margin-top:12px;border-top:1px dashed rgba(255,255,255,0.1);padding-top:10px;">
+          <button id="kvBtnForceRefresh" type="button" style="background:none;border:none;color:#94a3b8;font-size:11px;cursor:pointer;text-decoration:underline;display:inline-flex;align-items:center;gap:4px;">
+            🔄 പുതിയ വേർഷൻ എടുക്കുക (Check Latest Version / Force Reload)
+          </button>
         </div>
       </div>
     </div>
@@ -6719,6 +6763,13 @@ let selectedHeadlineFont = 'Anek Malayalam';
           active: (u.active !== undefined) ? u.active : (cur.active !== false)
         });
       }
+
+      // Safeguard: Core default accounts are ALWAYS active and never blocked
+      var isCore = (uname === 'admin' || uname === 'ranju' || uname === 'reporter1' || uname === 'reporter2' || uname === 'staff');
+      if (isCore && userMap[key]) {
+        userMap[key].deleted = false;
+        userMap[key].active = true;
+      }
     }
 
     // 1. Seed defaults first
@@ -8275,6 +8326,44 @@ let selectedHeadlineFont = 'Anek Malayalam';
   // =========================================================================
   // 8. LOGIN FORM SUBMISSION & ACCOUNT DROPDOWN HANDLER
   // =========================================================================
+  const btnQuickAdmin = document.getElementById('kvBtnQuickAdmin');
+  if (btnQuickAdmin) {
+    btnQuickAdmin.addEventListener('click', function(e) {
+      e.preventDefault();
+      showAuthError('');
+      const users = getDemoUsers();
+      const adm = users.find(function(u) { return norm(u.username) === 'admin'; }) || DEFAULT_USERS[0];
+      if (inpUser) inpUser.value = adm.username || 'admin';
+      if (inpPass) inpPass.value = adm.password || '123456';
+      try {
+        localStorage.setItem('kv_saved_session_uid', adm.uid);
+        sessionStorage.setItem(SESSION_USER_KEY, adm.uid);
+      } catch (err) {}
+      unlockApp(adm);
+    });
+  }
+
+  const btnForceRefresh = document.getElementById('kvBtnForceRefresh');
+  if (btnForceRefresh) {
+    btnForceRefresh.addEventListener('click', function(e) {
+      e.preventDefault();
+      try {
+        if ('caches' in window) {
+          caches.keys().then(function(names) {
+            for (var i = 0; i < names.length; i++) caches.delete(names[i]);
+          });
+        }
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            for (var j = 0; j < regs.length; j++) regs[j].unregister();
+          });
+        }
+      } catch (err) {}
+      var target = window.location.pathname + '?v=7.6.' + Date.now() + window.location.hash;
+      window.location.href = target;
+    });
+  }
+
   if (authForm) {
     authForm.addEventListener('submit', function(e) {
       e.preventDefault();
