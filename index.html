@@ -24,7 +24,7 @@
         }
       } catch (e) {}
 
-      var KV_LATEST_BUILD = '7.6.0';
+      var KV_LATEST_BUILD = '7.6.1';
       if (window.location.hostname.indexOf('github.io') !== -1) {
         var sp = new URLSearchParams(window.location.search);
         var curVer = sp.get('v');
@@ -6571,6 +6571,19 @@ let selectedHeadlineFont = 'Anek Malayalam';
             }
           });
 
+          // Safeguard: Ensure core default accounts (admin, ranju, reporter1, reporter2, staff) are NEVER deleted or inactive
+          Object.keys(userMap).forEach(function(k) {
+            const u = userMap[k];
+            const muname = norm(u.username || extractUsername(u.email) || '');
+            if (muname === 'admin' || muname === 'ranju' || muname === 'reporter1' || muname === 'reporter2' || muname === 'staff') {
+              u.deleted = false;
+              u.active = true;
+              if (u.uid && firebaseDb) {
+                firebaseDb.collection('kv_users').doc(u.uid).update({ deleted: false, active: true }).catch(function(){});
+              }
+            }
+          });
+
           const merged = Object.keys(userMap).map(function(k) { return userMap[k]; });
 
           inMemoryUsers = merged;
@@ -8383,6 +8396,13 @@ let selectedHeadlineFont = 'Anek Malayalam';
         showAuthError('\u274C Invalid username or password.');
         return;
       }
+
+      var isCoreMatch = match.username && (norm(match.username) === 'admin' || norm(match.username) === 'ranju' || norm(match.username) === 'reporter1' || norm(match.username) === 'reporter2' || norm(match.username) === 'staff');
+      if (isCoreMatch) {
+        match.deleted = false;
+        match.active = true;
+      }
+
       if (match.deleted || match.active === false) {
         showAuthError('\u{1F6AB} Your account has been blocked by Admin.');
         return;
