@@ -2423,7 +2423,7 @@
     <div class="kv-auth-card">
       <div class="kv-auth-brand">
         <div class="kv-auth-logo-wrap">
-          <img id="kvAuthLogoImg" src="clean_logo.png" alt="Kozhikode Vision">
+          <img id="kvAuthLogoImg" src="logo.png" onerror="this.onerror=null; this.src='logo-official.png';" alt="Kozhikode Vision">
         </div>
         <div style="margin-top:6px;margin-bottom:8px;">
           <span class="kv-live-tag" style="font-size:10px;padding:3px 10px;border-radius:14px;background:rgba(239,68,68,0.25);border:1px solid #ef4444;color:#fca5a5;display:inline-flex;align-items:center;gap:6px;">
@@ -4377,7 +4377,7 @@
     let cardDateText = todaySystemDate;
     let headlineText = 'കോഴിക്കോട് ബീച്ചിൽ പുതിയ ടൂറിസം പദ്ധതിക്ക് തുടക്കമായി';
     let summaryText = 'മന്ത്രി മുഹമ്മദ് റിയാസ് ഉദ്ഘാടനം ചെയ്തു; ആദ്യഘട്ടത്തിൽ 10 കോടിയുടെ സമഗ്ര വികസനം നടപ്പാക്കും.';
-    let locationText = 'കോഴിക്കോട്';
+    let locationText = 'കോഴിക്കോട്'; window.locationText = locationText;
     let reporterText = 'വിഷൻ ന്യൂസ് കോഴിക്കോട്';
     let headlineOffsetX = 0;
     let headlineOffsetY = 0;
@@ -5604,7 +5604,7 @@
     const btnTextModeSimple = document.getElementById('btnTextModeSimple');
     const btnTextModeAdvanced = document.getElementById('btnTextModeAdvanced');
     const unifiedTextToolbar = document.getElementById('unifiedTextToolbar');
-    const newsTextAdjustWrap = document.getElementById('newsTextAdjustWrap');
+    // newsTextAdjustWrap is already declared above at card type controls
 
     function applyStudioMode(mode) {
       isAdvancedTextMode = (mode === 'advanced');
@@ -8573,7 +8573,10 @@
     if (profile.location && profile.location.trim()) {
       const locInp = document.getElementById('txtLocation');
       if (locInp) locInp.value = profile.location.trim();
-      locationText = profile.location.trim();
+      try {
+        locationText = profile.location.trim();
+      } catch (e) {}
+      window.locationText = profile.location.trim();
     }
 
     document.body.classList.remove('kv-locked');
