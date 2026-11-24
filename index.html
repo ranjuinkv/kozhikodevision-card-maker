@@ -24,7 +24,7 @@
         }
       } catch (e) {}
 
-      var KV_LATEST_BUILD = '8.0.1';
+      var KV_LATEST_BUILD = '8.0.2';
       if (window.location.hostname.indexOf('github.io') !== -1) {
         var sp = new URLSearchParams(window.location.search);
         var curVer = sp.get('v');
@@ -4300,6 +4300,7 @@
     let photoZoom = 1.0;
     let photoPosX = 0;
     let photoPosY = 0;
+    let activePhotoFilter = 'normal';
 
     // Photo 2 (Secondary / Dual Cutout) state
     let userImg2 = null;
@@ -5787,8 +5788,8 @@
       });
     }
 
-    txtCardDate.addEventListener('input', (e) => { cardDateText = e.target.value; renderCard(); });
-    txtHeadline.addEventListener('input', (e) => { headlineText = e.target.value; renderCard(); });
+    if (txtCardDate) txtCardDate.addEventListener('input', (e) => { cardDateText = e.target.value; renderCard(); });
+    if (txtHeadline) txtHeadline.addEventListener('input', (e) => { headlineText = e.target.value; renderCard(); });
     const selHeadlineFont = document.getElementById('selHeadlineFont');
     if (selHeadlineFont) {
       selHeadlineFont.addEventListener('change', (e) => {
@@ -5800,41 +5801,51 @@
         }
       });
     }
-    txtSummary.addEventListener('input', (e) => { summaryText = e.target.value; renderCard(); });
-    txtLocation.addEventListener('input', (e) => { locationText = e.target.value; renderCard(); });
-    txtReporter.addEventListener('input', (e) => { reporterText = e.target.value; renderCard(); });
+    if (txtSummary) txtSummary.addEventListener('input', (e) => { summaryText = e.target.value; renderCard(); });
+    if (txtLocation) txtLocation.addEventListener('input', (e) => { locationText = e.target.value; renderCard(); });
+    if (txtReporter) txtReporter.addEventListener('input', (e) => { reporterText = e.target.value; renderCard(); });
 
-    headYRange.addEventListener('input', (e) => {
-      headlineOffsetY = parseInt(e.target.value, 10);
-      headYVal.textContent = headlineOffsetY + 'px';
-      renderCard();
-    });
+    if (headYRange) {
+      headYRange.addEventListener('input', (e) => {
+        headlineOffsetY = parseInt(e.target.value, 10);
+        if (headYVal) headYVal.textContent = headlineOffsetY + 'px';
+        renderCard();
+      });
+    }
 
     const headXRange = document.getElementById('headXRange');
     const headXVal = document.getElementById('headXVal');
-    headXRange.addEventListener('input', (e) => {
-      headlineOffsetX = parseInt(e.target.value, 10);
-      headXVal.textContent = headlineOffsetX + 'px';
-      renderCard();
-    });
+    if (headXRange) {
+      headXRange.addEventListener('input', (e) => {
+        headlineOffsetX = parseInt(e.target.value, 10);
+        if (headXVal) headXVal.textContent = headlineOffsetX + 'px';
+        renderCard();
+      });
+    }
 
-    headlineSizeRange.addEventListener('input', (e) => {
-      headlineFontSize = parseInt(e.target.value, 10);
-      headlineSizeVal.textContent = headlineFontSize + 'px';
-      renderCard();
-    });
+    if (headlineSizeRange) {
+      headlineSizeRange.addEventListener('input', (e) => {
+        headlineFontSize = parseInt(e.target.value, 10);
+        if (headlineSizeVal) headlineSizeVal.textContent = headlineFontSize + 'px';
+        renderCard();
+      });
+    }
 
-    summarySizeRange.addEventListener('input', (e) => {
-      summaryFontSize = parseInt(e.target.value, 10);
-      summarySizeVal.textContent = summaryFontSize + 'px';
-      renderCard();
-    });
+    if (summarySizeRange) {
+      summarySizeRange.addEventListener('input', (e) => {
+        summaryFontSize = parseInt(e.target.value, 10);
+        if (summarySizeVal) summarySizeVal.textContent = summaryFontSize + 'px';
+        renderCard();
+      });
+    }
 
-    summaryYRange.addEventListener('input', (e) => {
-      summaryOffsetY = parseInt(e.target.value, 10);
-      summaryYVal.textContent = summaryOffsetY + 'px';
-      renderCard();
-    });
+    if (summaryYRange) {
+      summaryYRange.addEventListener('input', (e) => {
+        summaryOffsetY = parseInt(e.target.value, 10);
+        if (summaryYVal) summaryYVal.textContent = summaryOffsetY + 'px';
+        renderCard();
+      });
+    }
 
     const summaryLineHeightRange = document.getElementById('summaryLineHeightRange');
     const summaryLineHeightVal = document.getElementById('summaryLineHeightVal');
@@ -5866,19 +5877,25 @@
       });
     }
 
-    document.getElementById('btnFontIncr').addEventListener('click', () => {
-      headlineFontSize = Math.min(84, headlineFontSize + 4);
-      headlineSizeRange.value = headlineFontSize;
-      headlineSizeVal.textContent = headlineFontSize + 'px';
-      renderCard();
-    });
+    const btnFontIncr = document.getElementById('btnFontIncr');
+    if (btnFontIncr) {
+      btnFontIncr.addEventListener('click', () => {
+        headlineFontSize = Math.min(84, headlineFontSize + 4);
+        if (headlineSizeRange) headlineSizeRange.value = headlineFontSize;
+        if (headlineSizeVal) headlineSizeVal.textContent = headlineFontSize + 'px';
+        renderCard();
+      });
+    }
 
-    document.getElementById('btnFontDecr').addEventListener('click', () => {
-      headlineFontSize = Math.max(32, headlineFontSize - 4);
-      headlineSizeRange.value = headlineFontSize;
-      headlineSizeVal.textContent = headlineFontSize + 'px';
-      renderCard();
-    });
+    const btnFontDecr = document.getElementById('btnFontDecr');
+    if (btnFontDecr) {
+      btnFontDecr.addEventListener('click', () => {
+        headlineFontSize = Math.max(32, headlineFontSize - 4);
+        if (headlineSizeRange) headlineSizeRange.value = headlineFontSize;
+        if (headlineSizeVal) headlineSizeVal.textContent = headlineFontSize + 'px';
+        renderCard();
+      });
+    }
 
     // Obituary Tribute title pills
     const txtCustomTribute = document.getElementById('txtCustomTribute');
@@ -5887,37 +5904,45 @@
         document.querySelectorAll('.pill-btn[data-tribute]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         tributeTitle = btn.getAttribute('data-tribute');
-        txtCustomTribute.value = tributeTitle;
+        if (txtCustomTribute) txtCustomTribute.value = tributeTitle;
         renderCard();
       });
     });
-    txtCustomTribute.addEventListener('input', (e) => {
-      tributeTitle = e.target.value;
-      renderCard();
-    });
+    if (txtCustomTribute) {
+      txtCustomTribute.addEventListener('input', (e) => {
+        tributeTitle = e.target.value;
+        renderCard();
+      });
+    }
 
     // Obituary Date
     const txtObitDate = document.getElementById('txtObitDate');
-    txtObitDate.addEventListener('input', (e) => {
-      obitDateText = e.target.value;
-      renderCard();
-    });
+    if (txtObitDate) {
+      txtObitDate.addEventListener('input', (e) => {
+        obitDateText = e.target.value;
+        renderCard();
+      });
+    }
 
     // Obituary Photo Shape: Rectangle vs Round/Oval
     const btnShapeRound = document.getElementById('btnShapeRound');
     const btnShapeRect = document.getElementById('btnShapeRect');
-    btnShapeRound.addEventListener('click', () => {
-      obitPhotoShape = 'round';
-      btnShapeRound.classList.add('active');
-      btnShapeRect.classList.remove('active');
-      renderCard();
-    });
-    btnShapeRect.addEventListener('click', () => {
-      obitPhotoShape = 'rectangle';
-      btnShapeRect.classList.add('active');
-      btnShapeRound.classList.remove('active');
-      renderCard();
-    });
+    if (btnShapeRound) {
+      btnShapeRound.addEventListener('click', () => {
+        obitPhotoShape = 'round';
+        btnShapeRound.classList.add('active');
+        if (btnShapeRect) btnShapeRect.classList.remove('active');
+        renderCard();
+      });
+    }
+    if (btnShapeRect) {
+      btnShapeRect.addEventListener('click', () => {
+        obitPhotoShape = 'rectangle';
+        btnShapeRect.classList.add('active');
+        if (btnShapeRound) btnShapeRound.classList.remove('active');
+        renderCard();
+      });
+    }
 
     // OBITUARY FRAME SIZE / SCALE (As Requested!)
     const frameScaleRange = document.getElementById('frameScaleRange');
@@ -5927,86 +5952,119 @@
     const frameXRange = document.getElementById('frameXRange');
     const frameXVal = document.getElementById('frameXVal');
 
-    frameScaleRange.addEventListener('input', (e) => {
-      obitFrameScale = parseInt(e.target.value, 10) / 100;
-      frameScaleVal.textContent = e.target.value + '%';
-      renderCard();
-    });
+    if (frameScaleRange) {
+      frameScaleRange.addEventListener('input', (e) => {
+        obitFrameScale = parseInt(e.target.value, 10) / 100;
+        if (frameScaleVal) frameScaleVal.textContent = e.target.value + '%';
+        renderCard();
+      });
+    }
 
-    frameYRange.addEventListener('input', (e) => {
-      obitFramePosY = parseInt(e.target.value, 10);
-      frameYVal.textContent = obitFramePosY + 'px';
-      renderCard();
-    });
+    if (frameYRange) {
+      frameYRange.addEventListener('input', (e) => {
+        obitFramePosY = parseInt(e.target.value, 10);
+        if (frameYVal) frameYVal.textContent = obitFramePosY + 'px';
+        renderCard();
+      });
+    }
 
-    frameXRange.addEventListener('input', (e) => {
-      obitFramePosX = parseInt(e.target.value, 10);
-      frameXVal.textContent = obitFramePosX + 'px';
-      renderCard();
-    });
+    if (frameXRange) {
+      frameXRange.addEventListener('input', (e) => {
+        obitFramePosX = parseInt(e.target.value, 10);
+        if (frameXVal) frameXVal.textContent = obitFramePosX + 'px';
+        renderCard();
+      });
+    }
 
     // Frame Position D-Pad
-    document.getElementById('btnFrameLeft').addEventListener('click', () => {
-      obitFramePosX = Math.max(-180, obitFramePosX - 15);
-      frameXRange.value = obitFramePosX;
-      frameXVal.textContent = obitFramePosX + 'px';
-      renderCard();
-    });
-    document.getElementById('btnFrameRight').addEventListener('click', () => {
-      obitFramePosX = Math.min(180, obitFramePosX + 15);
-      frameXRange.value = obitFramePosX;
-      frameXVal.textContent = obitFramePosX + 'px';
-      renderCard();
-    });
-    document.getElementById('btnFrameUp').addEventListener('click', () => {
-      obitFramePosY = Math.max(-180, obitFramePosY - 15);
-      frameYRange.value = obitFramePosY;
-      frameYVal.textContent = obitFramePosY + 'px';
-      renderCard();
-    });
-    document.getElementById('btnFrameDown').addEventListener('click', () => {
-      obitFramePosY = Math.min(180, obitFramePosY + 15);
-      frameYRange.value = obitFramePosY;
-      frameYVal.textContent = obitFramePosY + 'px';
-      renderCard();
-    });
-    document.getElementById('btnFrameCenter').addEventListener('click', () => {
-      obitFramePosX = 0;
-      obitFramePosY = 0;
-      obitFrameScale = 1.0;
-      frameXRange.value = 0;
-      frameYRange.value = 0;
-      frameScaleRange.value = 100;
-      frameXVal.textContent = '0px';
-      frameYVal.textContent = '0px';
-      frameScaleVal.textContent = '100%';
-      renderCard();
-    });
+    const btnFrameLeft = document.getElementById('btnFrameLeft');
+    if (btnFrameLeft) {
+      btnFrameLeft.addEventListener('click', () => {
+        obitFramePosX = Math.max(-180, obitFramePosX - 15);
+        if (frameXRange) frameXRange.value = obitFramePosX;
+        if (frameXVal) frameXVal.textContent = obitFramePosX + 'px';
+        renderCard();
+      });
+    }
+    const btnFrameRight = document.getElementById('btnFrameRight');
+    if (btnFrameRight) {
+      btnFrameRight.addEventListener('click', () => {
+        obitFramePosX = Math.min(180, obitFramePosX + 15);
+        if (frameXRange) frameXRange.value = obitFramePosX;
+        if (frameXVal) frameXVal.textContent = obitFramePosX + 'px';
+        renderCard();
+      });
+    }
+    const btnFrameUp = document.getElementById('btnFrameUp');
+    if (btnFrameUp) {
+      btnFrameUp.addEventListener('click', () => {
+        obitFramePosY = Math.max(-180, obitFramePosY - 15);
+        if (frameYRange) frameYRange.value = obitFramePosY;
+        if (frameYVal) frameYVal.textContent = obitFramePosY + 'px';
+        renderCard();
+      });
+    }
+    const btnFrameDown = document.getElementById('btnFrameDown');
+    if (btnFrameDown) {
+      btnFrameDown.addEventListener('click', () => {
+        obitFramePosY = Math.min(180, obitFramePosY + 15);
+        if (frameYRange) frameYRange.value = obitFramePosY;
+        if (frameYVal) frameYVal.textContent = obitFramePosY + 'px';
+        renderCard();
+      });
+    }
+    const btnFrameCenter = document.getElementById('btnFrameCenter');
+    if (btnFrameCenter) {
+      btnFrameCenter.addEventListener('click', () => {
+        obitFramePosX = 0;
+        obitFramePosY = 0;
+        obitFrameScale = 1.0;
+        if (frameXRange) frameXRange.value = 0;
+        if (frameYRange) frameYRange.value = 0;
+        if (frameScaleRange) frameScaleRange.value = 100;
+        if (frameXVal) frameXVal.textContent = '0px';
+        if (frameYVal) frameYVal.textContent = '0px';
+        if (frameScaleVal) frameScaleVal.textContent = '100%';
+        renderCard();
+      });
+    }
 
     // Tribute Title Position Sliders
     const tributeYRange = document.getElementById('tributeYRange');
     const tributeYVal = document.getElementById('tributeYVal');
-    tributeYRange.addEventListener('input', (e) => {
-      tributePosY = parseInt(e.target.value, 10);
-      tributeYVal.textContent = tributePosY + 'px';
-      renderCard();
-    });
+    if (tributeYRange) {
+      tributeYRange.addEventListener('input', (e) => {
+        tributePosY = parseInt(e.target.value, 10);
+        if (tributeYVal) tributeYVal.textContent = tributePosY + 'px';
+        renderCard();
+      });
+    }
 
     // Deceased Details Y Position
     const obitDetailsYRange = document.getElementById('obitDetailsYRange');
     const obitDetailsYVal = document.getElementById('obitDetailsYVal');
-    obitDetailsYRange.addEventListener('input', (e) => {
-      obitDetailsOffsetY = parseInt(e.target.value, 10);
-      obitDetailsYVal.textContent = obitDetailsOffsetY + 'px';
-      renderCard();
-    });
+    if (obitDetailsYRange) {
+      obitDetailsYRange.addEventListener('input', (e) => {
+        obitDetailsOffsetY = parseInt(e.target.value, 10);
+        if (obitDetailsYVal) obitDetailsYVal.textContent = obitDetailsOffsetY + 'px';
+        renderCard();
+      });
+    }
 
     // Obituary text inputs
-    document.getElementById('txtObitName').addEventListener('input', (e) => { obitName = e.target.value; renderCard(); });
-    document.getElementById('txtObitAge').addEventListener('input', (e) => { obitAge = e.target.value; renderCard(); });
-    document.getElementById('txtObitPlace').addEventListener('input', (e) => { obitPlace = e.target.value; renderCard(); });
-    document.getElementById('txtObitDetails').addEventListener('input', (e) => { obitDetails = e.target.value; renderCard(); });
-    document.getElementById('txtObitMessage').addEventListener('input', (e) => { obitMessage = e.target.value; renderCard(); });
+    ['txtObitName', 'txtObitAge', 'txtObitPlace', 'txtObitDetails', 'txtObitMessage'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', (e) => {
+          if (id === 'txtObitName') obitName = e.target.value;
+          if (id === 'txtObitAge') obitAge = e.target.value;
+          if (id === 'txtObitPlace') obitPlace = e.target.value;
+          if (id === 'txtObitDetails') obitDetails = e.target.value;
+          if (id === 'txtObitMessage') obitMessage = e.target.value;
+          renderCard();
+        });
+      }
+    });
 
     // Overlay style pills
     const btnStyleGrad = document.getElementById('btnStyleGrad');
@@ -6056,41 +6114,52 @@
       });
     });
 
-    document.getElementById('btnTextUp').addEventListener('click', () => {
-      headlineOffsetY -= 10;
-      headYRange.value = headlineOffsetY;
-      headYVal.textContent = headlineOffsetY + 'px';
-      renderCard();
-    });
-    document.getElementById('btnTextDown').addEventListener('click', () => {
-      headlineOffsetY += 10;
-      headYRange.value = headlineOffsetY;
-      headYVal.textContent = headlineOffsetY + 'px';
-      renderCard();
-    });
-    document.getElementById('btnTextReset').addEventListener('click', () => {
-      headlineOffsetX = 0;
-      headlineOffsetY = 0;
-      summaryOffsetY = 0;
-      headYRange.value = 0;
-      headYVal.textContent = '0px';
-      const headXRange = document.getElementById('headXRange');
-      const headXVal = document.getElementById('headXVal');
-      if (headXRange) headXRange.value = 0;
-      if (headXVal) headXVal.textContent = '0px';
-      summaryYRange.value = 0;
-      summaryYVal.textContent = '0px';
-      summaryLineHeightMult = 1.35;
-      if (document.getElementById('summaryLineHeightRange')) document.getElementById('summaryLineHeightRange').value = 1.35;
-      if (document.getElementById('summaryLineHeightVal')) document.getElementById('summaryLineHeightVal').textContent = '1.35x';
-      summaryMaxLines = 4;
-      if (document.getElementById('summaryMaxLinesRange')) document.getElementById('summaryMaxLinesRange').value = 4;
-      if (document.getElementById('summaryMaxLinesVal')) document.getElementById('summaryMaxLinesVal').textContent = '4 lines';
-      summaryOffsetX = 0;
-      if (document.getElementById('summaryXRange')) document.getElementById('summaryXRange').value = 0;
-      if (document.getElementById('summaryXVal')) document.getElementById('summaryXVal').textContent = '0px';
-      renderCard();
-    });
+    const btnTextUp = document.getElementById('btnTextUp');
+    if (btnTextUp) {
+      btnTextUp.addEventListener('click', () => {
+        headlineOffsetY -= 10;
+        if (headYRange) headYRange.value = headlineOffsetY;
+        if (headYVal) headYVal.textContent = headlineOffsetY + 'px';
+        renderCard();
+      });
+    }
+
+    const btnTextDown = document.getElementById('btnTextDown');
+    if (btnTextDown) {
+      btnTextDown.addEventListener('click', () => {
+        headlineOffsetY += 10;
+        if (headYRange) headYRange.value = headlineOffsetY;
+        if (headYVal) headYVal.textContent = headlineOffsetY + 'px';
+        renderCard();
+      });
+    }
+
+    const btnTextReset = document.getElementById('btnTextReset');
+    if (btnTextReset) {
+      btnTextReset.addEventListener('click', () => {
+        headlineOffsetX = 0;
+        headlineOffsetY = 0;
+        summaryOffsetY = 0;
+        if (headYRange) headYRange.value = 0;
+        if (headYVal) headYVal.textContent = '0px';
+        const headXRange = document.getElementById('headXRange');
+        const headXVal = document.getElementById('headXVal');
+        if (headXRange) headXRange.value = 0;
+        if (headXVal) headXVal.textContent = '0px';
+        if (summaryYRange) summaryYRange.value = 0;
+        if (summaryYVal) summaryYVal.textContent = '0px';
+        summaryLineHeightMult = 1.35;
+        if (document.getElementById('summaryLineHeightRange')) document.getElementById('summaryLineHeightRange').value = 1.35;
+        if (document.getElementById('summaryLineHeightVal')) document.getElementById('summaryLineHeightVal').textContent = '1.35x';
+        summaryMaxLines = 4;
+        if (document.getElementById('summaryMaxLinesRange')) document.getElementById('summaryMaxLinesRange').value = 4;
+        if (document.getElementById('summaryMaxLinesVal')) document.getElementById('summaryMaxLinesVal').textContent = '4 lines';
+        summaryOffsetX = 0;
+        if (document.getElementById('summaryXRange')) document.getElementById('summaryXRange').value = 0;
+        if (document.getElementById('summaryXVal')) document.getElementById('summaryXVal').textContent = '0px';
+        renderCard();
+      });
+    }
 
     // ==========================================
     // STEP 3: LOGO, WATERMARK & DOWNLOAD
@@ -6837,7 +6906,7 @@
     // =========================================================================
     // ✨ ONE-TAP PHOTO CLARITY & FILTER ENGINE
     // =========================================================================
-    let activePhotoFilter = 'normal';
+    // activePhotoFilter declared above in global photo state
 
     function applyPhotoClarityFilter(c) {
       if (activePhotoFilter === 'bright') {
