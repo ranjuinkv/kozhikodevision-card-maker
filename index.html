@@ -24,7 +24,7 @@
         }
       } catch (e) {}
 
-      var KV_LATEST_BUILD = '8.0.2';
+      var KV_LATEST_BUILD = '8.0.3';
       if (window.location.hostname.indexOf('github.io') !== -1) {
         var sp = new URLSearchParams(window.location.search);
         var curVer = sp.get('v');
@@ -2565,192 +2565,207 @@
         <button id="kvBtnCloseAdmin" type="button" class="kv-admin-close">✕</button>
       </div>
       <div class="kv-admin-body">
-        <div id="kvAdminModeBadge" style="font-size:11px; color:#94a3b8; text-align:center;"></div>
+        <div id="kvAdminModeBadge" style="font-size:11px; color:#94a3b8; text-align:center; margin-bottom:8px;"></div>
 
-        <!-- Add New User Form -->
-                        <!-- Live TV Stream Configuration Section -->
-        <div class="kv-admin-section" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:12px;margin-bottom:14px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-            <div style="font-weight:700;color:#fca5a5;font-size:12px;display:flex;align-items:center;gap:6px;">
-              <span>📺 Live TV Stream Settings (HLS / m3u8)</span>
+        <!-- 📑 ADMIN NAVIGATION TABS (Users First, Add User, Stream/Cloud Settings) -->
+        <div class="kv-admin-nav-tabs" style="display:flex; gap:6px; margin-bottom:14px; background:#1e293b; padding:4px; border-radius:10px; border:1px solid #334155;">
+          <button id="kvTabBtnUsers" type="button" class="kv-admin-tab-nav active" data-tab="users" style="flex:1; padding:8px 6px; font-size:11.5px; font-weight:800; border-radius:7px; border:none; background:#0284c7; color:#fff; cursor:pointer;">
+            👥 ഉപയോക്താക്കൾ (Users)
+          </button>
+          <button id="kvTabBtnAddUser" type="button" class="kv-admin-tab-nav" data-tab="adduser" style="flex:1; padding:8px 6px; font-size:11.5px; font-weight:800; border-radius:7px; border:none; background:transparent; color:#94a3b8; cursor:pointer;">
+            ➕ പുതിയ യൂസർ (Add User)
+          </button>
+          <button id="kvTabBtnSettings" type="button" class="kv-admin-tab-nav" data-tab="settings" style="flex:1; padding:8px 6px; font-size:11.5px; font-weight:800; border-radius:7px; border:none; background:transparent; color:#94a3b8; cursor:pointer;">
+            ⚙️ സ്ട്രീം &amp; ക്ലൗഡ് (Settings)
+          </button>
+        </div>
+
+        <!-- ==========================================
+             PANE 1: USERS LIST (FIRST & IMMEDIATE VIEW)
+             ========================================== -->
+        <div id="kvAdminPaneUsers" class="kv-admin-pane">
+          <!-- Registered Users List -->
+          <div class="kv-admin-section" style="margin-top:0;">
+            <div class="kv-admin-sec-title" style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-weight:800; color:#38bdf8;">👥 Registered Channel Users</span>
+              <span id="kvUserCountBadge" style="font-size:11px; color:#94a3b8;">0 users</span>
             </div>
-            <span id="kvLiveStreamStatusBadge" class="kv-status-pill" style="background:#7f1d1d;color:#fca5a5;font-size:10px;padding:3px 8px;">🔴 Stream Standby (No Link)</span>
+            <div style="font-size:11px; color:#94a3b8; margin-bottom:10px;">
+              എല്ലാ യൂസർമാരുടെയും യൂസർനെയിം, പാസ്‌വേഡ്, ഡിഫോൾട്ട് ലൊക്കേഷൻ എന്നിവ ഇവിടെ നേരിട്ട് കാണാനും മാറ്റാനും സാധിക്കും:
+            </div>
+            <div id="kvUsersListContainer" class="kv-user-list">
+              <div style="text-align:center; color:#94a3b8; font-size:12px; padding:12px;">Loading users...</div>
+            </div>
           </div>
 
-          <div style="font-size:11px;color:#cbd5e1;line-height:1.4;margin-bottom:8px;">
-            Enter your channel official <b>.m3u8</b> live stream URL here to broadcast live across the app. If no link is provided, the standby screen will show.
-          </div>
-
-          <div class="form-group" style="margin-bottom:8px;">
-            <label style="font-size:11px;color:#94a3b8;display:block;margin-bottom:4px;">🔗 Live Stream URL (.m3u8 HLS Link):</label>
-            <input id="kvInpLiveStreamUrl" type="url" class="kv-admin-input" placeholder="https://example.com/live/kozhikodevision.m3u8" style="background:#0b1329;border:1px solid #334155;color:#38bdf8;">
-          </div>
-
-          <div class="form-group" style="margin-bottom:12px;">
-            <label style="font-size:11px;color:#fbbf24;display:block;margin-bottom:4px;">📻 Radio Stream URL (Optional Audio Link - MP3/AAC/.m3u8):</label>
-            <input id="kvInpRadioStreamUrl" type="url" class="kv-admin-input" placeholder="Leave empty to use Live TV audio track (Auto Fallback)" style="background:#0b1329;border:1px solid #334155;color:#fbbf24;">
-            <span style="font-size:9.5px;color:#64748b;display:block;margin-top:2px;">💡 If no separate radio link is provided, Live TV audio stream will play automatically.</span>
-          </div>
-
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            <button id="kvBtnSaveLiveStreamUrl" type="button" class="btn-tactile" style="font-size:11px;font-weight:700;padding:6px 14px;background:#10b981;color:#fff;border-radius:6px;border:none;cursor:pointer;">
-              💾 Save Stream Links
-            </button>
-            <button id="kvBtnClearLiveStreamUrl" type="button" class="btn-tactile" style="font-size:11px;padding:6px 12px;background:#ef4444;color:#fff;border-radius:6px;border:none;cursor:pointer;">
-              ✕ Reset to Standby
-            </button>
-            <button id="kvBtnPreviewLiveTv" type="button" class="btn-tactile" style="font-size:11px;padding:6px 12px;background:#3b82f6;color:#fff;border-radius:6px;border:none;cursor:pointer;">
-              ▶ Open Live Player
-            </button>
+          <!-- Deleted Users / Recycle Bin (Restore Any Deleted User) -->
+          <div id="kvDeletedUsersSection" class="kv-admin-section kv-hidden" style="border-top:1px dashed rgba(248,113,113,0.3); padding-top:12px; margin-top:14px;">
+            <div class="kv-admin-sec-title" style="color:#f87171; font-size:12px; display:flex; justify-content:space-between; align-items:center;">
+              <span>♻️ Deleted Users (Recycle Bin - Restore Any Time)</span>
+              <span id="kvDeletedCountBadge" style="font-size:10px; color:#fca5a5;">0 deleted</span>
+            </div>
+            <div id="kvDeletedUsersListContainer" class="kv-user-list"></div>
           </div>
         </div>
 
-        <!-- Online Cloud Database (Google Firebase Firestore) Section -->
-        <div class="kv-admin-section" style="background:rgba(2,132,199,0.08);border:1px solid rgba(56,189,248,0.3);border-radius:10px;padding:12px;margin-bottom:14px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-            <div style="font-weight:700;color:#38bdf8;font-size:12px;display:flex;align-items:center;gap:6px;">
-              <span>☁️ Cloud Database (Firebase Sync)</span>
+        <!-- ==========================================
+             PANE 2: ADD NEW USER FORM
+             ========================================== -->
+        <div id="kvAdminPaneAddUser" class="kv-admin-pane kv-hidden">
+          <div class="kv-admin-section" style="margin-top:0;">
+            <div class="kv-admin-sec-title" style="font-weight:800; color:#38bdf8;">➕ Add New Staff / Reporter Account</div>
+            <div style="font-size:11px; color:#94a3b8; margin-bottom:10px;">
+              പുതിയ റിപ്പോർട്ടർമാർക്കോ സ്റ്റാഫിനോ വേണ്ടി അക്കൗണ്ട് ഉണ്ടാക്കുക:
             </div>
-            <span id="kvCloudStatusBadge" class="kv-status-pill" style="background:#475569;color:#fff;font-size:10px;padding:3px 8px;">🟡 Local Mode (Local Only)</span>
-          </div>
-
-          <div style="font-size:11px;color:#cbd5e1;line-height:1.4;margin-bottom:8px;">
-            Connect Firebase to sync users and settings across all reporters' devices in real-time.
-          </div>
-
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            <button id="kvBtnToggleCloudConfig" type="button" class="btn-tactile" style="font-size:11px;padding:5px 12px;background:#0284c7;color:#fff;border-radius:6px;border:none;cursor:pointer;">
-              ⚙️ Configure Firebase
-            </button>
-            <button id="kvBtnSyncDefaultsToCloud" type="button" class="btn-tactile" style="font-size:11px;padding:5px 12px;background:#059669;color:#fff;border-radius:6px;border:none;cursor:pointer;">
-              🚀 Sync Users to Cloud
-            </button>
-          </div>
-
-          <!-- Collapsible Firebase Config Box -->
-          <div id="kvCloudConfigBox" class="kv-hidden" style="margin-top:10px;padding-top:10px;border-top:1px dashed rgba(255,255,255,0.12);">
-            <label style="font-size:11px;color:#cbd5e1;display:block;margin-bottom:4px;">
-              Paste your Firebase Web App Config code from Firebase Console ➔ Project Settings here:
-            </label>
-            <textarea id="kvTxtFirebaseConfig" rows="6" style="width:100%;font-family:monospace;font-size:11px;background:#0b1329;color:#38bdf8;border:1px solid #334155;border-radius:6px;padding:8px;resize:vertical;" placeholder='const firebaseConfig = {
-  apiKey: "AIzaSyBnkBPGoVZS4UO417eQrxr94kXJTLzm2Bo",
-  authDomain: "kozhikode-vision-news.firebaseapp.com",
-  projectId: "kozhikode-vision-news",
-  storageBucket: "kozhikode-vision-news.firebasestorage.app",
-  messagingSenderId: "822240406412",
-  appId: "1:822240406412:web:2407061f774c5febfc84a9"
-};'></textarea>
-            <div style="display:flex;gap:8px;margin-top:8px;">
-              <button id="kvBtnSaveFirebaseConfig" type="button" class="btn-tactile" style="font-size:11px;font-weight:700;padding:6px 14px;background:#10b981;color:#fff;border-radius:6px;border:none;cursor:pointer;">
-                💾 Save &amp; Connect
-              </button>
-              <button id="kvBtnClearFirebaseConfig" type="button" class="btn-tactile" style="font-size:11px;padding:6px 12px;background:#ef4444;color:#fff;border-radius:6px;border:none;cursor:pointer;">
-                🗑️ Reset to Local
-              </button>
+            <div id="kvAdminAddFormBox">
+              <div class="kv-admin-grid">
+                <div>
+                  <label style="font-size:11px; color:#cbd5e1; display:block; margin-bottom:4px;">1. Full Name (പൂർണ്ണ നാമം) *</label>
+                  <input id="kvNewName" type="text" class="kv-admin-input" placeholder="e.g. Arun (Reporter)">
+                </div>
+                <div>
+                  <label style="font-size:11px; color:#cbd5e1; display:block; margin-bottom:4px;">2. Username (ലോഗിൻ യൂസർനെയിം) *</label>
+                  <input id="kvNewUser" type="text" class="kv-admin-input" placeholder="e.g. arun">
+                </div>
+                <div>
+                  <label style="font-size:11px; color:#cbd5e1; display:block; margin-bottom:4px;">3. Password (പാസ്‌വേഡ്) *</label>
+                  <input id="kvNewPass" type="text" class="kv-admin-input" placeholder="e.g. 1234">
+                </div>
+                <div>
+                  <label style="font-size:11px; color:#cbd5e1; display:block; margin-bottom:4px;">4. Role (പദവി)</label>
+                  <select id="kvNewRole" class="kv-admin-input">
+                    <option value="user">Staff User (Card Maker Access Only)</option>
+                    <option value="admin">Admin (Full Control)</option>
+                  </select>
+                </div>
+                <div style="grid-column: span 2;">
+                  <label style="font-size:11px; color:#cbd5e1; display:block; margin-bottom:4px;">5. Default Location (റിപ്പോർട്ടറുടെ ഡിഫോൾട്ട് സ്ഥലം)</label>
+                  <input id="kvNewLocation" type="text" class="kv-admin-input" placeholder="e.g. കോഴിക്കോട്, വടകര, കൊയിലാണ്ടി">
+                </div>
+              </div>
+              <button id="kvBtnAddUser" type="button" class="kv-admin-create-btn" style="cursor:pointer; margin-top:12px;">➕ Create User Account</button>
             </div>
-            <div id="kvCloudConfigHelp" style="font-size:10px;color:#94a3b8;margin-top:6px;line-height:1.4;">
-              💡 <b>To setup free Firebase:</b> Open <a href="https://console.firebase.google.com" target="_blank" style="color:#38bdf8;text-decoration:underline;">console.firebase.google.com</a> ➔ <i>Add Project</i> ➔ <i>Firestore Database</i> (Test mode) ➔ Register Web App in <i>Project Settings</i> and paste code here.
-            </div>
+            <div id="kvAdminStatusMsg" class="kv-admin-status-msg" style="margin-top:8px;"></div>
           </div>
         </div>
 
-                <!-- Admin Self-Profile & Password Edit Section -->
-        <div class="kv-admin-section" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:12px;margin-bottom:14px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <div style="font-weight:700;color:#fbbf24;font-size:12px;display:flex;align-items:center;gap:6px;">
-              <span>🔐 Admin Account Settings</span>
-            </div>
-            <button id="kvBtnToggleAdminEdit" type="button" class="btn-tactile" style="font-size:11px;padding:5px 12px;background:#d97706;color:#fff;border-radius:6px;border:none;cursor:pointer;">
-              ✏️ Edit
-            </button>
-          </div>
-
-          <div id="kvAdminEditFormBox" class="kv-hidden" style="margin-top:10px;padding-top:10px;border-top:1px dashed rgba(255,255,255,0.12);">
-            <div class="kv-admin-grid">
-              <div>
-                <label style="font-size:11px;color:#cbd5e1;display:block;margin-bottom:4px;">Admin Display Name:</label>
-                <input id="kvEditAdminName" type="text" class="kv-admin-input" placeholder="e.g. Channel Editor">
+        <!-- ==========================================
+             PANE 3: STREAM, CLOUD & ADMIN SETTINGS
+             ========================================== -->
+        <div id="kvAdminPaneSettings" class="kv-admin-pane kv-hidden">
+          <!-- Admin Self-Profile & Password Edit Section -->
+          <div class="kv-admin-section" style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.3); border-radius:10px; padding:12px; margin-bottom:14px; margin-top:0;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div style="font-weight:700; color:#fbbf24; font-size:12px; display:flex; align-items:center; gap:6px;">
+                <span>🔐 Admin Account Password Settings</span>
               </div>
-              <div>
-                <label style="font-size:11px;color:#cbd5e1;display:block;margin-bottom:4px;">New Password:</label>
-                <input id="kvEditAdminPass" type="text" class="kv-admin-input" placeholder="Enter new password">
-              </div>
-            </div>
-            <div style="display:flex;gap:8px;margin-top:10px;">
-              <button id="kvBtnSaveAdminProfile" type="button" class="btn-tactile" style="font-size:11px;font-weight:700;padding:6px 14px;background:#10b981;color:#fff;border-radius:6px;border:none;cursor:pointer;">
-                💾 Save Admin Credentials
+              <button id="kvBtnToggleAdminEdit" type="button" class="btn-tactile" style="font-size:11px; padding:5px 12px; background:#d97706; color:#fff; border-radius:6px; border:none; cursor:pointer;">
+                ✏️ Edit
               </button>
             </div>
-          </div>
-        </div>
 
-        <!-- 📢 Real-Time Newsroom Broadcast Notice Section -->
-        <div class="kv-admin-section" style="background:rgba(234,88,12,0.1);border:1px solid rgba(251,146,60,0.35);border-radius:10px;padding:12px;margin-bottom:14px;">
-          <div style="font-weight:700;color:#fb923c;font-size:12px;display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-            <span>📢 Newsroom Flash Notice (Broadcast to All Staff)</span>
-          </div>
-          <div style="font-size:11px;color:#cbd5e1;line-height:1.4;margin-bottom:8px;">
-            Type a breaking announcement or newsroom notice here to scroll live across all staff screens in real-time.
-          </div>
-          <div style="display:flex;gap:8px;">
-            <input id="kvInpAdminNotice" type="text" class="kv-admin-input" placeholder="Type breaking notice to broadcast...">
-            <button id="kvBtnPublishNotice" type="button" class="btn-tactile" style="background:#ea580c;color:#fff;font-size:11px;font-weight:700;padding:8px 14px;border-radius:6px;border:none;white-space:nowrap;cursor:pointer;">📢 Post</button>
-            <button id="kvBtnClearNotice" type="button" class="btn-tactile" style="background:#ef4444;color:#fff;font-size:11px;padding:8px 10px;border-radius:6px;border:none;cursor:pointer;">Clear</button>
-          </div>
-        </div>
-
-        <div class="kv-admin-section">
-          <div class="kv-admin-sec-title">➕ Add Staff / User</div>
-          <div id="kvAdminAddFormBox">
-            <div class="kv-admin-grid">
-              <div>
-                <label style="font-size:11px;color:#cbd5e1;display:block;margin-bottom:4px;">1. Full Name</label>
-                <input id="kvNewName" type="text" class="kv-admin-input" placeholder="e.g. Arun (Reporter)">
+            <div id="kvAdminEditFormBox" class="kv-hidden" style="margin-top:10px; padding-top:10px; border-top:1px dashed rgba(255,255,255,0.12);">
+              <div class="kv-admin-grid">
+                <div>
+                  <label style="font-size:11px; color:#cbd5e1; display:block; margin-bottom:4px;">Admin Display Name:</label>
+                  <input id="kvEditAdminName" type="text" class="kv-admin-input" placeholder="e.g. Channel Editor">
+                </div>
+                <div>
+                  <label style="font-size:11px; color:#cbd5e1; display:block; margin-bottom:4px;">New Password:</label>
+                  <input id="kvEditAdminPass" type="text" class="kv-admin-input" placeholder="Enter new password">
+                </div>
               </div>
-              <div>
-                <label style="font-size:11px;color:#cbd5e1;display:block;margin-bottom:4px;">2. Username (Optional)</label>
-                <input id="kvNewUser" type="text" class="kv-admin-input" placeholder="e.g. arun">
-              </div>
-              <div>
-                <label style="font-size:11px;color:#cbd5e1;display:block;margin-bottom:4px;">3. Password</label>
-                <input id="kvNewPass" type="text" class="kv-admin-input" placeholder="e.g. 1234">
-              </div>
-              <div>
-                <label style="font-size:11px;color:#cbd5e1;display:block;margin-bottom:4px;">4. Role</label>
-                <select id="kvNewRole" class="kv-admin-input">
-                  <option value="user">Staff User (Card Maker Access Only)</option>
-                  <option value="admin">Admin (Full Control)</option>
-                </select>
-              </div>
-              <div>
-                <label style="font-size:11px;color:#cbd5e1;display:block;margin-bottom:4px;">5. Default Location (സ്ഥിരം സ്ഥലം)</label>
-                <input id="kvNewLocation" type="text" class="kv-admin-input" placeholder="e.g. കോഴിക്കോട്, വടകര">
+              <div style="display:flex; gap:8px; margin-top:10px;">
+                <button id="kvBtnSaveAdminProfile" type="button" class="btn-tactile" style="font-size:11px; font-weight:700; padding:6px 14px; background:#10b981; color:#fff; border-radius:6px; border:none; cursor:pointer;">
+                  💾 Save Admin Credentials
+                </button>
               </div>
             </div>
-            <button id="kvBtnAddUser" type="button" class="kv-admin-create-btn" style="cursor:pointer;">➕ Create User Account</button>
           </div>
-          <div id="kvAdminStatusMsg" class="kv-admin-status-msg"></div>
+
+          <!-- Live TV Stream Configuration Section -->
+          <div class="kv-admin-section" style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:10px; padding:12px; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div style="font-weight:700; color:#fca5a5; font-size:12px; display:flex; align-items:center; gap:6px;">
+                <span>📺 Live TV Stream Settings (HLS / m3u8)</span>
+              </div>
+              <span id="kvLiveStreamStatusBadge" class="kv-status-pill" style="background:#7f1d1d; color:#fca5a5; font-size:10px; padding:3px 8px;">🔴 Stream Standby (No Link)</span>
+            </div>
+
+            <div style="font-size:11px; color:#cbd5e1; line-height:1.4; margin-bottom:8px;">
+              Enter your channel official <b>.m3u8</b> live stream URL here to broadcast live across the app:
+            </div>
+
+            <div class="form-group" style="margin-bottom:8px;">
+              <label style="font-size:11px; color:#94a3b8; display:block; margin-bottom:4px;">🔗 Live Stream URL (.m3u8 HLS Link):</label>
+              <input id="kvInpLiveStreamUrl" type="url" class="kv-admin-input" placeholder="https://example.com/live/kozhikodevision.m3u8" style="background:#0b1329; border:1px solid #334155; color:#38bdf8;">
+            </div>
+
+            <div class="form-group" style="margin-bottom:12px;">
+              <label style="font-size:11px; color:#fbbf24; display:block; margin-bottom:4px;">📻 Radio Stream URL (Optional Audio Link):</label>
+              <input id="kvInpRadioStreamUrl" type="url" class="kv-admin-input" placeholder="Leave empty to use Live TV audio track" style="background:#0b1329; border:1px solid #334155; color:#fbbf24;">
+            </div>
+
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <button id="kvBtnSaveLiveStreamUrl" type="button" class="btn-tactile" style="font-size:11px; font-weight:700; padding:6px 14px; background:#10b981; color:#fff; border-radius:6px; border:none; cursor:pointer;">
+                💾 Save Stream Links
+              </button>
+              <button id="kvBtnClearLiveStreamUrl" type="button" class="btn-tactile" style="font-size:11px; padding:6px 12px; background:#ef4444; color:#fff; border-radius:6px; border:none; cursor:pointer;">
+                ✕ Reset to Standby
+              </button>
+              <button id="kvBtnPreviewLiveTv" type="button" class="btn-tactile" style="font-size:11px; padding:6px 12px; background:#3b82f6; color:#fff; border-radius:6px; border:none; cursor:pointer;">
+                ▶ Open Live Player
+              </button>
+            </div>
+          </div>
+
+          <!-- Cloud Database (Firebase) Section -->
+          <div class="kv-admin-section" style="background:rgba(2,132,199,0.08); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:12px; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div style="font-weight:700; color:#38bdf8; font-size:12px; display:flex; align-items:center; gap:6px;">
+                <span>☁️ Cloud Database (Firebase Sync)</span>
+              </div>
+              <span id="kvCloudStatusBadge" class="kv-status-pill" style="background:#475569; color:#fff; font-size:10px; padding:3px 8px;">🟡 Local Mode</span>
+            </div>
+
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <button id="kvBtnToggleCloudConfig" type="button" class="btn-tactile" style="font-size:11px; padding:5px 12px; background:#0284c7; color:#fff; border-radius:6px; border:none; cursor:pointer;">
+                ⚙️ Configure Firebase
+              </button>
+              <button id="kvBtnSyncDefaultsToCloud" type="button" class="btn-tactile" style="font-size:11px; padding:5px 12px; background:#059669; color:#fff; border-radius:6px; border:none; cursor:pointer;">
+                🚀 Sync Users to Cloud
+              </button>
+            </div>
+
+            <div id="kvCloudConfigBox" class="kv-hidden" style="margin-top:10px; padding-top:10px; border-top:1px dashed rgba(255,255,255,0.12);">
+              <label style="font-size:11px; color:#cbd5e1; display:block; margin-bottom:4px;">
+                Paste your Firebase Web App Config code:
+              </label>
+              <textarea id="kvTxtFirebaseConfig" rows="5" style="width:100%; font-family:monospace; font-size:11px; background:#0b1329; color:#38bdf8; border:1px solid #334155; border-radius:6px; padding:8px; resize:vertical;"></textarea>
+              <div style="display:flex; gap:8px; margin-top:8px;">
+                <button id="kvBtnSaveFirebaseConfig" type="button" class="btn-tactile" style="font-size:11px; font-weight:700; padding:6px 14px; background:#10b981; color:#fff; border-radius:6px; border:none; cursor:pointer;">
+                  💾 Save &amp; Connect
+                </button>
+                <button id="kvBtnClearFirebaseConfig" type="button" class="btn-tactile" style="font-size:11px; padding:6px 12px; background:#ef4444; color:#fff; border-radius:6px; border:none; cursor:pointer;">
+                  🗑️ Reset to Local
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Newsroom Notice Section -->
+          <div class="kv-admin-section" style="background:rgba(234,88,12,0.1); border:1px solid rgba(251,146,60,0.35); border-radius:10px; padding:12px;">
+            <div style="font-weight:700; color:#fb923c; font-size:12px; display:flex; align-items:center; gap:6px; margin-bottom:8px;">
+              <span>📢 Newsroom Flash Notice</span>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <input id="kvInpAdminNotice" type="text" class="kv-admin-input" placeholder="Type breaking notice to broadcast...">
+              <button id="kvBtnPublishNotice" type="button" class="btn-tactile" style="background:#ea580c; color:#fff; font-size:11px; font-weight:700; padding:8px 14px; border-radius:6px; border:none; white-space:nowrap; cursor:pointer;">📢 Post</button>
+              <button id="kvBtnClearNotice" type="button" class="btn-tactile" style="background:#ef4444; color:#fff; font-size:11px; padding:8px 10px; border-radius:6px; border:none; cursor:pointer;">Clear</button>
+            </div>
+          </div>
         </div>
 
-                <!-- Deleted Users / Recycle Bin (Restore Any Deleted User) -->
-        <div id="kvDeletedUsersSection" class="kv-admin-section kv-hidden" style="border-top:1px dashed rgba(248,113,113,0.3);padding-top:12px;margin-top:14px;">
-          <div class="kv-admin-sec-title" style="color:#f87171;font-size:12px;display:flex;justify-content:space-between;align-items:center;">
-            <span>♻️ Deleted Users (Recycle Bin - Restore Any Time)</span>
-            <span id="kvDeletedCountBadge" style="font-size:10px;color:#fca5a5;">0 deleted</span>
-          </div>
-          <div id="kvDeletedUsersListContainer" class="kv-user-list"></div>
-        </div>
-
-        <!-- Registered Users List -->
-        <div class="kv-admin-section">
-          <div class="kv-admin-sec-title" style="display:flex;justify-content:space-between;align-items:center;">
-            <span>👥 User Management</span>
-            <span id="kvUserCountBadge" style="font-size:11px;color:#94a3b8;">0 users</span>
-          </div>
-          <div id="kvUsersListContainer" class="kv-user-list">
-            <div style="text-align:center;color:#94a3b8;font-size:12px;padding:12px;">Loading...</div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -3288,21 +3303,50 @@
                 <textarea id="txtHeadline" class="form-textarea" rows="2">കോഴിക്കോട് ബീച്ചിൽ പുതിയ ടൂറിസം പദ്ധതിക്ക് തുടക്കമായി</textarea>
               </div>
 
-              <!-- 🎛️ Headline Typography & Standard Box Toolbar -->
-              <div style="margin-top:6px; margin-bottom:12px; padding:12px; background:#0f172a; border:1px solid #334155; border-radius:12px;">
-                <div style="font-size:11px; font-weight:800; color:#38bdf8; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                  <span>🔤 Headline Typography &amp; Box</span>
-                  <div style="display:flex; gap:4px;">
-                    <button id="btnFontDecr" type="button" class="btn-tactile" style="font-size:9.5px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; padding:2px 7px; border-radius:4px;">A-</button>
-                    <button id="btnFontIncr" type="button" class="btn-tactile" style="font-size:9.5px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; padding:2px 7px; border-radius:4px;">A+</button>
+              <!-- ✍️ Summary / Subline Input (Directly below Headline) -->
+              <div class="form-group" style="margin-top:6px; margin-bottom:8px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                  <label class="form-label" style="margin-bottom:0;font-weight:800;color:#f8fafc;">📝 Summary / Subline (ഉള്ളടക്കം):</label>
+                  <button id="btnVoiceSummary" type="button" class="btn-voice-mic" title="സംസാരിച്ച് മലയാളത്തിൽ ടൈപ്പ് ചെയ്യുക">🎙️ സംസാരിക്കുക</button>
+                </div>
+                <textarea id="txtSummary" class="form-textarea" rows="2" placeholder="Type news summary here...">മന്ത്രി മുഹമ്മദ് റിയാസ് ഉദ്ഘാടനം ചെയ്തു; ആദ്യഘട്ടത്തിൽ 10 കോടിയുടെ സമഗ്ര വികസനം നടപ്പാക്കും.</textarea>
+              </div>
+
+              <!-- 🎯 Punchline Tag & 👤 Reporter Byline (Compact Side-by-Side Row) -->
+              <div style="display:grid; grid-template-columns:1.1fr 1fr; gap:8px; margin-bottom:10px;">
+                <div>
+                  <label class="form-label" style="font-size:10.5px; color:#cbd5e1; margin-bottom:2px; font-weight:700;">🎯 Punchline / Tag (തീരുമാനം ഉടൻ):</label>
+                  <input id="txtPunchline" type="text" class="form-input" placeholder="തീരുമാനം ഉടൻ" style="font-size:11.5px; font-weight:700; padding:6px 8px;">
+                </div>
+                <div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
+                    <label class="form-label" style="font-size:10.5px; margin-bottom:0; font-weight:700;">👤 Reporter Byline:</label>
+                    <button id="btnSyncMyByline" type="button" class="btn-tactile" style="font-size:9.5px;padding:1px 6px;background:rgba(56,189,248,0.18);border:1px solid #38bdf8;color:#38bdf8;border-radius:4px;cursor:pointer;">My Name</button>
+                  </div>
+                  <input id="txtReporter" type="text" class="form-input" value="വിഷൻ ന്യൂസ് കോഴിക്കോട്" style="font-size:11.5px; padding:6px 8px;">
+                </div>
+              </div>
+
+              <!-- 🎛️ UNIFIED BROADCAST TEXT & BOX STUDIO TOOLBAR (Headline & Summary Switcher) -->
+              <div id="unifiedTextToolbar" style="margin-top:4px; margin-bottom:12px; padding:12px; background:#0f172a; border:1px solid #334155; border-radius:12px;">
+                <!-- Target Switcher Tabs: Headline vs Summary -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #334155;">
+                  <span style="font-size:11px; font-weight:800; color:#38bdf8; text-transform:uppercase; letter-spacing:0.5px;">🔤 Text &amp; Box Studio</span>
+                  <div style="display:flex; background:#1e293b; padding:3px; border-radius:8px; border:1px solid #475569; gap:3px;">
+                    <button id="btnTargetHeadline" type="button" class="btn-tactile active" style="padding:4px 10px; font-size:11px; font-weight:800; border-radius:6px; border:none; background:#0284c7; color:#fff; cursor:pointer;">
+                      📰 പ്രധാന വാർത്ത (Headline)
+                    </button>
+                    <button id="btnTargetSummary" type="button" class="btn-tactile" style="padding:4px 10px; font-size:11px; font-weight:800; border-radius:6px; border:none; background:transparent; color:#94a3b8; cursor:pointer;">
+                      📝 വിവരണം (Summary)
+                    </button>
                   </div>
                 </div>
 
                 <!-- Font & Line-Height Row -->
-                <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:8px; margin-bottom:8px;">
+                <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:8px; margin-bottom:8px;">
                   <div>
                     <label style="font-size:10px; color:#94a3b8; display:block; margin-bottom:3px;">ഫോണ്ട് (Font):</label>
-                    <select id="selHeadlineFont" class="form-input" style="padding:6px 8px; font-size:11.5px; font-weight:700; background:#1e293b; border:1px solid #475569; color:#fff;">
+                    <select id="selUnifiedFont" class="form-input" style="padding:6px 8px; font-size:11.5px; font-weight:700; background:#1e293b; border:1px solid #475569; color:#fff;">
                       <option value="Anek Malayalam" selected>🅰️ Anek Malayalam</option>
                       <option value="Baloo Chettan 2">💥 Baloo Chettan 2 (Heavy)</option>
                       <option value="Gayathri">📰 Gayathri (Editorial)</option>
@@ -3313,68 +3357,75 @@
                   <div>
                     <div style="display:flex; justify-content:space-between; font-size:10px; color:#94a3b8; margin-bottom:3px;">
                       <span>വരി അകലം (Line Space):</span>
-                      <span id="headlineLineHeightVal" style="color:#38bdf8; font-weight:700;">1.25x</span>
+                      <span id="unifiedLineHeightVal" style="color:#38bdf8; font-weight:700;">1.25x</span>
                     </div>
-                    <input id="headlineLineHeightRange" type="range" min="1.0" max="1.8" step="0.05" value="1.25" style="width:100%; accent-color:#38bdf8; cursor:pointer;">
+                    <input id="unifiedLineHeightRange" type="range" min="1.0" max="2.4" step="0.05" value="1.25" style="width:100%; accent-color:#38bdf8; cursor:pointer;">
                   </div>
                 </div>
 
-                <!-- Alignment & Underline Row -->
+                <!-- Alignment, Size (A-/A+), and Underline Row -->
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px; padding-bottom:8px; border-bottom:1px dashed #334155;">
                   <!-- Alignment Pills -->
                   <div style="display:flex; align-items:center; gap:4px;">
                     <span style="font-size:10px; color:#94a3b8;">അലൈൻമെന്റ്:</span>
-                    <button type="button" class="btn-tactile btn-h-align active" data-align="left" style="padding:4px 8px; font-size:11px; background:#0284c7; color:#fff; border-radius:5px; border:none; cursor:pointer;" title="Left Align">⬅️ ഇടത്</button>
-                    <button type="button" class="btn-tactile btn-h-align" data-align="center" style="padding:4px 8px; font-size:11px; background:#1e293b; color:#cbd5e1; border-radius:5px; border:1px solid #475569; cursor:pointer;" title="Center Align">↔️ മധ്യത്തിൽ</button>
-                    <button type="button" class="btn-tactile btn-h-align" data-align="right" style="padding:4px 8px; font-size:11px; background:#1e293b; color:#cbd5e1; border-radius:5px; border:1px solid #475569; cursor:pointer;" title="Right Align">➡️ വലത്</button>
+                    <button type="button" class="btn-tactile btn-unified-align active" data-align="left" style="padding:4px 8px; font-size:11px; background:#0284c7; color:#fff; border-radius:5px; border:none; cursor:pointer;" title="Left Align">⬅️ ഇടത്</button>
+                    <button type="button" class="btn-tactile btn-unified-align" data-align="center" style="padding:4px 8px; font-size:11px; background:#1e293b; color:#cbd5e1; border-radius:5px; border:1px solid #475569; cursor:pointer;" title="Center Align">↔️ മധ്യത്തിൽ</button>
+                    <button type="button" class="btn-tactile btn-unified-align" data-align="right" style="padding:4px 8px; font-size:11px; background:#1e293b; color:#cbd5e1; border-radius:5px; border:1px solid #475569; cursor:pointer;" title="Right Align">➡️ വലത്</button>
                   </div>
 
-                  <!-- Underline Toggle -->
-                  <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:11px; font-weight:700; color:#cbd5e1; margin:0;">
-                    <input id="chkHeadlineUnderline" type="checkbox" style="width:15px; height:15px; accent-color:#38bdf8; cursor:pointer;">
-                    <span><u>U</u> അടിവര (Underline)</span>
-                  </label>
+                  <!-- Underline Toggle & Font Size Quick Adjust -->
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <label style="display:flex; align-items:center; gap:5px; cursor:pointer; font-size:11px; font-weight:700; color:#cbd5e1; margin:0;">
+                      <input id="chkUnifiedUnderline" type="checkbox" style="width:15px; height:15px; accent-color:#38bdf8; cursor:pointer;">
+                      <span><u>U</u> അടിവര</span>
+                    </label>
+                    <div style="display:flex; align-items:center; gap:3px;">
+                      <button id="btnUnifiedFontDecr" type="button" class="btn-tactile" style="font-size:10px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; padding:2px 7px; border-radius:4px;" title="Decrease Font Size">A-</button>
+                      <span id="lblUnifiedFontSize" style="font-size:10.5px; color:#38bdf8; font-weight:700; min-width:28px; text-align:center;">56px</span>
+                      <button id="btnUnifiedFontIncr" type="button" class="btn-tactile" style="font-size:10px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; padding:2px 7px; border-radius:4px;" title="Increase Font Size">A+</button>
+                    </div>
+                  </div>
                 </div>
 
                 <!-- Text Color Selection Row -->
                 <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
                   <div style="display:flex; align-items:center; gap:6px;">
-                    <span style="font-size:11px; color:#facc15; font-weight:700;">🎨 ടെക്സ്റ്റ് കളർ:</span>
-                    <input id="colHeadlineColor" type="color" value="#ffffff" style="width:26px; height:26px; border:none; border-radius:4px; cursor:pointer; background:none;">
+                    <span id="lblUnifiedColorTarget" style="font-size:11px; color:#facc15; font-weight:700;">🎨 ടെക്സ്റ്റ് കളർ:</span>
+                    <input id="colUnifiedTextColor" type="color" value="#ffffff" style="width:26px; height:26px; border:none; border-radius:4px; cursor:pointer; background:none;">
                   </div>
                   <div style="display:flex; gap:5px; flex-wrap:wrap;">
-                    <button type="button" class="btn-hl-col-pill" data-col="#ffffff" style="width:22px; height:22px; border-radius:50%; background:#ffffff; border:2px solid #38bdf8; cursor:pointer;" title="Pure White"></button>
-                    <button type="button" class="btn-hl-col-pill" data-col="#ffd700" style="width:22px; height:22px; border-radius:50%; background:#ffd700; border:1px solid #64748b; cursor:pointer;" title="Golden Yellow"></button>
-                    <button type="button" class="btn-hl-col-pill" data-col="#38bdf8" style="width:22px; height:22px; border-radius:50%; background:#38bdf8; border:1px solid #64748b; cursor:pointer;" title="Sky Blue"></button>
-                    <button type="button" class="btn-hl-col-pill" data-col="#a3e635" style="width:22px; height:22px; border-radius:50%; background:#a3e635; border:1px solid #64748b; cursor:pointer;" title="Lime Green"></button>
-                    <button type="button" class="btn-hl-col-pill" data-col="#fb923c" style="width:22px; height:22px; border-radius:50%; background:#fb923c; border:1px solid #64748b; cursor:pointer;" title="Warm Orange"></button>
-                    <button type="button" class="btn-hl-col-pill" data-col="#fca5a5" style="width:22px; height:22px; border-radius:50%; background:#fca5a5; border:1px solid #64748b; cursor:pointer;" title="Light Coral"></button>
+                    <button type="button" class="btn-uni-col-pill" data-col="#ffffff" style="width:22px; height:22px; border-radius:50%; background:#ffffff; border:2px solid #38bdf8; cursor:pointer;" title="Pure White"></button>
+                    <button type="button" class="btn-uni-col-pill" data-col="#ffd700" style="width:22px; height:22px; border-radius:50%; background:#ffd700; border:1px solid #64748b; cursor:pointer;" title="Golden Yellow"></button>
+                    <button type="button" class="btn-uni-col-pill" data-col="#38bdf8" style="width:22px; height:22px; border-radius:50%; background:#38bdf8; border:1px solid #64748b; cursor:pointer;" title="Sky Blue"></button>
+                    <button type="button" class="btn-uni-col-pill" data-col="#a3e635" style="width:22px; height:22px; border-radius:50%; background:#a3e635; border:1px solid #64748b; cursor:pointer;" title="Lime Green"></button>
+                    <button type="button" class="btn-uni-col-pill" data-col="#fb923c" style="width:22px; height:22px; border-radius:50%; background:#fb923c; border:1px solid #64748b; cursor:pointer;" title="Warm Orange"></button>
+                    <button type="button" class="btn-uni-col-pill" data-col="#fca5a5" style="width:22px; height:22px; border-radius:50%; background:#fca5a5; border:1px solid #64748b; cursor:pointer;" title="Light Coral"></button>
                   </div>
                 </div>
 
-                <!-- 📦 Standard Headline Box Toggle & Settings -->
+                <!-- 📦 Standard Box Toggle & Settings -->
                 <div style="background:rgba(30, 41, 59, 0.7); padding:10px; border-radius:8px; border:1px solid #334155;">
                   <div style="display:flex; justify-content:space-between; align-items:center;">
                     <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin:0; font-weight:800; font-size:12px; color:#facc15;">
-                      <input id="chkHeadlineBox" type="checkbox" style="width:17px; height:17px; accent-color:#facc15; cursor:pointer;">
-                      <span>📦 ഹെഡ്‌ലൈൻ ബോക്സ് (Headline Box)</span>
+                      <input id="chkUnifiedBox" type="checkbox" style="width:17px; height:17px; accent-color:#facc15; cursor:pointer;">
+                      <span id="lblUnifiedBoxTitle">📦 ടെക്സ്റ്റ് ബോക്സ് (Text Box)</span>
                     </label>
-                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer; margin:0; font-weight:700; font-size:11px; color:#cbd5e1;">
-                      <input id="chkVerticalBar" type="checkbox" checked style="width:15px; height:15px; accent-color:#ef4444; cursor:pointer;">
+                    <label id="lblUnifiedVerticalBarWrap" style="display:flex; align-items:center; gap:6px; cursor:pointer; margin:0; font-weight:700; font-size:11px; color:#cbd5e1;">
+                      <input id="chkUnifiedVerticalBar" type="checkbox" checked style="width:15px; height:15px; accent-color:#ef4444; cursor:pointer;">
                       <span>▎ റെഡ് ബാർ (Vertical Bar)</span>
                     </label>
                   </div>
 
-                  <div id="headlineBoxSettings" style="display:none; margin-top:8px; padding-top:8px; border-top:1px dashed #475569;">
+                  <div id="unifiedBoxSettings" style="display:none; margin-top:8px; padding-top:8px; border-top:1px dashed #475569;">
                     <!-- Standard Box Styles -->
                     <div style="margin-bottom:8px;">
-                      <span style="font-size:10px; color:#94a3b8; font-weight:700; display:block; margin-bottom:4px;">സ്റ്റാൻഡേർഡ് ബോക്സ് സ്റ്റൈൽ:</span>
+                      <span style="font-size:10px; color:#94a3b8; font-weight:700; display:block; margin-bottom:4px;">സ്റ്റാൻഡേർഡ് ബോക്സ് സ്റ്റൈൽ (Preset):</span>
                       <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:5px;">
-                        <button type="button" class="btn-tactile btn-h-box-style active" data-style="solid" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#0284c7; border:none; color:#fff; cursor:pointer;">⏹️ സോളിഡ്</button>
-                        <button type="button" class="btn-tactile btn-h-box-style" data-style="rounded" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">🔲 റൗണ്ടഡ്</button>
-                        <button type="button" class="btn-tactile btn-h-box-style" data-style="accent" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">▎ ആക്സെന്റ്</button>
-                        <button type="button" class="btn-tactile btn-h-box-style" data-style="glass" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">🪟 ഗ്ലാസ്</button>
-                        <button type="button" class="btn-tactile btn-h-box-style" data-style="cutout" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">📐 കട്ടൗട്ട്</button>
+                        <button type="button" class="btn-tactile btn-uni-box-style active" data-style="solid" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#0284c7; border:none; color:#fff; cursor:pointer;">⏹️ സോളിഡ്</button>
+                        <button type="button" class="btn-tactile btn-uni-box-style" data-style="rounded" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">🔲 റൗണ്ടഡ്</button>
+                        <button type="button" class="btn-tactile btn-uni-box-style" data-style="accent" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">▎ ആക്സെന്റ്</button>
+                        <button type="button" class="btn-tactile btn-uni-box-style" data-style="glass" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">🪟 ഗ്ലാസ്</button>
+                        <button type="button" class="btn-tactile btn-uni-box-style" data-style="cutout" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">📐 കട്ടൗട്ട്</button>
                       </div>
                     </div>
 
@@ -3382,145 +3433,19 @@
                     <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
                       <div style="display:flex; align-items:center; gap:6px;">
                         <span style="font-size:10.5px; color:#38bdf8; font-weight:700;">🎨 ബോക്സ് കളർ:</span>
-                        <input id="colBoxBg" type="color" value="#061129" style="width:24px; height:24px; border:none; border-radius:4px; cursor:pointer; background:none;">
+                        <input id="colUnifiedBoxBg" type="color" value="#061129" style="width:24px; height:24px; border:none; border-radius:4px; cursor:pointer; background:none;">
                       </div>
                       <div style="display:flex; gap:5px; flex-wrap:wrap;">
-                        <button type="button" class="btn-box-col-pill" data-col="#061129" style="width:20px; height:20px; border-radius:50%; background:#061129; border:2px solid #38bdf8; cursor:pointer;" title="Navy Blue"></button>
-                        <button type="button" class="btn-box-col-pill" data-col="#000000" style="width:20px; height:20px; border-radius:50%; background:#000000; border:1px solid #64748b; cursor:pointer;" title="Pure Black"></button>
-                        <button type="button" class="btn-box-col-pill" data-col="#7f1d1d" style="width:20px; height:20px; border-radius:50%; background:#7f1d1d; border:1px solid #64748b; cursor:pointer;" title="Crimson Red"></button>
-                        <button type="button" class="btn-box-col-pill" data-col="#064e3b" style="width:20px; height:20px; border-radius:50%; background:#064e3b; border:1px solid #64748b; cursor:pointer;" title="Forest Green"></button>
-                        <button type="button" class="btn-box-col-pill" data-col="#4c0519" style="width:20px; height:20px; border-radius:50%; background:#4c0519; border:1px solid #64748b; cursor:pointer;" title="Deep Maroon"></button>
-                        <button type="button" class="btn-box-col-pill" data-col="#1e1b4b" style="width:20px; height:20px; border-radius:50%; background:#1e1b4b; border:1px solid #64748b; cursor:pointer;" title="Midnight"></button>
+                        <button type="button" class="btn-uni-box-col-pill" data-col="#061129" style="width:20px; height:20px; border-radius:50%; background:#061129; border:2px solid #38bdf8; cursor:pointer;" title="Navy Blue"></button>
+                        <button type="button" class="btn-uni-box-col-pill" data-col="#000000" style="width:20px; height:20px; border-radius:50%; background:#000000; border:1px solid #64748b; cursor:pointer;" title="Pure Black"></button>
+                        <button type="button" class="btn-uni-box-col-pill" data-col="#7f1d1d" style="width:20px; height:20px; border-radius:50%; background:#7f1d1d; border:1px solid #64748b; cursor:pointer;" title="Crimson Red"></button>
+                        <button type="button" class="btn-uni-box-col-pill" data-col="#064e3b" style="width:20px; height:20px; border-radius:50%; background:#064e3b; border:1px solid #64748b; cursor:pointer;" title="Forest Green"></button>
+                        <button type="button" class="btn-uni-box-col-pill" data-col="#4c0519" style="width:20px; height:20px; border-radius:50%; background:#4c0519; border:1px solid #64748b; cursor:pointer;" title="Deep Maroon"></button>
+                        <button type="button" class="btn-uni-box-col-pill" data-col="#1e1b4b" style="width:20px; height:20px; border-radius:50%; background:#1e1b4b; border:1px solid #64748b; cursor:pointer;" title="Midnight"></button>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <!-- Optional Punchline / Decision Tag (like 'തീരുമാനം ഉടൻ') -->
-              <div class="form-group" style="margin-top:6px; margin-bottom:10px;">
-                <label class="form-label" style="font-size:11px; color:#94a3b8; margin-bottom:2px;">🎯 Punchline / Decision Tag (Optional - e.g. തീരുമാനം ഉടൻ):</label>
-                <input id="txtPunchline" type="text" class="form-input" placeholder="തീരുമാനം ഉടൻ" style="font-size:13px; font-weight:700; padding:6px 10px;">
-              </div>
-
-              <!-- ✍️ Summary Input & Styling Controls -->
-              <div class="form-group">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-                  <label class="form-label" style="margin-bottom:0;font-weight:800;color:#f8fafc;">📝 Summary / Subline (ഉള്ളടക്കം):</label>
-                  <button id="btnVoiceSummary" type="button" class="btn-voice-mic" title="സംസാരിച്ച് മലയാളത്തിൽ ടൈപ്പ് ചെയ്യുക">🎙️ സംസാരിക്കുക</button>
-                  <span style="font-size:10px;color:#38bdf8;font-weight:600;">↵ Enter for Next Line</span>
-                </div>
-                <textarea id="txtSummary" class="form-textarea" rows="3" placeholder="Type news summary here. Press Enter for next line...">മന്ത്രി മുഹമ്മദ് റിയാസ് ഉദ്ഘാടനം ചെയ്തു; ആദ്യഘട്ടത്തിൽ 10 കോടിയുടെ സമഗ്ര വികസനം നടപ്പാക്കും.</textarea>
-              </div>
-
-              <!-- 🎛️ Summary Typography & Standard Box Toolbar -->
-              <div style="margin-top:6px; margin-bottom:12px; padding:12px; background:#0f172a; border:1px solid #334155; border-radius:12px;">
-                <div style="font-size:11px; font-weight:800; color:#38bdf8; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">
-                  <span>🔤 Summary Typography &amp; Box</span>
-                </div>
-
-                <!-- Font & Line-Height Row -->
-                <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:8px; margin-bottom:8px;">
-                  <div>
-                    <label style="font-size:10px; color:#94a3b8; display:block; margin-bottom:3px;">ഫോണ്ട് (Font):</label>
-                    <select id="selSummaryFont" class="form-input" style="padding:6px 8px; font-size:11.5px; font-weight:700; background:#1e293b; border:1px solid #475569; color:#fff;">
-                      <option value="Anek Malayalam" selected>🅰️ Anek Malayalam</option>
-                      <option value="Baloo Chettan 2">💥 Baloo Chettan 2</option>
-                      <option value="Gayathri">📰 Gayathri (Editorial)</option>
-                      <option value="Manjari">✒️ Manjari (Curved)</option>
-                      <option value="Noto Sans Malayalam">🌐 Noto Sans</option>
-                    </select>
-                  </div>
-                  <div>
-                    <div style="display:flex; justify-content:space-between; font-size:10px; color:#94a3b8; margin-bottom:3px;">
-                      <span>വരി അകലം (Line Space):</span>
-                      <span id="summaryLineHeightVal" style="color:#38bdf8; font-weight:700;">1.35x</span>
-                    </div>
-                    <input id="summaryLineHeightRange" type="range" min="1.0" max="2.4" step="0.05" value="1.35" style="width:100%; accent-color:#38bdf8; cursor:pointer;">
-                  </div>
-                </div>
-
-                <!-- Alignment & Underline Row -->
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px; padding-bottom:8px; border-bottom:1px dashed #334155;">
-                  <!-- Alignment Pills -->
-                  <div style="display:flex; align-items:center; gap:4px;">
-                    <span style="font-size:10px; color:#94a3b8;">അലൈൻമെന്റ്:</span>
-                    <button type="button" class="btn-tactile btn-s-align active" data-align="left" style="padding:4px 8px; font-size:11px; background:#0284c7; color:#fff; border-radius:5px; border:none; cursor:pointer;" title="Left Align">⬅️ ഇടത്</button>
-                    <button type="button" class="btn-tactile btn-s-align" data-align="center" style="padding:4px 8px; font-size:11px; background:#1e293b; color:#cbd5e1; border-radius:5px; border:1px solid #475569; cursor:pointer;" title="Center Align">↔️ മധ്യത്തിൽ</button>
-                    <button type="button" class="btn-tactile btn-s-align" data-align="right" style="padding:4px 8px; font-size:11px; background:#1e293b; color:#cbd5e1; border-radius:5px; border:1px solid #475569; cursor:pointer;" title="Right Align">➡️ വലത്</button>
-                  </div>
-
-                  <!-- Underline Toggle -->
-                  <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:11px; font-weight:700; color:#cbd5e1; margin:0;">
-                    <input id="chkSummaryUnderline" type="checkbox" style="width:15px; height:15px; accent-color:#38bdf8; cursor:pointer;">
-                    <span><u>U</u> അടിവര (Underline)</span>
-                  </label>
-                </div>
-
-                <!-- Text Color Selection Row -->
-                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
-                  <div style="display:flex; align-items:center; gap:6px;">
-                    <span style="font-size:11px; color:#e2e8f0; font-weight:700;">🎨 ടെക്സ്റ്റ് കളർ:</span>
-                    <input id="colSummaryColor" type="color" value="#e2e8f0" style="width:26px; height:26px; border:none; border-radius:4px; cursor:pointer; background:none;">
-                  </div>
-                  <div style="display:flex; gap:5px; flex-wrap:wrap;">
-                    <button type="button" class="btn-sum-col-pill" data-col="#e2e8f0" style="width:22px; height:22px; border-radius:50%; background:#e2e8f0; border:2px solid #38bdf8; cursor:pointer;" title="Light Slate"></button>
-                    <button type="button" class="btn-sum-col-pill" data-col="#ffffff" style="width:22px; height:22px; border-radius:50%; background:#ffffff; border:1px solid #64748b; cursor:pointer;" title="Pure White"></button>
-                    <button type="button" class="btn-sum-col-pill" data-col="#fef08a" style="width:22px; height:22px; border-radius:50%; background:#fef08a; border:1px solid #64748b; cursor:pointer;" title="Pale Yellow"></button>
-                    <button type="button" class="btn-sum-col-pill" data-col="#bae6fd" style="width:22px; height:22px; border-radius:50%; background:#bae6fd; border:1px solid #64748b; cursor:pointer;" title="Cyan Tint"></button>
-                    <button type="button" class="btn-sum-col-pill" data-col="#bbf7d0" style="width:22px; height:22px; border-radius:50%; background:#bbf7d0; border:1px solid #64748b; cursor:pointer;" title="Soft Mint"></button>
-                    <button type="button" class="btn-sum-col-pill" data-col="#fed7aa" style="width:22px; height:22px; border-radius:50%; background:#fed7aa; border:1px solid #64748b; cursor:pointer;" title="Peach"></button>
-                  </div>
-                </div>
-
-                <!-- 📦 Standard Summary Box Toggle & Settings -->
-                <div style="background:rgba(30, 41, 59, 0.7); padding:10px; border-radius:8px; border:1px solid #334155;">
-                  <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin:0; font-weight:800; font-size:12px; color:#facc15;">
-                      <input id="chkSummaryBox" type="checkbox" style="width:17px; height:17px; accent-color:#facc15; cursor:pointer;">
-                      <span>📦 സമ്മറി ബോക്സ് (Summary Box)</span>
-                    </label>
-                  </div>
-
-                  <div id="summaryBoxSettings" style="display:none; margin-top:8px; padding-top:8px; border-top:1px dashed #475569;">
-                    <!-- Standard Box Styles -->
-                    <div style="margin-bottom:8px;">
-                      <span style="font-size:10px; color:#94a3b8; font-weight:700; display:block; margin-bottom:4px;">സ്റ്റാൻഡേർഡ് ബോക്സ് സ്റ്റൈൽ:</span>
-                      <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:5px;">
-                        <button type="button" class="btn-tactile btn-s-box-style active" data-style="solid" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#0284c7; border:none; color:#fff; cursor:pointer;">⏹️ സോളിഡ്</button>
-                        <button type="button" class="btn-tactile btn-s-box-style" data-style="rounded" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">🔲 റൗണ്ടഡ്</button>
-                        <button type="button" class="btn-tactile btn-s-box-style" data-style="accent" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">▎ ആക്സെന്റ്</button>
-                        <button type="button" class="btn-tactile btn-s-box-style" data-style="glass" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">🪟 ഗ്ലാസ്</button>
-                        <button type="button" class="btn-tactile btn-s-box-style" data-style="cutout" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">📐 കട്ടൗട്ട്</button>
-                      </div>
-                    </div>
-
-                    <!-- Box Color -->
-                    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
-                      <div style="display:flex; align-items:center; gap:6px;">
-                        <span style="font-size:10.5px; color:#38bdf8; font-weight:700;">🎨 ബോക്സ് കളർ:</span>
-                        <input id="colSummaryBoxBg" type="color" value="#061129" style="width:24px; height:24px; border:none; border-radius:4px; cursor:pointer; background:none;">
-                      </div>
-                      <div style="display:flex; gap:5px; flex-wrap:wrap;">
-                        <button type="button" class="btn-s-box-col-pill" data-col="#061129" style="width:20px; height:20px; border-radius:50%; background:#061129; border:2px solid #38bdf8; cursor:pointer;" title="Navy Blue"></button>
-                        <button type="button" class="btn-s-box-col-pill" data-col="#000000" style="width:20px; height:20px; border-radius:50%; background:#000000; border:1px solid #64748b; cursor:pointer;" title="Pure Black"></button>
-                        <button type="button" class="btn-s-box-col-pill" data-col="#7f1d1d" style="width:20px; height:20px; border-radius:50%; background:#7f1d1d; border:1px solid #64748b; cursor:pointer;" title="Crimson Red"></button>
-                        <button type="button" class="btn-s-box-col-pill" data-col="#064e3b" style="width:20px; height:20px; border-radius:50%; background:#064e3b; border:1px solid #64748b; cursor:pointer;" title="Forest Green"></button>
-                        <button type="button" class="btn-s-box-col-pill" data-col="#4c0519" style="width:20px; height:20px; border-radius:50%; background:#4c0519; border:1px solid #64748b; cursor:pointer;" title="Deep Maroon"></button>
-                        <button type="button" class="btn-s-box-col-pill" data-col="#1e1b4b" style="width:20px; height:20px; border-radius:50%; background:#1e1b4b; border:1px solid #64748b; cursor:pointer;" title="Midnight"></button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Reporter -->
-              <div class="form-group">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-                  <label class="form-label" style="margin-bottom:0;">Reporter Byline:</label>
-                  <button id="btnSyncMyByline" type="button" class="btn-tactile" style="font-size:10px;padding:2px 8px;background:rgba(56,189,248,0.18);border:1px solid #38bdf8;color:#38bdf8;border-radius:5px;cursor:pointer;">👤 Use My Name</button>
-                </div>
-                <input id="txtReporter" type="text" class="form-input" value="വിഷൻ ന്യൂസ് കോഴിക്കോട്">
               </div>
 
             </div>
@@ -5464,222 +5389,339 @@
     }
 
     // ==========================================
-    // HEADLINE TYPOGRAPHY & BOX STYLING HANDLERS
+    // 🔤 UNIFIED BROADCAST TEXT & BOX STUDIO HANDLERS
     // ==========================================
-    const chkHeadlineBox = document.getElementById('chkHeadlineBox');
-    const chkVerticalBar = document.getElementById('chkVerticalBar');
-    const headlineBoxSettings = document.getElementById('headlineBoxSettings');
-    const colBoxBg = document.getElementById('colBoxBg');
-    const colHeadlineColor = document.getElementById('colHeadlineColor');
+    let activeTextTarget = 'headline'; // 'headline' | 'summary'
+
+    const btnTargetHeadline = document.getElementById('btnTargetHeadline');
+    const btnTargetSummary = document.getElementById('btnTargetSummary');
+    const selUnifiedFont = document.getElementById('selUnifiedFont');
+    const unifiedLineHeightRange = document.getElementById('unifiedLineHeightRange');
+    const unifiedLineHeightVal = document.getElementById('unifiedLineHeightVal');
+    const chkUnifiedUnderline = document.getElementById('chkUnifiedUnderline');
+    const btnUnifiedFontDecr = document.getElementById('btnUnifiedFontDecr');
+    const btnUnifiedFontIncr = document.getElementById('btnUnifiedFontIncr');
+    const lblUnifiedFontSize = document.getElementById('lblUnifiedFontSize');
+    const colUnifiedTextColor = document.getElementById('colUnifiedTextColor');
+    const lblUnifiedColorTarget = document.getElementById('lblUnifiedColorTarget');
+    const chkUnifiedBox = document.getElementById('chkUnifiedBox');
+    const lblUnifiedBoxTitle = document.getElementById('lblUnifiedBoxTitle');
+    const unifiedBoxSettings = document.getElementById('unifiedBoxSettings');
+    const lblUnifiedVerticalBarWrap = document.getElementById('lblUnifiedVerticalBarWrap');
+    const chkUnifiedVerticalBar = document.getElementById('chkUnifiedVerticalBar');
+    const colUnifiedBoxBg = document.getElementById('colUnifiedBoxBg');
     const txtPunchline = document.getElementById('txtPunchline');
-    const chkHeadlineUnderline = document.getElementById('chkHeadlineUnderline');
-    const headlineLineHeightRange = document.getElementById('headlineLineHeightRange');
-    const headlineLineHeightVal = document.getElementById('headlineLineHeightVal');
 
-    if (headlineLineHeightRange) {
-      headlineLineHeightRange.addEventListener('input', (e) => {
-        headlineLineHeightMult = parseFloat(e.target.value);
-        if (headlineLineHeightVal) headlineLineHeightVal.textContent = headlineLineHeightMult.toFixed(2) + 'x';
-        renderCard();
-      });
-    }
+    function syncUnifiedToolbarUI() {
+      const isHl = (activeTextTarget === 'headline');
 
-    document.querySelectorAll('.btn-h-align').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.btn-h-align').forEach(b => {
+      // 1. Update target toggle tabs
+      if (btnTargetHeadline && btnTargetSummary) {
+        if (isHl) {
+          btnTargetHeadline.classList.add('active');
+          btnTargetHeadline.style.background = '#0284c7';
+          btnTargetHeadline.style.color = '#ffffff';
+          btnTargetSummary.classList.remove('active');
+          btnTargetSummary.style.background = 'transparent';
+          btnTargetSummary.style.color = '#94a3b8';
+        } else {
+          btnTargetSummary.classList.add('active');
+          btnTargetSummary.style.background = '#0284c7';
+          btnTargetSummary.style.color = '#ffffff';
+          btnTargetHeadline.classList.remove('active');
+          btnTargetHeadline.style.background = 'transparent';
+          btnTargetHeadline.style.color = '#94a3b8';
+        }
+      }
+
+      // 2. Font dropdown
+      if (selUnifiedFont) {
+        selUnifiedFont.value = isHl ? (selectedHeadlineFont || 'Anek Malayalam') : (selectedSummaryFont || 'Anek Malayalam');
+      }
+
+      // 3. Line Spacing
+      const lh = isHl ? (headlineLineHeightMult || 1.25) : (summaryLineHeightMult || 1.35);
+      if (unifiedLineHeightRange) unifiedLineHeightRange.value = lh;
+      if (unifiedLineHeightVal) unifiedLineHeightVal.textContent = lh.toFixed(2) + 'x';
+
+      // 4. Alignment pills
+      const curAlign = isHl ? (headlineAlign || 'left') : (summaryAlign || 'left');
+      document.querySelectorAll('.btn-unified-align').forEach(function(b) {
+        if (b.dataset.align === curAlign) {
+          b.classList.add('active');
+          b.style.background = '#0284c7';
+          b.style.color = '#ffffff';
+          b.style.border = 'none';
+        } else {
           b.classList.remove('active');
           b.style.background = '#1e293b';
           b.style.color = '#cbd5e1';
           b.style.border = '1px solid #475569';
-        });
-        btn.classList.add('active');
-        btn.style.background = '#0284c7';
-        btn.style.color = '#ffffff';
-        btn.style.border = 'none';
-        headlineAlign = btn.dataset.align || 'left';
-        renderCard();
+        }
       });
-    });
 
-    if (chkHeadlineUnderline) {
-      chkHeadlineUnderline.addEventListener('change', () => {
-        headlineUnderline = chkHeadlineUnderline.checked;
-        renderCard();
-      });
-    }
+      // 5. Underline checkbox
+      if (chkUnifiedUnderline) {
+        chkUnifiedUnderline.checked = isHl ? !!headlineUnderline : !!summaryUnderline;
+      }
 
-    if (colHeadlineColor) {
-      colHeadlineColor.addEventListener('input', (e) => {
-        headlineTextColor = e.target.value;
-        renderCard();
-      });
-    }
-    document.querySelectorAll('.btn-hl-col-pill').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.btn-hl-col-pill').forEach(b => b.style.borderColor = '#64748b');
-        btn.style.borderColor = '#38bdf8';
-        headlineTextColor = btn.dataset.col || '#ffffff';
-        if (colHeadlineColor) colHeadlineColor.value = headlineTextColor;
-        renderCard();
-      });
-    });
+      // 6. Font Size display
+      if (lblUnifiedFontSize) {
+        lblUnifiedFontSize.textContent = (isHl ? headlineFontSize : summaryFontSize) + 'px';
+      }
 
-    if (chkHeadlineBox) {
-      chkHeadlineBox.addEventListener('change', () => {
-        enableHeadlineBox = chkHeadlineBox.checked;
-        if (headlineBoxSettings) headlineBoxSettings.style.display = enableHeadlineBox ? 'block' : 'none';
-        renderCard();
+      // 7. Text color & color pills
+      const curColor = isHl ? (headlineTextColor || '#ffffff') : (summaryTextColor || '#e2e8f0');
+      if (colUnifiedTextColor) colUnifiedTextColor.value = curColor;
+      if (lblUnifiedColorTarget) {
+        lblUnifiedColorTarget.textContent = isHl ? '🎨 ഹെഡ്‌ലൈൻ കളർ:' : '🎨 സമ്മറി കളർ:';
+      }
+      document.querySelectorAll('.btn-uni-col-pill').forEach(function(b) {
+        b.style.borderColor = (b.dataset.col.toLowerCase() === curColor.toLowerCase()) ? '#38bdf8' : '#64748b';
       });
-    }
 
-    if (chkVerticalBar) {
-      chkVerticalBar.addEventListener('change', () => {
-        showVerticalAccentBar = chkVerticalBar.checked;
-        renderCard();
-      });
-    }
+      // 8. Box toggle & settings
+      const isBoxOn = isHl ? !!enableHeadlineBox : !!enableSummaryBox;
+      if (chkUnifiedBox) chkUnifiedBox.checked = isBoxOn;
+      if (unifiedBoxSettings) unifiedBoxSettings.style.display = isBoxOn ? 'block' : 'none';
+      if (lblUnifiedBoxTitle) {
+        lblUnifiedBoxTitle.textContent = isHl ? '📦 ഹെഡ്‌ലൈൻ ബോക്സ് (Headline Box)' : '📦 സമ്മറി ബോക്സ് (Summary Box)';
+      }
 
-    document.querySelectorAll('.btn-h-box-style').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.btn-h-box-style').forEach(b => {
+      // 9. Vertical Bar (only visible for headline)
+      if (lblUnifiedVerticalBarWrap) {
+        lblUnifiedVerticalBarWrap.style.display = isHl ? 'flex' : 'none';
+      }
+      if (chkUnifiedVerticalBar) {
+        chkUnifiedVerticalBar.checked = (showVerticalAccentBar !== false);
+      }
+
+      // 10. Box style preset buttons
+      const curBoxStyle = isHl ? (headlineBoxStyle || 'solid') : (summaryBoxStyle || 'solid');
+      document.querySelectorAll('.btn-uni-box-style').forEach(function(b) {
+        if (b.dataset.style === curBoxStyle) {
+          b.classList.add('active');
+          b.style.background = '#0284c7';
+          b.style.color = '#ffffff';
+          b.style.border = 'none';
+        } else {
           b.classList.remove('active');
           b.style.background = '#1e293b';
           b.style.color = '#cbd5e1';
           b.style.border = '1px solid #475569';
-        });
-        btn.classList.add('active');
-        btn.style.background = '#0284c7';
-        btn.style.color = '#ffffff';
-        btn.style.border = 'none';
-        headlineBoxStyle = btn.dataset.style || 'solid';
-        renderCard();
+        }
       });
-    });
 
-    if (colBoxBg) {
-      colBoxBg.addEventListener('input', (e) => {
-        headlineBoxBgColor = e.target.value;
+      // 11. Box background color & color pills
+      const curBoxBg = isHl ? (headlineBoxBgColor || '#061129') : (summaryBoxBgColor || '#061129');
+      if (colUnifiedBoxBg) colUnifiedBoxBg.value = curBoxBg;
+      document.querySelectorAll('.btn-uni-box-col-pill').forEach(function(b) {
+        b.style.borderColor = (b.dataset.col.toLowerCase() === curBoxBg.toLowerCase()) ? '#38bdf8' : '#64748b';
+      });
+    }
+
+    // Target switcher clicks
+    if (btnTargetHeadline) {
+      btnTargetHeadline.addEventListener('click', function() {
+        activeTextTarget = 'headline';
+        syncUnifiedToolbarUI();
+      });
+    }
+    if (btnTargetSummary) {
+      btnTargetSummary.addEventListener('click', function() {
+        activeTextTarget = 'summary';
+        syncUnifiedToolbarUI();
+      });
+    }
+
+    // Font selection change
+    if (selUnifiedFont) {
+      selUnifiedFont.addEventListener('change', function(e) {
+        const val = e.target.value || 'Anek Malayalam';
+        if (activeTextTarget === 'headline') {
+          selectedHeadlineFont = val;
+          if (document.fonts && document.fonts.load) {
+            document.fonts.load('800 48px "' + val + '"').then(renderCard).catch(renderCard);
+          } else {
+            renderCard();
+          }
+        } else {
+          selectedSummaryFont = val;
+          if (document.fonts && document.fonts.load) {
+            document.fonts.load('500 28px "' + val + '"').then(renderCard).catch(renderCard);
+          } else {
+            renderCard();
+          }
+        }
+      });
+    }
+
+    // Line height slider
+    if (unifiedLineHeightRange) {
+      unifiedLineHeightRange.addEventListener('input', function(e) {
+        const val = parseFloat(e.target.value);
+        if (unifiedLineHeightVal) unifiedLineHeightVal.textContent = val.toFixed(2) + 'x';
+        if (activeTextTarget === 'headline') {
+          headlineLineHeightMult = val;
+        } else {
+          summaryLineHeightMult = val;
+        }
         renderCard();
       });
     }
-    document.querySelectorAll('.btn-box-col-pill').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.btn-box-col-pill').forEach(b => b.style.borderColor = '#64748b');
-        btn.style.borderColor = '#38bdf8';
-        headlineBoxBgColor = btn.dataset.col || '#061129';
-        if (colBoxBg) colBoxBg.value = headlineBoxBgColor;
+
+    // Alignment pills
+    document.querySelectorAll('.btn-unified-align').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const align = btn.dataset.align || 'left';
+        if (activeTextTarget === 'headline') {
+          headlineAlign = align;
+        } else {
+          summaryAlign = align;
+        }
+        syncUnifiedToolbarUI();
         renderCard();
       });
     });
 
+    // Underline checkbox
+    if (chkUnifiedUnderline) {
+      chkUnifiedUnderline.addEventListener('change', function() {
+        if (activeTextTarget === 'headline') {
+          headlineUnderline = chkUnifiedUnderline.checked;
+        } else {
+          summaryUnderline = chkUnifiedUnderline.checked;
+        }
+        renderCard();
+      });
+    }
+
+    // Font size A- / A+ buttons
+    if (btnUnifiedFontDecr) {
+      btnUnifiedFontDecr.addEventListener('click', function() {
+        if (activeTextTarget === 'headline') {
+          headlineFontSize = Math.max(24, headlineFontSize - 4);
+          if (lblUnifiedFontSize) lblUnifiedFontSize.textContent = headlineFontSize + 'px';
+        } else {
+          summaryFontSize = Math.max(14, summaryFontSize - 2);
+          if (lblUnifiedFontSize) lblUnifiedFontSize.textContent = summaryFontSize + 'px';
+        }
+        renderCard();
+      });
+    }
+    if (btnUnifiedFontIncr) {
+      btnUnifiedFontIncr.addEventListener('click', function() {
+        if (activeTextTarget === 'headline') {
+          headlineFontSize = Math.min(92, headlineFontSize + 4);
+          if (lblUnifiedFontSize) lblUnifiedFontSize.textContent = headlineFontSize + 'px';
+        } else {
+          summaryFontSize = Math.min(52, summaryFontSize + 2);
+          if (lblUnifiedFontSize) lblUnifiedFontSize.textContent = summaryFontSize + 'px';
+        }
+        renderCard();
+      });
+    }
+
+    // Text color picker
+    if (colUnifiedTextColor) {
+      colUnifiedTextColor.addEventListener('input', function(e) {
+        if (activeTextTarget === 'headline') {
+          headlineTextColor = e.target.value;
+        } else {
+          summaryTextColor = e.target.value;
+        }
+        syncUnifiedToolbarUI();
+        renderCard();
+      });
+    }
+
+    // Text color quick pills
+    document.querySelectorAll('.btn-uni-col-pill').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const col = btn.dataset.col;
+        if (activeTextTarget === 'headline') {
+          headlineTextColor = col;
+        } else {
+          summaryTextColor = col;
+        }
+        syncUnifiedToolbarUI();
+        renderCard();
+      });
+    });
+
+    // Box toggle
+    if (chkUnifiedBox) {
+      chkUnifiedBox.addEventListener('change', function() {
+        const on = chkUnifiedBox.checked;
+        if (activeTextTarget === 'headline') {
+          enableHeadlineBox = on;
+        } else {
+          enableSummaryBox = on;
+        }
+        if (unifiedBoxSettings) unifiedBoxSettings.style.display = on ? 'block' : 'none';
+        renderCard();
+      });
+    }
+
+    // Vertical bar toggle (headline)
+    if (chkUnifiedVerticalBar) {
+      chkUnifiedVerticalBar.addEventListener('change', function() {
+        showVerticalAccentBar = chkUnifiedVerticalBar.checked;
+        renderCard();
+      });
+    }
+
+    // Box style preset buttons
+    document.querySelectorAll('.btn-uni-box-style').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const style = btn.dataset.style || 'solid';
+        if (activeTextTarget === 'headline') {
+          headlineBoxStyle = style;
+        } else {
+          summaryBoxStyle = style;
+        }
+        syncUnifiedToolbarUI();
+        renderCard();
+      });
+    });
+
+    // Box background color picker
+    if (colUnifiedBoxBg) {
+      colUnifiedBoxBg.addEventListener('input', function(e) {
+        if (activeTextTarget === 'headline') {
+          headlineBoxBgColor = e.target.value;
+        } else {
+          summaryBoxBgColor = e.target.value;
+        }
+        syncUnifiedToolbarUI();
+        renderCard();
+      });
+    }
+
+    // Box background color quick pills
+    document.querySelectorAll('.btn-uni-box-col-pill').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const col = btn.dataset.col;
+        if (activeTextTarget === 'headline') {
+          headlineBoxBgColor = col;
+        } else {
+          summaryBoxBgColor = col;
+        }
+        syncUnifiedToolbarUI();
+        renderCard();
+      });
+    });
+
+    // Punchline input
     if (txtPunchline) {
-      txtPunchline.addEventListener('input', () => {
+      txtPunchline.addEventListener('input', function() {
         punchlineText = txtPunchline.value.trim();
         renderCard();
       });
     }
 
-    // ==========================================
-    // SUMMARY TYPOGRAPHY & BOX STYLING HANDLERS
-    // ==========================================
-    const selSummaryFont = document.getElementById('selSummaryFont');
-    const chkSummaryUnderline = document.getElementById('chkSummaryUnderline');
-    const colSummaryColor = document.getElementById('colSummaryColor');
-    const chkSummaryBox = document.getElementById('chkSummaryBox');
-    const summaryBoxSettings = document.getElementById('summaryBoxSettings');
-    const colSummaryBoxBg = document.getElementById('colSummaryBoxBg');
-
-    if (selSummaryFont) {
-      selSummaryFont.addEventListener('change', (e) => {
-        selectedSummaryFont = e.target.value || 'Anek Malayalam';
-        if (document.fonts && document.fonts.load) {
-          document.fonts.load('500 28px "' + selectedSummaryFont + '"').then(() => renderCard()).catch(() => renderCard());
-        } else {
-          renderCard();
-        }
-      });
-    }
-
-    document.querySelectorAll('.btn-s-align').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.btn-s-align').forEach(b => {
-          b.classList.remove('active');
-          b.style.background = '#1e293b';
-          b.style.color = '#cbd5e1';
-          b.style.border = '1px solid #475569';
-        });
-        btn.classList.add('active');
-        btn.style.background = '#0284c7';
-        btn.style.color = '#ffffff';
-        btn.style.border = 'none';
-        summaryAlign = btn.dataset.align || 'left';
-        renderCard();
-      });
-    });
-
-    if (chkSummaryUnderline) {
-      chkSummaryUnderline.addEventListener('change', () => {
-        summaryUnderline = chkSummaryUnderline.checked;
-        renderCard();
-      });
-    }
-
-    if (colSummaryColor) {
-      colSummaryColor.addEventListener('input', (e) => {
-        summaryTextColor = e.target.value;
-        renderCard();
-      });
-    }
-    document.querySelectorAll('.btn-sum-col-pill').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.btn-sum-col-pill').forEach(b => b.style.borderColor = '#64748b');
-        btn.style.borderColor = '#38bdf8';
-        summaryTextColor = btn.dataset.col || '#e2e8f0';
-        if (colSummaryColor) colSummaryColor.value = summaryTextColor;
-        renderCard();
-      });
-    });
-
-    if (chkSummaryBox) {
-      chkSummaryBox.addEventListener('change', () => {
-        enableSummaryBox = chkSummaryBox.checked;
-        if (summaryBoxSettings) summaryBoxSettings.style.display = enableSummaryBox ? 'block' : 'none';
-        renderCard();
-      });
-    }
-
-    document.querySelectorAll('.btn-s-box-style').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.btn-s-box-style').forEach(b => {
-          b.classList.remove('active');
-          b.style.background = '#1e293b';
-          b.style.color = '#cbd5e1';
-          b.style.border = '1px solid #475569';
-        });
-        btn.classList.add('active');
-        btn.style.background = '#0284c7';
-        btn.style.color = '#ffffff';
-        btn.style.border = 'none';
-        summaryBoxStyle = btn.dataset.style || 'solid';
-        renderCard();
-      });
-    });
-
-    if (colSummaryBoxBg) {
-      colSummaryBoxBg.addEventListener('input', (e) => {
-        summaryBoxBgColor = e.target.value;
-        renderCard();
-      });
-    }
-    document.querySelectorAll('.btn-s-box-col-pill').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.btn-s-box-col-pill').forEach(b => b.style.borderColor = '#64748b');
-        btn.style.borderColor = '#38bdf8';
-        summaryBoxBgColor = btn.dataset.col || '#061129';
-        if (colSummaryBoxBg) colSummaryBoxBg.value = summaryBoxBgColor;
-        renderCard();
-      });
-    });
+    // Initial sync of the unified toolbar
+    syncUnifiedToolbarUI();
 
     zoomRange.addEventListener('input', (e) => {
       photoZoom = parseFloat(e.target.value);
@@ -7828,6 +7870,7 @@
 
   const DEFAULT_USERS = [
     { uid: 'u-admin', name: 'Channel Admin', username: 'admin', email: 'admin@kozhikodevision.app', password: '123456', role: 'admin', location: 'കോഴിക്കോട്', active: true, deleted: false },
+    { uid: 'u-ranju', name: 'Ranju (Chief Editor)', username: 'ranju', email: 'ranju@kozhikodevision.app', password: '123456', role: 'admin', location: 'കോഴിക്കോട്', active: true, deleted: false },
     { uid: 'u-reporter1', name: 'Arun (Reporter)', username: 'reporter1', email: 'reporter1@kozhikodevision.app', password: '1234', role: 'user', location: 'കോഴിക്കോട്', active: true, deleted: false },
     { uid: 'u-reporter2', name: 'Rahul (Reporter)', username: 'reporter2', email: 'reporter2@kozhikodevision.app', password: '1234', role: 'user', location: 'വടകര', active: true, deleted: false },
     { uid: 'u-staff', name: 'Staff Desk', username: 'staff', email: 'staff@kozhikodevision.app', password: '123456', role: 'user', location: 'കൊയിലാണ്ടി', active: true, deleted: false }
@@ -7836,9 +7879,13 @@
   let inMemoryUsers = null;
 
   // COMPREHENSIVE SCANNER: Finds all users from ALL storage layers and keys ever created
-  function getDemoUsers() {
-    if (inMemoryUsers && inMemoryUsers.length > 0) return inMemoryUsers;
-    if (window.KV_GLOBAL_USERS && window.KV_GLOBAL_USERS.length > 0) {
+  function getDemoUsers(forceReload) {
+    if (forceReload) {
+      inMemoryUsers = null;
+      window.KV_GLOBAL_USERS = null;
+    }
+    if (!forceReload && inMemoryUsers && inMemoryUsers.length > 0) return inMemoryUsers;
+    if (!forceReload && window.KV_GLOBAL_USERS && window.KV_GLOBAL_USERS.length > 0) {
       inMemoryUsers = window.KV_GLOBAL_USERS;
       return inMemoryUsers;
     }
@@ -7853,14 +7900,15 @@
       if (!key) return;
 
       if (!userMap[key]) {
-        userMap[key] = Object.assign({}, u, { uid: uid });
+        userMap[key] = Object.assign({}, u, { uid: uid, location: u.location || 'കോഴിക്കോട്' });
       } else {
-        // Merge preserving existing password, custom name, photo, status
+        // Merge preserving existing password, custom name, photo, status, location
         const cur = userMap[key];
         userMap[key] = Object.assign({}, cur, u, {
           photo: u.photo || cur.photo || '',
           password: u.password || cur.password || '1234',
           name: (u.name && u.name !== 'User') ? u.name : (cur.name || u.name),
+          location: u.location || cur.location || 'കോഴിക്കോട്',
           deleted: (u.deleted !== undefined) ? u.deleted : (cur.deleted || false),
           active: (u.active !== undefined) ? u.active : (cur.active !== false)
         });
@@ -8414,8 +8462,8 @@
     }
   }
 
-  function refreshDemoAdminList() {
-    const users = getDemoUsers();
+  function refreshDemoAdminList(forceReload) {
+    const users = getDemoUsers(forceReload);
     renderQuickUserPills();
 
     renderUsersList(users, {
@@ -8587,11 +8635,14 @@
       if (inpNewLocation) inpNewLocation.value = '';
       if (selNewRole) selNewRole.value = 'user';
 
-      refreshDemoAdminList();
+      refreshDemoAdminList(true);
       renderQuickUserPills();
       showAdminStatus('\u{1F389} User account "' + name + '" created successfully!', false);
       if (typeof showToast === 'function') {
         showToast('\u2728 Added: ' + name);
+      }
+      if (typeof switchAdminTab === 'function') {
+        switchAdminTab('users');
       }
     } catch (err) {
       console.error('Error adding user:', err);
@@ -8803,10 +8854,55 @@
   // =========================================================================
   // 6. ADMIN CONSOLE, FIREBASE CONFIG & LIVE STREAM HANDLERS
   // =========================================================================
+  // Admin Navigation Tabs Switching Functionality
+  function switchAdminTab(targetTab) {
+    const tabBtns = document.querySelectorAll('.kv-admin-tab-nav');
+    const panes = {
+      users: document.getElementById('kvAdminPaneUsers'),
+      adduser: document.getElementById('kvAdminPaneAddUser'),
+      settings: document.getElementById('kvAdminPaneSettings')
+    };
+
+    tabBtns.forEach(function(btn) {
+      if (btn.getAttribute('data-tab') === targetTab) {
+        btn.classList.add('active');
+        btn.style.background = '#0284c7';
+        btn.style.color = '#ffffff';
+      } else {
+        btn.classList.remove('active');
+        btn.style.background = 'transparent';
+        btn.style.color = '#94a3b8';
+      }
+    });
+
+    Object.keys(panes).forEach(function(key) {
+      const pane = panes[key];
+      if (pane) {
+        if (key === targetTab) {
+          pane.classList.remove('kv-hidden');
+        } else {
+          pane.classList.add('kv-hidden');
+        }
+      }
+    });
+
+    if (targetTab === 'users') {
+      refreshDemoAdminList(true);
+    }
+  }
+
+  document.querySelectorAll('.kv-admin-tab-nav').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      const tab = btn.getAttribute('data-tab');
+      if (tab) switchAdminTab(tab);
+    });
+  });
+
   if (btnOpenAdmin) {
     btnOpenAdmin.addEventListener('click', function() {
       adminModal.classList.remove('kv-hidden');
-      refreshDemoAdminList();
+      switchAdminTab('users');
+      refreshDemoAdminList(true);
       renderQuickUserPills();
     });
   }
