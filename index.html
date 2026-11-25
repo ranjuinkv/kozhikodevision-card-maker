@@ -9,8 +9,8 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    // === AUTO-UPDATE & PWA ENGINE v8.1.1 ===
-    var KV_LATEST_BUILD = '8.1.1';
+    // === AUTO-UPDATE & PWA ENGINE v8.2.0 ===
+    var KV_LATEST_BUILD = '8.2.0';
     (function() {
       try {
         if ('serviceWorker' in navigator) {
@@ -3545,7 +3545,7 @@ html, body {
         </div>
         <div style="margin-top:6px;margin-bottom:8px;">
           <span class="kv-live-tag" style="font-size:10px;padding:3px 10px;border-radius:14px;background:rgba(239,68,68,0.25);border:1px solid #ef4444;color:#fca5a5;display:inline-flex;align-items:center;gap:6px;">
-            <span class="kv-live-dot"></span>🔴 V8.1.0 LIVE: BROADCAST STUDIO
+            <span class="kv-live-dot"></span>🔴 V8.2.0 LIVE: BROADCAST STUDIO
           </span>
         </div>
         <div class="kv-auth-title">KOZHIKODE VISION NEWS</div>
@@ -3676,7 +3676,7 @@ html, body {
   <div id="kvAdminModal" class="kv-hidden">
     <div class="kv-admin-dialog">
       <div class="kv-admin-header">
-        <h3>👑 Admin Console &amp; User Control <span style="background:#0284c7;color:#fff;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;">v7.0</span></h3>
+        <h3>👑 Admin Console &amp; User Control <span style="background:#0284c7;color:#fff;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;">v8.2.0</span></h3>
         <button id="kvBtnCloseAdmin" type="button" class="kv-admin-close">✕</button>
       </div>
       <div class="kv-admin-body">
@@ -3852,6 +3852,26 @@ html, body {
               </button>
             </div>
 
+                      <!-- Firebase Security Rules Guidance Note -->
+          <div style="background:#0f172a; border:1px solid #334155; border-radius:8px; padding:10px 12px; margin-top:12px; margin-bottom:12px;">
+            <div style="font-size:11.5px; font-weight:800; color:#38bdf8; margin-bottom:4px;">🛡️ Firebase Firestore Security Rules:</div>
+            <div style="font-size:10.5px; color:#94a3b8; line-height:1.4;">
+              To protect registered channel accounts and settings from public access, paste these rules in Firebase Console:
+            </div>
+            <pre style="background:#020617; border:1px solid #1e293b; border-radius:6px; padding:8px; font-size:10px; color:#38bdf8; margin:6px 0; overflow-x:auto;">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /kv_users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.token.role == 'admin';
+    }
+    match /kv_settings/{settingId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.role == 'admin';
+    }
+  }
+}</pre>
+          </div>
             <div id="kvCloudConfigBox" class="kv-hidden" style="margin-top:10px; padding-top:10px; border-top:1px dashed rgba(255,255,255,0.12);">
               <label style="font-size:11px; color:#cbd5e1; display:block; margin-bottom:4px;">
                 Paste your Firebase Web App Config code:
@@ -4056,7 +4076,7 @@ html, body {
         <span id="lblEditLockIcon">🔒</span>
         <span id="lblEditLockText">എഡിറ്റ് ലോക്ക്: ഓൺ</span>
       </button>
-      <span class="edit-lock-hint" id="editLockHint">സ്ക്രോളിംഗ് സുരക്ഷിതമാണ് (വാല്യൂ മാറില്ല)</span>
+      <span class="edit-lock-hint" id="editLockHint">സ്ക്രോളിംഗ് സുരക്ഷിതമാണ്</span>
     </div>
 
       <!-- Hidden Step Indicator Compatibility -->
@@ -4298,20 +4318,32 @@ html, body {
                     <button id="btnBlurTypePixel" type="button" class="btn-tactile pill-btn" style="font-size:10px; padding:3px 9px; background:#1e293b; color:#cbd5e1; border-radius:5px; border:1px solid #475569; cursor:pointer;">⬛ Mosaic / Pixel</button>
                   </div>
                 </div>
-                <div class="slider-item">
-                  <div class="slider-head">
-                    <span style="font-size:10.5px; color:#cbd5e1;">↔ Mask Position X:</span>
-                    <span id="blurMaskXVal" class="val" style="color:#38bdf8; font-weight:700;">50%</span>
+                                <!-- Advanced Privacy Blur Mask Stepper (- / +) -->
+                <details class="advanced-settings-box" style="margin-top:6px; margin-bottom:6px;">
+                  <summary>⚙️ അഡ്വാൻസ്ഡ് മാസ്ക് പൊസിഷൻ സ്റ്റെപ്പർ (- / +)</summary>
+                  <div class="stepper-group" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+                    <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                      <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↔ X Pos:</span>
+                      <div style="display:flex; align-items:center; gap:4px;">
+                        <button type="button" class="btn-stepper" id="btnBlurMaskXDecr" title="Move Left">-</button>
+                        <span id="blurMaskXValBadge" style="font-size:11px; font-weight:800; color:#f59e0b; min-width:32px; text-align:center;">50%</span>
+                        <button type="button" class="btn-stepper" id="btnBlurMaskXIncr" title="Move Right">+</button>
+                      </div>
+                    </div>
+                    <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                      <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↕ Y Pos:</span>
+                      <div style="display:flex; align-items:center; gap:4px;">
+                        <button type="button" class="btn-stepper" id="btnBlurMaskYDecr" title="Move Up">-</button>
+                        <span id="blurMaskYValBadge" style="font-size:11px; font-weight:800; color:#f59e0b; min-width:32px; text-align:center;">40%</span>
+                        <button type="button" class="btn-stepper" id="btnBlurMaskYIncr" title="Move Down">+</button>
+                      </div>
+                    </div>
                   </div>
-                  <input id="blurMaskXRange" type="range" min="0" max="100" step="1" value="50" style="width:100%; accent-color:#f59e0b; cursor:pointer;">
-                </div>
-                <div class="slider-item">
-                  <div class="slider-head">
-                    <span style="font-size:10.5px; color:#cbd5e1;">↕ Mask Position Y:</span>
-                    <span id="blurMaskYVal" class="val" style="color:#38bdf8; font-weight:700;">40%</span>
-                  </div>
-                  <input id="blurMaskYRange" type="range" min="0" max="100" step="1" value="40" style="width:100%; accent-color:#f59e0b; cursor:pointer;">
-                </div>
+                  <input id="blurMaskXRange" type="range" min="0" max="100" step="1" value="50" style="display:none;">
+                  <input id="blurMaskYRange" type="range" min="0" max="100" step="1" value="40" style="display:none;">
+                  <span id="blurMaskXVal" style="display:none;">50%</span>
+                  <span id="blurMaskYVal" style="display:none;">40%</span>
+                </details>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
                   <div class="slider-item">
                     <div class="slider-head">
@@ -4494,23 +4526,32 @@ html, body {
                 <input id="videoZoomRange" type="range" min="0.5" max="3" step="0.05" value="1" style="width:100%;accent-color:#8b5cf6;cursor:pointer;">
               </div>
 
-              <!-- Vertical Position (Y) -->
-              <div class="slider-item">
-                <div class="slider-head">
-                  <span style="font-size:11px;color:#e2e8f0;">↕ Position Y (Up/Down):</span>
-                  <span id="videoPosYVal" class="val" style="color:#38bdf8;font-weight:700;">0px</span>
+                            <!-- Advanced Video Position Stepper (- / +) -->
+              <details class="advanced-settings-box" style="margin-top:8px;">
+                <summary>⚙️ അഡ്വാൻസ്ഡ് പൊസിഷൻ സ്റ്റെപ്പർ (- / +)</summary>
+                <div class="stepper-group" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+                  <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↔ X Pos:</span>
+                    <div style="display:flex; align-items:center; gap:4px;">
+                      <button type="button" class="btn-stepper" id="btnVideoXDecr" title="Move Left">-</button>
+                      <span id="videoXValBadge" style="font-size:11px; font-weight:800; color:#38bdf8; min-width:32px; text-align:center;">0</span>
+                      <button type="button" class="btn-stepper" id="btnVideoXIncr" title="Move Right">+</button>
+                    </div>
+                  </div>
+                  <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↕ Y Pos:</span>
+                    <div style="display:flex; align-items:center; gap:4px;">
+                      <button type="button" class="btn-stepper" id="btnVideoYDecr" title="Move Up">-</button>
+                      <span id="videoYValBadge" style="font-size:11px; font-weight:800; color:#38bdf8; min-width:32px; text-align:center;">0</span>
+                      <button type="button" class="btn-stepper" id="btnVideoYIncr" title="Move Down">+</button>
+                    </div>
+                  </div>
                 </div>
-                <input id="videoPosYRange" type="range" min="-600" max="600" step="5" value="0" style="width:100%;accent-color:#8b5cf6;cursor:pointer;">
-              </div>
-
-              <!-- Horizontal Position (X) -->
-              <div class="slider-item">
-                <div class="slider-head">
-                  <span style="font-size:11px;color:#e2e8f0;">↔ Position X (Left/Right):</span>
-                  <span id="videoPosXVal" class="val" style="color:#38bdf8;font-weight:700;">0px</span>
-                </div>
-                <input id="videoPosXRange" type="range" min="-600" max="600" step="5" value="0" style="width:100%;accent-color:#8b5cf6;cursor:pointer;">
-              </div>
+                <input id="videoPosXRange" type="range" min="-600" max="600" step="5" value="0" style="display:none;">
+                <input id="videoPosYRange" type="range" min="-600" max="600" step="5" value="0" style="display:none;">
+                <span id="videoPosXVal" style="display:none;">0px</span>
+                <span id="videoPosYVal" style="display:none;">0px</span>
+              </details>
 
               <!-- D-Pad Directional Controls -->
               <div class="dpad-container" style="margin-top:8px;">
@@ -4636,8 +4677,8 @@ html, body {
       </div>
     </div>
 
-    <!-- Row 2: Line Spacing (Left) & Position Y / Fine Adjust (Right) -->
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; align-items:center;">
+        <!-- Row 2: Line Spacing (Left) & Active Text Mode (Right) -->
+    <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:8px; align-items:center;">
       <div>
         <div style="display:flex; justify-content:space-between; font-size:10px; color:#94a3b8; font-weight:700; margin-bottom:3px;">
           <span>Line Spacing:</span>
@@ -4646,11 +4687,12 @@ html, body {
         <input id="unifiedLineHeightRange" type="range" min="1.0" max="2.3" step="0.05" value="1.25" style="width:100%; accent-color:#38bdf8; cursor:pointer;">
       </div>
       <div>
-        <div style="display:flex; justify-content:space-between; font-size:10px; color:#94a3b8; font-weight:700; margin-bottom:3px;">
-          <span>Position Y:</span>
-          <span id="summaryYVal" style="color:#38bdf8; font-weight:800;">0px</span>
+        <div style="font-size:10px; color:#94a3b8; font-weight:700; margin-bottom:3px;">
+          <span>Active Target:</span>
         </div>
-        <input id="summaryYRange" type="range" min="-120" max="120" step="2" value="0" style="width:100%; accent-color:#38bdf8; cursor:pointer;">
+        <div id="lblActiveTargetBadge" style="background:#1e293b; border:1px solid #475569; border-radius:6px; padding:6px 8px; font-size:11px; font-weight:800; color:#38bdf8; text-align:center;">
+          📰 Headline
+        </div>
       </div>
     </div>
 
@@ -4719,128 +4761,7 @@ html, body {
   </div>
 </div>
 
-<!-- 🎛️ UNIFIED BROADCAST TEXT & BOX STUDIO TOOLBAR (Headline & Summary Switcher) -->
-              <div id="unifiedTextToolbar" style="display:none !important;">
-                <!-- Target Switcher Tabs: Headline vs Summary -->
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #334155;">
-                  <span style="font-size:11px; font-weight:800; color:#38bdf8; text-transform:uppercase; letter-spacing:0.5px;">🔤 Text &amp; Box Studio</span>
-                  <div style="display:flex; background:#1e293b; padding:3px; border-radius:8px; border:1px solid #475569; gap:3px;">
-                    <button id="btnTargetHeadline" type="button" class="btn-tactile active" style="padding:4px 10px; font-size:11px; font-weight:800; border-radius:6px; border:none; background:#0284c7; color:#fff; cursor:pointer;">
-                      📰 Main Headline
-                    </button>
-                    <button id="btnTargetSummary" type="button" class="btn-tactile" style="padding:4px 10px; font-size:11px; font-weight:800; border-radius:6px; border:none; background:transparent; color:#94a3b8; cursor:pointer;">
-                      📝 News Summary
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Font & Line-Height Row -->
-                <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:8px; margin-bottom:8px;">
-                  <div>
-                    <label style="font-size:10px; color:#94a3b8; display:block; margin-bottom:3px;">Font Family:</label>
-                    <select id="selUnifiedFont" class="form-input" style="padding:6px 8px; font-size:11.5px; font-weight:700; background:#1e293b; border:1px solid #475569; color:#fff;">
-                      <option value="Anek Malayalam" selected>🅰️ Anek Malayalam</option>
-                      <option value="Baloo Chettan 2">💥 Baloo Chettan 2 (Heavy)</option>
-                      <option value="Gayathri">📰 Gayathri (Editorial)</option>
-                      <option value="Manjari">✒️ Manjari (Curved)</option>
-                      <option value="Noto Sans Malayalam">🌐 Noto Sans</option>
-                    </select>
-                  </div>
-                  <div>
-                    <div style="display:flex; justify-content:space-between; font-size:10px; color:#94a3b8; margin-bottom:3px;">
-                      <span>Line Spacing:</span>
-                      <span id="unifiedLineHeightVal" style="color:#38bdf8; font-weight:700;">1.25x</span>
-                    </div>
-                    <input id="unifiedLineHeightRange" type="range" min="1.0" max="2.4" step="0.05" value="1.25" style="width:100%; accent-color:#38bdf8; cursor:pointer;">
-                  </div>
-                </div>
-
-                <!-- Alignment, Size (A-/A+), and Underline Row -->
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px; padding-bottom:8px; border-bottom:1px dashed #334155;">
-                  <!-- Alignment Pills -->
-                  <div style="display:flex; align-items:center; gap:4px;">
-                    <span style="font-size:10px; color:#94a3b8;">Alignment:</span>
-                    <button type="button" class="btn-tactile btn-unified-align active" data-align="left" style="padding:4px 8px; font-size:11px; background:#0284c7; color:#fff; border-radius:5px; border:none; cursor:pointer;" title="Left Align">⬅️ Left</button>
-                    <button type="button" class="btn-tactile btn-unified-align" data-align="center" style="padding:4px 8px; font-size:11px; background:#1e293b; color:#cbd5e1; border-radius:5px; border:1px solid #475569; cursor:pointer;" title="Center Align">↔️ Center</button>
-                    <button type="button" class="btn-tactile btn-unified-align" data-align="right" style="padding:4px 8px; font-size:11px; background:#1e293b; color:#cbd5e1; border-radius:5px; border:1px solid #475569; cursor:pointer;" title="Right Align">➡️ Right</button>
-                  </div>
-
-                  <!-- Underline Toggle & Font Size Quick Adjust -->
-                  <div style="display:flex; align-items:center; gap:10px;">
-                    <label style="display:flex; align-items:center; gap:5px; cursor:pointer; font-size:11px; font-weight:700; color:#cbd5e1; margin:0;">
-                      <input id="chkUnifiedUnderline" type="checkbox" style="width:15px; height:15px; accent-color:#38bdf8; cursor:pointer;">
-                      <span><u>U</u> Underline</span>
-                    </label>
-                    <div style="display:flex; align-items:center; gap:3px;">
-                      <button id="btnUnifiedFontDecr" type="button" class="btn-tactile" style="font-size:10px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; padding:2px 7px; border-radius:4px;" title="Decrease Font Size">A-</button>
-                      <span id="lblUnifiedFontSize" style="font-size:10.5px; color:#38bdf8; font-weight:700; min-width:28px; text-align:center;">56px</span>
-                      <button id="btnUnifiedFontIncr" type="button" class="btn-tactile" style="font-size:10px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; padding:2px 7px; border-radius:4px;" title="Increase Font Size">A+</button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Text Color Selection Row -->
-                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
-                  <div style="display:flex; align-items:center; gap:6px;">
-                    <span id="lblUnifiedColorTarget" style="font-size:11px; color:#facc15; font-weight:700;">🎨 Text Color:</span>
-                    <input id="colUnifiedTextColor" type="color" value="#ffffff" style="width:26px; height:26px; border:none; border-radius:4px; cursor:pointer; background:none;">
-                  </div>
-                  <div style="display:flex; gap:5px; flex-wrap:wrap;">
-                    <button type="button" class="btn-uni-col-pill" data-col="#ffffff" style="width:22px; height:22px; border-radius:50%; background:#ffffff; border:2px solid #38bdf8; cursor:pointer;" title="Pure White"></button>
-                    <button type="button" class="btn-uni-col-pill" data-col="#ffd700" style="width:22px; height:22px; border-radius:50%; background:#ffd700; border:1px solid #64748b; cursor:pointer;" title="Golden Yellow"></button>
-                    <button type="button" class="btn-uni-col-pill" data-col="#38bdf8" style="width:22px; height:22px; border-radius:50%; background:#38bdf8; border:1px solid #64748b; cursor:pointer;" title="Sky Blue"></button>
-                    <button type="button" class="btn-uni-col-pill" data-col="#a3e635" style="width:22px; height:22px; border-radius:50%; background:#a3e635; border:1px solid #64748b; cursor:pointer;" title="Lime Green"></button>
-                    <button type="button" class="btn-uni-col-pill" data-col="#fb923c" style="width:22px; height:22px; border-radius:50%; background:#fb923c; border:1px solid #64748b; cursor:pointer;" title="Warm Orange"></button>
-                    <button type="button" class="btn-uni-col-pill" data-col="#fca5a5" style="width:22px; height:22px; border-radius:50%; background:#fca5a5; border:1px solid #64748b; cursor:pointer;" title="Light Coral"></button>
-                  </div>
-                </div>
-
-                <!-- 📦 Standard Box Toggle & Settings -->
-                <div style="background:rgba(30, 41, 59, 0.7); padding:10px; border-radius:8px; border:1px solid #334155;">
-                  <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin:0; font-weight:800; font-size:12px; color:#facc15;">
-                      <input id="chkUnifiedBox" type="checkbox" style="width:17px; height:17px; accent-color:#facc15; cursor:pointer;">
-                      <span id="lblUnifiedBoxTitle">📦 Text Box Background</span>
-                    </label>
-                    <label id="lblUnifiedVerticalBarWrap" style="display:flex; align-items:center; gap:6px; cursor:pointer; margin:0; font-weight:700; font-size:11px; color:#cbd5e1;">
-                      <input id="chkUnifiedVerticalBar" type="checkbox" checked style="width:15px; height:15px; accent-color:#ef4444; cursor:pointer;">
-                      <span>▎ Vertical Accent Bar</span>
-                    </label>
-                  </div>
-
-                  <div id="unifiedBoxSettings" style="display:none; margin-top:8px; padding-top:8px; border-top:1px dashed #475569;">
-                    <!-- Standard Box Styles -->
-                    <div style="margin-bottom:8px;">
-                      <span style="font-size:10px; color:#94a3b8; font-weight:700; display:block; margin-bottom:4px;">Box Style Preset:</span>
-                      <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:5px;">
-                        <button type="button" class="btn-tactile btn-uni-box-style active" data-style="solid" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#0284c7; border:none; color:#fff; cursor:pointer;">⏹️ Solid</button>
-                        <button type="button" class="btn-tactile btn-uni-box-style" data-style="rounded" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">🔲 Rounded</button>
-                        <button type="button" class="btn-tactile btn-uni-box-style" data-style="accent" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">▎ Accent</button>
-                        <button type="button" class="btn-tactile btn-uni-box-style" data-style="glass" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">🪟 Glass</button>
-                        <button type="button" class="btn-tactile btn-uni-box-style" data-style="cutout" style="padding:5px 2px; font-size:10px; font-weight:700; border-radius:6px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; cursor:pointer;">📐 Cutout</button>
-                      </div>
-                    </div>
-
-                    <!-- Box Color -->
-                    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
-                      <div style="display:flex; align-items:center; gap:6px;">
-                        <span style="font-size:10.5px; color:#38bdf8; font-weight:700;">🎨 Box Color:</span>
-                        <input id="colUnifiedBoxBg" type="color" value="#061129" style="width:24px; height:24px; border:none; border-radius:4px; cursor:pointer; background:none;">
-                      </div>
-                      <div style="display:flex; gap:5px; flex-wrap:wrap;">
-                        <button type="button" class="btn-uni-box-col-pill" data-col="#061129" style="width:20px; height:20px; border-radius:50%; background:#061129; border:2px solid #38bdf8; cursor:pointer;" title="Navy Blue"></button>
-                        <button type="button" class="btn-uni-box-col-pill" data-col="#000000" style="width:20px; height:20px; border-radius:50%; background:#000000; border:1px solid #64748b; cursor:pointer;" title="Pure Black"></button>
-                        <button type="button" class="btn-uni-box-col-pill" data-col="#7f1d1d" style="width:20px; height:20px; border-radius:50%; background:#7f1d1d; border:1px solid #64748b; cursor:pointer;" title="Crimson Red"></button>
-                        <button type="button" class="btn-uni-box-col-pill" data-col="#064e3b" style="width:20px; height:20px; border-radius:50%; background:#064e3b; border:1px solid #64748b; cursor:pointer;" title="Forest Green"></button>
-                        <button type="button" class="btn-uni-box-col-pill" data-col="#4c0519" style="width:20px; height:20px; border-radius:50%; background:#4c0519; border:1px solid #64748b; cursor:pointer;" title="Deep Maroon"></button>
-                        <button type="button" class="btn-uni-box-col-pill" data-col="#1e1b4b" style="width:20px; height:20px; border-radius:50%; background:#1e1b4b; border:1px solid #64748b; cursor:pointer;" title="Midnight"></button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            <!-- OBITUARY MODE DETAILS -->
+<!-- OBITUARY MODE DETAILS -->
             <div id="obitDetailsWrap" style="display:none; flex-direction:column; gap:8px;">
               <span class="col-title">🕯️ Obituary Details</span>
 
@@ -4972,12 +4893,7 @@ html, body {
                 </div>
               </div>
 
-              <!-- Quick Move Text Buttons -->
-              <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-top:2px;">
-                <button id="btnTextUp" type="button" class="btn-tactile dpad-pill">▲ Up</button>
-                <button id="btnTextDown" type="button" class="btn-tactile dpad-pill">▼ Down</button>
-                <button id="btnTextReset" type="button" class="btn-tactile dpad-pill center">🎯 Reset</button>
-              </div>
+              
             </div>
 
             <!-- OBITUARY SHAPE, SIZE & POSITION CONTROLS (As Requested!) -->
@@ -5002,49 +4918,54 @@ html, body {
                 <input id="frameScaleRange" type="range" min="50" max="160" step="5" value="100">
               </div>
 
-              <!-- FRAME POSITION Y & X (As Requested!) -->
-              <div class="slider-item">
-                <div class="slider-head">
-                  <span>↕ Frame Position Y:</span>
-                  <span id="frameYVal" class="val">0px</span>
+                            <!-- Advanced Frame & Details Steppers (- / +) -->
+              <details class="advanced-settings-box" style="margin-top:8px;">
+                <summary>⚙️ അഡ്വാൻസ്ഡ് ഫ്രെയിം &amp; പൊസിഷൻ സ്റ്റെപ്പർ (- / +)</summary>
+                <div class="stepper-group" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+                  <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↔ Frame X:</span>
+                    <div style="display:flex; align-items:center; gap:4px;">
+                      <button type="button" class="btn-stepper" id="btnFrameXDecr" title="Move Left">-</button>
+                      <span id="frameXValBadge" style="font-size:11px; font-weight:800; color:#38bdf8; min-width:32px; text-align:center;">0</span>
+                      <button type="button" class="btn-stepper" id="btnFrameXIncr" title="Move Right">+</button>
+                    </div>
+                  </div>
+                  <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↕ Frame Y:</span>
+                    <div style="display:flex; align-items:center; gap:4px;">
+                      <button type="button" class="btn-stepper" id="btnFrameYDecr" title="Move Up">-</button>
+                      <span id="frameYValBadge" style="font-size:11px; font-weight:800; color:#38bdf8; min-width:32px; text-align:center;">0</span>
+                      <button type="button" class="btn-stepper" id="btnFrameYIncr" title="Move Down">+</button>
+                    </div>
+                  </div>
                 </div>
-                <input id="frameYRange" type="range" min="-180" max="180" step="2" value="0">
-              </div>
-
-              <div class="slider-item">
-                <div class="slider-head">
-                  <span>↔ Frame Position X:</span>
-                  <span id="frameXVal" class="val">0px</span>
+                <div class="stepper-group" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+                  <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↕ Title Y:</span>
+                    <div style="display:flex; align-items:center; gap:4px;">
+                      <button type="button" class="btn-stepper" id="btnTributeYDecr" title="Move Up">-</button>
+                      <span id="tributeYValBadge" style="font-size:11px; font-weight:800; color:#facc15; min-width:32px; text-align:center;">0</span>
+                      <button type="button" class="btn-stepper" id="btnTributeYIncr" title="Move Down">+</button>
+                    </div>
+                  </div>
+                  <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↕ Details Y:</span>
+                    <div style="display:flex; align-items:center; gap:4px;">
+                      <button type="button" class="btn-stepper" id="btnObitDetailsYDecr" title="Move Up">-</button>
+                      <span id="obitDetailsYValBadge" style="font-size:11px; font-weight:800; color:#facc15; min-width:32px; text-align:center;">0</span>
+                      <button type="button" class="btn-stepper" id="btnObitDetailsYIncr" title="Move Down">+</button>
+                    </div>
+                  </div>
                 </div>
-                <input id="frameXRange" type="range" min="-180" max="180" step="2" value="0">
-              </div>
-
-              <!-- D-Pad for Frame Position -->
-              <div class="dpad-container">
-                <button id="btnFrameLeft" type="button" class="btn-tactile dpad-pill">◀</button>
-                <button id="btnFrameDown" type="button" class="btn-tactile dpad-pill">▼</button>
-                <button id="btnFrameCenter" type="button" class="btn-tactile dpad-pill center">🎯 Center Frame</button>
-                <button id="btnFrameUp" type="button" class="btn-tactile dpad-pill">▲</button>
-                <button id="btnFrameRight" type="button" class="btn-tactile dpad-pill">▶</button>
-              </div>
-
-              <!-- Movable Tribute Title Position (Y & X) -->
-              <div class="slider-item" style="margin-top:4px;">
-                <div class="slider-head">
-                  <span>↕ Title Position Y:</span>
-                  <span id="tributeYVal" class="val">0px</span>
-                </div>
-                <input id="tributeYRange" type="range" min="-180" max="180" step="2" value="0">
-              </div>
-
-              <!-- Deceased Details Y Position -->
-              <div class="slider-item">
-                <div class="slider-head">
-                  <span>↕ Details Position Y:</span>
-                  <span id="obitDetailsYVal" class="val">0px</span>
-                </div>
-                <input id="obitDetailsYRange" type="range" min="-150" max="150" step="2" value="0">
-              </div>
+                <input id="frameXRange" type="range" min="-180" max="180" step="2" value="0" style="display:none;">
+                <input id="frameYRange" type="range" min="-180" max="180" step="2" value="0" style="display:none;">
+                <span id="frameXVal" style="display:none;">0px</span>
+                <span id="frameYVal" style="display:none;">0px</span>
+                <input id="tributeYRange" type="range" min="-180" max="180" step="2" value="0" style="display:none;">
+                <span id="tributeYVal" style="display:none;">0px</span>
+                <input id="obitDetailsYRange" type="range" min="-150" max="150" step="2" value="0" style="display:none;">
+                <span id="obitDetailsYVal" style="display:none;">0px</span>
+              </details>
 
             </div>
 
@@ -5111,21 +5032,32 @@ html, body {
               <input id="logoScaleRange" type="range" min="50" max="200" step="5" value="100">
             </div>
 
-            <div class="slider-item">
-              <div class="slider-head">
-                <span>↔ Position X:</span>
-                <span id="logoXVal" class="val">0px</span>
+                        <!-- Advanced Logo Position Stepper (- / +) -->
+            <details class="advanced-settings-box" style="margin-top:8px;">
+              <summary>⚙️ അഡ്വാൻസ്ഡ് ലോഗോ പൊസിഷൻ സ്റ്റെപ്പർ (- / +)</summary>
+              <div class="stepper-group" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+                <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↔ X Pos:</span>
+                  <div style="display:flex; align-items:center; gap:4px;">
+                    <button type="button" class="btn-stepper" id="btnLogoXDecr" title="Move Left">-</button>
+                    <span id="logoXValBadge" style="font-size:11px; font-weight:800; color:#38bdf8; min-width:32px; text-align:center;">0</span>
+                    <button type="button" class="btn-stepper" id="btnLogoXIncr" title="Move Right">+</button>
+                  </div>
+                </div>
+                <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↕ Y Pos:</span>
+                  <div style="display:flex; align-items:center; gap:4px;">
+                    <button type="button" class="btn-stepper" id="btnLogoYDecr" title="Move Up">-</button>
+                    <span id="logoYValBadge" style="font-size:11px; font-weight:800; color:#38bdf8; min-width:32px; text-align:center;">0</span>
+                    <button type="button" class="btn-stepper" id="btnLogoYIncr" title="Move Down">+</button>
+                  </div>
+                </div>
               </div>
-              <input id="logoXRange" type="range" min="-300" max="300" step="5" value="0">
-            </div>
-
-            <div class="slider-item">
-              <div class="slider-head">
-                <span>↕ Position Y:</span>
-                <span id="logoYVal" class="val">0px</span>
-              </div>
-              <input id="logoYRange" type="range" min="-300" max="300" step="5" value="0">
-            </div>
+              <input id="logoXRange" type="range" min="-300" max="300" step="5" value="0" style="display:none;">
+              <input id="logoYRange" type="range" min="-300" max="300" step="5" value="0" style="display:none;">
+              <span id="logoXVal" style="display:none;">0px</span>
+              <span id="logoYVal" style="display:none;">0px</span>
+            </details>
 
             <!-- D-Pad Directional Row for Logo -->
             <div class="dpad-container">
@@ -5173,13 +5105,22 @@ html, body {
               </div>
             </div>
 
-            <div class="slider-item">
-              <div class="slider-head">
-                <span>↕ Position Y:</span>
-                <span id="wmYVal" class="val">0px</span>
+                        <!-- Advanced Watermark Position Stepper (- / +) -->
+            <details class="advanced-settings-box" style="margin-top:8px;">
+              <summary>⚙️ അഡ്വാൻസ്ഡ് വാട്ടർമാർക്ക് പൊസിഷൻ സ്റ്റെപ്പർ (- / +)</summary>
+              <div class="stepper-group" style="display:flex; gap:8px; margin-top:8px;">
+                <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center; flex:1;">
+                  <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↕ Watermark Y:</span>
+                  <div style="display:flex; align-items:center; gap:4px;">
+                    <button type="button" class="btn-stepper" id="btnWmYDecr" title="Move Up">-</button>
+                    <span id="wmYValBadge" style="font-size:11px; font-weight:800; color:#38bdf8; min-width:32px; text-align:center;">0</span>
+                    <button type="button" class="btn-stepper" id="btnWmYIncr" title="Move Down">+</button>
+                  </div>
+                </div>
               </div>
-              <input id="wmYRange" type="range" min="-300" max="300" step="10" value="0">
-            </div>
+              <input id="wmYRange" type="range" min="-300" max="300" step="10" value="0" style="display:none;">
+              <span id="wmYVal" style="display:none;">0px</span>
+            </details>
 
             <!-- Social Media Handle (Admin Protected) -->
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px; margin-bottom:4px;">
@@ -5280,7 +5221,7 @@ html, body {
         <span class="dev-badge-icon">⚡</span>
         <span class="dev-title">Developed by <span class="dev-name">Ranju</span></span>
         <span class="dev-sep">•</span>
-        <span class="dev-studio-tag">Kozhikode Vision Official Media Studio v8.1.0</span>
+        <span class="dev-studio-tag">Kozhikode Vision Official Media Studio v8.2.0</span>
       </div>
       <div class="dev-copyright-text">
         &copy; 2026 Kozhikode Vision News &amp; Entertainment. All Rights Reserved.
@@ -7454,8 +7395,16 @@ html, body {
 
     if (headlineSizeRange) {
       headlineSizeRange.addEventListener('input', (e) => {
-        headlineFontSize = parseInt(e.target.value, 10);
-        if (headlineSizeVal) headlineSizeVal.textContent = headlineFontSize + 'px';
+        const val = parseInt(e.target.value, 10);
+        if (activeTextTarget === 'summary') {
+          summaryFontSize = val;
+          if (headlineSizeVal) headlineSizeVal.textContent = val + 'px';
+          const sumRange = document.getElementById('summarySizeRange');
+          if (sumRange) sumRange.value = val;
+        } else {
+          headlineFontSize = val;
+          if (headlineSizeVal) headlineSizeVal.textContent = val + 'px';
+        }
         renderCard();
       });
     }
@@ -7946,7 +7895,7 @@ html, body {
       const jpgData = canvas.toDataURL('image/jpeg', 0.94);
       const w = window.open('');
       if (w) {
-        w.document.write('<title>Kozhikode Vision Card</title><body style="margin:0; background:#060913; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; padding:10px;"><img src="' + jpgData + '" style="max-width:100%; height:auto; box-shadow:0 8px 30px rgba(0,0,0,0.8); border-radius:12px;"><p style="color:#6ee7b7; font-family:sans-serif; margin-top:14px; font-weight:bold;">📱 സേവ് ചെയ്യാൻ ചിത്രത്തിൽ അമർത്തിപ്പിടിക്കുക (Long Press)</p></body>');
+        w.document.write('<title>Kozhikode Vision Card</title><body style="margin:0; background:#060913; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; padding:10px;"><img src="' + jpgData + '" style="max-width:100%; height:auto; box-shadow:0 8px 30px rgba(0,0,0,0.8); border-radius:12px;"><p style="color:#6ee7b7; font-family:sans-serif; margin-top:14px; font-weight:bold;">📱 സേവ് ചെയ്യാൻ ചിത്രത്തിൽ അമർത്തിപ്പിടിക്കുക</p></body>');
       } else {
         alert('Please allow popups to open card in new tab');
       }
@@ -8025,11 +7974,32 @@ html, body {
     });
 
     document.getElementById('btnShareFB').addEventListener('click', () => {
-      downloadHDCard();
-      showToast('Card downloaded. Opening Facebook...');
-      setTimeout(() => {
-        window.open('https://www.facebook.com/', '_blank');
-      }, 600);
+      canvas.toBlob(async blob => {
+        if (!blob) {
+          downloadHDCard();
+          window.open('https://www.facebook.com/', '_blank');
+          return;
+        }
+        const file = new File([blob], 'kozhikodevision-card.jpg', { type: 'image/jpeg' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              title: headlineText,
+              text: headlineText,
+              files: [file]
+            });
+            return;
+          } catch(err) {
+            if (err.name === 'AbortError') return;
+          }
+        }
+        // Fallback: download card and open Facebook
+        downloadHDCard();
+        showToast('Card downloaded. Opening Facebook...');
+        setTimeout(() => {
+          window.open('https://www.facebook.com/', '_blank');
+        }, 600);
+      }, 'image/jpeg', 0.95);
     });
 
     // ==========================================
@@ -9530,11 +9500,11 @@ html, body {
   const SESSION_USER_KEY = 'kv_active_session_uid_v3';
 
   const DEFAULT_USERS = [
-    { uid: 'u-admin', name: 'Channel Admin', username: 'admin', email: 'admin@kozhikodevision.app', password: '123456', role: 'admin', location: 'കോഴിക്കോട്', active: true, deleted: false },
-    { uid: 'u-ranju', name: 'Ranju (Chief Editor)', username: 'ranju', email: 'ranju@kozhikodevision.app', password: '123456', role: 'admin', location: 'കോഴിക്കോട്', active: true, deleted: false },
-    { uid: 'u-reporter1', name: 'Arun (Reporter)', username: 'reporter1', email: 'reporter1@kozhikodevision.app', password: '1234', role: 'user', location: 'കോഴിക്കോട്', active: true, deleted: false },
-    { uid: 'u-reporter2', name: 'Rahul (Reporter)', username: 'reporter2', email: 'reporter2@kozhikodevision.app', password: '1234', role: 'user', location: 'വടകര', active: true, deleted: false },
-    { uid: 'u-staff', name: 'Staff Desk', username: 'staff', email: 'staff@kozhikodevision.app', password: '123456', role: 'user', location: 'കൊയിലാണ്ടി', active: true, deleted: false }
+    { uid: 'u-admin', name: 'Channel Admin', username: 'admin', email: 'admin@kozhikodevision.app', passwordHash: 'sha256$kv_sec01$f87a4686e73db4929e95efefe2e4b17994f1e2b8999bff7bd727f64405927b67', role: 'admin', location: 'കോഴിക്കോട്', active: true, deleted: false },
+    { uid: 'u-ranju', name: 'Ranju (Chief Editor)', username: 'ranju', email: 'ranju@kozhikodevision.app', passwordHash: 'sha256$kv_sec01$f87a4686e73db4929e95efefe2e4b17994f1e2b8999bff7bd727f64405927b67', role: 'admin', location: 'കോഴിക്കോട്', active: true, deleted: false },
+    { uid: 'u-reporter1', name: 'Arun (Reporter)', username: 'reporter1', email: 'reporter1@kozhikodevision.app', passwordHash: 'sha256$kv_sec02$c28f305b9c57911fd8bd4d40aa6840bd3db3d53da5079bf18f9d22715c30b4b2', role: 'user', location: 'കോഴിക്കോട്', active: true, deleted: false },
+    { uid: 'u-reporter2', name: 'Rahul (Reporter)', username: 'reporter2', email: 'reporter2@kozhikodevision.app', passwordHash: 'sha256$kv_sec02$c28f305b9c57911fd8bd4d40aa6840bd3db3d53da5079bf18f9d22715c30b4b2', role: 'user', location: 'വടകര', active: true, deleted: false },
+    { uid: 'u-staff', name: 'Staff Desk', username: 'staff', email: 'staff@kozhikodevision.app', passwordHash: 'sha256$kv_sec01$f87a4686e73db4929e95efefe2e4b17994f1e2b8999bff7bd727f64405927b67', role: 'user', location: 'കൊയിലാണ്ടി', active: true, deleted: false }
   ];
 
   let inMemoryUsers = null;
@@ -10062,7 +10032,7 @@ html, body {
             presenceBadge +
             ' <span class="kv-status-pill ' + (isBlocked ? 'blocked' : 'active') + '">' + (isBlocked ? '\u{1F6AB} Blocked' : '\u2705 Active') + '</span>' +
           '</div>' +
-          '<div class="kv-user-sub">Username: <b style="color:#38bdf8;">' + escapeHtml(u.username || extractUsername(u.email)) + '</b> &nbsp;|&nbsp; Password: <span style="color:#10b981;font-weight:700;">●●●●●● (Secured)</span> &nbsp;|&nbsp; 📍 Location: <span style="color:#6ee7b7;font-weight:700;">' + escapeHtml(u.location || 'കോഴിക്കോട്') + '</span>' + (isSelf ? ' <b style="color:#6ee7b7;">(You)</b>' : '') + (isOnline ? ' &nbsp;|&nbsp; <span style="color:#10b981;font-weight:700;">\u25CF Active on site</span>' : '') + '</div>';
+          '<div class="kv-user-sub">Username: <b style="color:#38bdf8;">' + escapeHtml(u.username || extractUsername(u.email)) + '</b> &nbsp;|&nbsp; 📍 Location: <span style="color:#6ee7b7;font-weight:700;">' + escapeHtml(u.location || 'കോഴിക്കോട്') + '</span>' + (isSelf ? ' <b style="color:#6ee7b7;">(You)</b>' : '') + (isOnline ? ' &nbsp;|&nbsp; <span style="color:#10b981;font-weight:700;">\u25CF Active on site</span>' : '') + '</div>';
 
         row.appendChild(meta);
 
@@ -10091,7 +10061,7 @@ html, body {
           btnPass.className = 'kv-act-btn';
           btnPass.style.background = '#d97706';
           btnPass.style.color = '#ffffff';
-          btnPass.textContent = '\u{1F511} Change Password';
+          btnPass.textContent = '\u{1F511} Reset Password';
           btnPass.addEventListener('click', function() {
             handlers.onResetPassword(u);
           });
@@ -11780,13 +11750,34 @@ html, body {
       [subtabHeadline, subtabSummary, subtabPlaceDate].forEach(b => b?.classList.remove('active'));
       [secHeadlineBox, secSummaryBox, secPlaceDateBox].forEach(s => { if (s) s.style.display = 'none'; });
 
+      const sizeRange = document.getElementById('headlineSizeRange');
+      const sizeVal = document.getElementById('headlineSizeVal');
+      const selFont = document.getElementById('selUnifiedFont');
+      const lhRange = document.getElementById('unifiedLineHeightRange');
+      const lhVal = document.getElementById('unifiedLineHeightVal');
+      const badge = document.getElementById('lblActiveTargetBadge');
+
       if (target === 'headline') {
+        activeTextTarget = 'headline';
         subtabHeadline?.classList.add('active');
         if (secHeadlineBox) secHeadlineBox.style.display = 'block';
+        if (badge) badge.textContent = '📰 Headline';
+        if (sizeRange) { sizeRange.min = 28; sizeRange.max = 84; sizeRange.value = headlineFontSize || 54; }
+        if (sizeVal) sizeVal.textContent = (headlineFontSize || 54) + 'px';
+        if (selFont) selFont.value = selectedHeadlineFont || 'Anek Malayalam';
+        if (lhRange) { lhRange.value = headlineLineHeightMult || 1.25; }
+        if (lhVal) lhVal.textContent = (headlineLineHeightMult || 1.25).toFixed(2) + 'x';
         document.getElementById('btnTargetHeadline')?.click();
       } else if (target === 'summary') {
+        activeTextTarget = 'summary';
         subtabSummary?.classList.add('active');
         if (secSummaryBox) secSummaryBox.style.display = 'block';
+        if (badge) badge.textContent = '📝 Summary';
+        if (sizeRange) { sizeRange.min = 18; sizeRange.max = 42; sizeRange.value = summaryFontSize || 26; }
+        if (sizeVal) sizeVal.textContent = (summaryFontSize || 26) + 'px';
+        if (selFont) selFont.value = selectedSummaryFont || 'Anek Malayalam';
+        if (lhRange) { lhRange.value = summaryLineHeightMult || 1.35; }
+        if (lhVal) lhVal.textContent = (summaryLineHeightMult || 1.35).toFixed(2) + 'x';
         document.getElementById('btnTargetSummary')?.click();
       } else if (target === 'placedate') {
         subtabPlaceDate?.classList.add('active');
@@ -11969,6 +11960,230 @@ html, body {
     btnTextYIncr?.addEventListener('click', () => {
       const r = document.getElementById('summaryYRange');
       if (r) { r.value = parseInt(r.value || 0) + 5; if (textYValBadge) textYValBadge.textContent = r.value + 'px'; r.dispatchEvent(new Event('input')); }
+    });
+
+    // ==========================================================================
+    // 🎛️ COMPLETE POSITION STEPPERS ENGINE (Video, Mask, Frame, Logo, Watermark)
+    // ==========================================================================
+    // Video Steppers
+    const btnVideoXDecr = document.getElementById('btnVideoXDecr');
+    const btnVideoXIncr = document.getElementById('btnVideoXIncr');
+    const btnVideoYDecr = document.getElementById('btnVideoYDecr');
+    const btnVideoYIncr = document.getElementById('btnVideoYIncr');
+    const videoXValBadge = document.getElementById('videoXValBadge');
+    const videoYValBadge = document.getElementById('videoYValBadge');
+
+    btnVideoXDecr?.addEventListener('click', () => {
+      videoPosX -= 15;
+      const r = document.getElementById('videoPosXRange'); if (r) r.value = videoPosX;
+      if (videoXValBadge) videoXValBadge.textContent = videoPosX + 'px';
+      renderCard();
+    });
+    btnVideoXIncr?.addEventListener('click', () => {
+      videoPosX += 15;
+      const r = document.getElementById('videoPosXRange'); if (r) r.value = videoPosX;
+      if (videoXValBadge) videoXValBadge.textContent = videoPosX + 'px';
+      renderCard();
+    });
+    btnVideoYDecr?.addEventListener('click', () => {
+      videoPosY -= 15;
+      const r = document.getElementById('videoPosYRange'); if (r) r.value = videoPosY;
+      if (videoYValBadge) videoYValBadge.textContent = videoPosY + 'px';
+      renderCard();
+    });
+    btnVideoYIncr?.addEventListener('click', () => {
+      videoPosY += 15;
+      const r = document.getElementById('videoPosYRange'); if (r) r.value = videoPosY;
+      if (videoYValBadge) videoYValBadge.textContent = videoPosY + 'px';
+      renderCard();
+    });
+
+    // Privacy Censor Blur Mask Steppers
+    const btnBlurMaskXDecr = document.getElementById('btnBlurMaskXDecr');
+    const btnBlurMaskXIncr = document.getElementById('btnBlurMaskXIncr');
+    const btnBlurMaskYDecr = document.getElementById('btnBlurMaskYDecr');
+    const btnBlurMaskYIncr = document.getElementById('btnBlurMaskYIncr');
+    const blurMaskXValBadge = document.getElementById('blurMaskXValBadge');
+    const blurMaskYValBadge = document.getElementById('blurMaskYValBadge');
+
+    btnBlurMaskXDecr?.addEventListener('click', () => {
+      const r = document.getElementById('blurMaskXRange');
+      if (r) {
+        r.value = Math.max(0, parseInt(r.value || 50) - 2);
+        if (blurMaskXValBadge) blurMaskXValBadge.textContent = r.value + '%';
+        r.dispatchEvent(new Event('input'));
+      }
+    });
+    btnBlurMaskXIncr?.addEventListener('click', () => {
+      const r = document.getElementById('blurMaskXRange');
+      if (r) {
+        r.value = Math.min(100, parseInt(r.value || 50) + 2);
+        if (blurMaskXValBadge) blurMaskXValBadge.textContent = r.value + '%';
+        r.dispatchEvent(new Event('input'));
+      }
+    });
+    btnBlurMaskYDecr?.addEventListener('click', () => {
+      const r = document.getElementById('blurMaskYRange');
+      if (r) {
+        r.value = Math.max(0, parseInt(r.value || 40) - 2);
+        if (blurMaskYValBadge) blurMaskYValBadge.textContent = r.value + '%';
+        r.dispatchEvent(new Event('input'));
+      }
+    });
+    btnBlurMaskYIncr?.addEventListener('click', () => {
+      const r = document.getElementById('blurMaskYRange');
+      if (r) {
+        r.value = Math.min(100, parseInt(r.value || 40) + 2);
+        if (blurMaskYValBadge) blurMaskYValBadge.textContent = r.value + '%';
+        r.dispatchEvent(new Event('input'));
+      }
+    });
+
+    // Obituary Frame Steppers
+    const btnFrameXDecr = document.getElementById('btnFrameXDecr');
+    const btnFrameXIncr = document.getElementById('btnFrameXIncr');
+    const btnFrameYDecr = document.getElementById('btnFrameYDecr');
+    const btnFrameYIncr = document.getElementById('btnFrameYIncr');
+    const frameXValBadge = document.getElementById('frameXValBadge');
+    const frameYValBadge = document.getElementById('frameYValBadge');
+
+    btnFrameXDecr?.addEventListener('click', () => {
+      const r = document.getElementById('frameXRange');
+      if (r) {
+        r.value = parseInt(r.value || 0) - 4;
+        if (frameXValBadge) frameXValBadge.textContent = r.value + 'px';
+        r.dispatchEvent(new Event('input'));
+      }
+    });
+    btnFrameXIncr?.addEventListener('click', () => {
+      const r = document.getElementById('frameXRange');
+      if (r) {
+        r.value = parseInt(r.value || 0) + 4;
+        if (frameXValBadge) frameXValBadge.textContent = r.value + 'px';
+        r.dispatchEvent(new Event('input'));
+      }
+    });
+    btnFrameYDecr?.addEventListener('click', () => {
+      const r = document.getElementById('frameYRange');
+      if (r) {
+        r.value = parseInt(r.value || 0) - 4;
+        if (frameYValBadge) frameYValBadge.textContent = r.value + 'px';
+        r.dispatchEvent(new Event('input'));
+      }
+    });
+    btnFrameYIncr?.addEventListener('click', () => {
+      const r = document.getElementById('frameYRange');
+      if (r) {
+        r.value = parseInt(r.value || 0) + 4;
+        if (frameYValBadge) frameYValBadge.textContent = r.value + 'px';
+        r.dispatchEvent(new Event('input'));
+      }
+    });
+
+    // Tribute Title Y & Details Y Steppers
+    const btnTributeYDecr = document.getElementById('btnTributeYDecr');
+    const btnTributeYIncr = document.getElementById('btnTributeYIncr');
+    const tributeYValBadge = document.getElementById('tributeYValBadge');
+
+    btnTributeYDecr?.addEventListener('click', () => {
+      const r = document.getElementById('tributeYRange');
+      if (r) {
+        r.value = parseInt(r.value || 0) - 4;
+        if (tributeYValBadge) tributeYValBadge.textContent = r.value + 'px';
+        r.dispatchEvent(new Event('input'));
+      }
+    });
+    btnTributeYIncr?.addEventListener('click', () => {
+      const r = document.getElementById('tributeYRange');
+      if (r) {
+        r.value = parseInt(r.value || 0) + 4;
+        if (tributeYValBadge) tributeYValBadge.textContent = r.value + 'px';
+        r.dispatchEvent(new Event('input'));
+      }
+    });
+
+    const btnObitDetailsYDecr = document.getElementById('btnObitDetailsYDecr');
+    const btnObitDetailsYIncr = document.getElementById('btnObitDetailsYIncr');
+    const obitDetailsYValBadge = document.getElementById('obitDetailsYValBadge');
+
+    btnObitDetailsYDecr?.addEventListener('click', () => {
+      const r = document.getElementById('obitDetailsYRange');
+      if (r) {
+        r.value = parseInt(r.value || 0) - 4;
+        if (obitDetailsYValBadge) obitDetailsYValBadge.textContent = r.value + 'px';
+        r.dispatchEvent(new Event('input'));
+      }
+    });
+    btnObitDetailsYIncr?.addEventListener('click', () => {
+      const r = document.getElementById('obitDetailsYRange');
+      if (r) {
+        r.value = parseInt(r.value || 0) + 4;
+        if (obitDetailsYValBadge) obitDetailsYValBadge.textContent = r.value + 'px';
+        r.dispatchEvent(new Event('input'));
+      }
+    });
+
+    // Logo Steppers
+    const btnLogoXDecr = document.getElementById('btnLogoXDecr');
+    const btnLogoXIncr = document.getElementById('btnLogoXIncr');
+    const btnLogoYDecr = document.getElementById('btnLogoYDecr');
+    const btnLogoYIncr = document.getElementById('btnLogoYIncr');
+    const logoXValBadge = document.getElementById('logoXValBadge');
+    const logoYValBadge = document.getElementById('logoYValBadge');
+
+    btnLogoXDecr?.addEventListener('click', () => {
+      const r = document.getElementById('logoXRange');
+      if (r) {
+        r.value = parseInt(r.value || 0) - 10;
+        if (logoXValBadge) logoXValBadge.textContent = r.value + 'px';
+        r.dispatchEvent(new Event('input'));
+      }
+    });
+    btnLogoXIncr?.addEventListener('click', () => {
+      const r = document.getElementById('logoXRange');
+      if (r) {
+        r.value = parseInt(r.value || 0) + 10;
+        if (logoXValBadge) logoXValBadge.textContent = r.value + 'px';
+        r.dispatchEvent(new Event('input'));
+      }
+    });
+    btnLogoYDecr?.addEventListener('click', () => {
+      const r = document.getElementById('logoYRange');
+      if (r) {
+        r.value = parseInt(r.value || 0) - 10;
+        if (logoYValBadge) logoYValBadge.textContent = r.value + 'px';
+        r.dispatchEvent(new Event('input'));
+      }
+    });
+    btnLogoYIncr?.addEventListener('click', () => {
+      const r = document.getElementById('logoYRange');
+      if (r) {
+        r.value = parseInt(r.value || 0) + 10;
+        if (logoYValBadge) logoYValBadge.textContent = r.value + 'px';
+        r.dispatchEvent(new Event('input'));
+      }
+    });
+
+    // Watermark Stepper
+    const btnWmYDecr = document.getElementById('btnWmYDecr');
+    const btnWmYIncr = document.getElementById('btnWmYIncr');
+    const wmYValBadge = document.getElementById('wmYValBadge');
+
+    btnWmYDecr?.addEventListener('click', () => {
+      const r = document.getElementById('wmYRange');
+      if (r) {
+        r.value = parseInt(r.value || 0) - 10;
+        if (wmYValBadge) wmYValBadge.textContent = r.value + 'px';
+        r.dispatchEvent(new Event('input'));
+      }
+    });
+    btnWmYIncr?.addEventListener('click', () => {
+      const r = document.getElementById('wmYRange');
+      if (r) {
+        r.value = parseInt(r.value || 0) + 10;
+        if (wmYValBadge) wmYValBadge.textContent = r.value + 'px';
+        r.dispatchEvent(new Event('input'));
+      }
     });
 
     // ==========================================================================
