@@ -9,8 +9,8 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    // === AUTO-UPDATE & PWA ENGINE v8.0.6 ===
-    var KV_LATEST_BUILD = '8.0.6';
+    // === AUTO-UPDATE & PWA ENGINE v8.0.7 ===
+    var KV_LATEST_BUILD = '8.0.7';
     (function() {
       try {
         if ('serviceWorker' in navigator) {
@@ -4417,12 +4417,14 @@ html, body {
             <span>➔</span>
           </button>
         </div>
-      </div>
+      </div><!-- close step1View -->
+    </div><!-- close panePhoto -->
 
-      <!-- ==============================================
-           STEP 2: NEWS / OBITUARY DETAILS & TEXT ADJUSTMENTS
-           ============================================== -->
-      </div></div><div id="paneText" class="inspector-pane" data-tab="text"><div id="step2View" class="step-view" style="display:contents;">
+    <!-- ==============================================
+         PANE 2: TEXT STUDIO (Inside inspectorDeck!)
+         ============================================== -->
+    <div id="paneText" class="inspector-pane" data-tab="text">
+      <div id="step2View" class="step-view" style="display:contents;">
         <div class="two-col-grid">
 
           <!-- Left Column: Details -->
@@ -4958,13 +4960,14 @@ html, body {
             <span>➔</span>
           </button>
         </div>
-      </div>
+      </div><!-- close step2View -->
+    </div><!-- close paneText -->
 
-      <!-- ==============================================
-           STEP 3: LOGO, WATERMARK, DATE & HD DOWNLOAD
-           (DOWNLOAD IS LOCATED HERE ON THE LAST PAGE AS REQUESTED!)
-           ============================================== -->
-      </div></div><div id="paneLogo" class="inspector-pane" data-tab="logo"><div id="step3View" class="step-view" style="display:contents;">
+    <!-- ==============================================
+         PANE 3: LOGO & BRANDING (Inside inspectorDeck!)
+         ============================================== -->
+    <div id="paneLogo" class="inspector-pane" data-tab="logo">
+      <div id="step3View" class="step-view" style="display:contents;">
         <div class="two-col-grid">
 
           <!-- Left Column: Logo Adjustments -->
@@ -5038,8 +5041,13 @@ html, body {
 
           </div>
 
-          </div></div>
-<div id="paneExport" class="inspector-pane" data-tab="export">
+                </div><!-- close col-card (logo) -->
+    </div><!-- close paneLogo -->
+
+    <!-- ==============================================
+         PANE 4: EXPORT & SHARING (Inside inspectorDeck!)
+         ============================================== -->
+    <div id="paneExport" class="inspector-pane" data-tab="export">
 <!-- Right Column: Watermark, Social & THE DOWNLOAD BUTTON -->
           <div class="col-card">
             
@@ -5152,7 +5160,7 @@ html, body {
 
         </section>
 
-  </div></div><!-- close step3View & paneExport -->
+    </div><!-- close paneExport -->
   </div><!-- close inspectorDeck -->
 </div><!-- close kvStudioLayout -->
 
