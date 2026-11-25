@@ -2,15 +2,15 @@
 <html lang="ml">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KOZHIKODE VISION NEWS - Card Maker</title>
   <meta name="theme-color" content="#060913">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    // === AUTO-UPDATE & PWA ENGINE v8.0.8 ===
-    var KV_LATEST_BUILD = '8.0.8';
+    // === AUTO-UPDATE & PWA ENGINE v8.1.0 ===
+    var KV_LATEST_BUILD = '8.1.0';
     (function() {
       try {
         if ('serviceWorker' in navigator) {
@@ -3042,20 +3042,24 @@
     padding: 10px 12px;
   }
 
+  /* PRIORITY 1: SAFE SCROLL & TOUCH ACTIONS */
   input[type="range"] {
-    height: 36px;
+    height: 40px !important;
+    touch-action: pan-y !important;
+    cursor: pointer;
   }
 
   input[type="range"]::-webkit-slider-thumb {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: #38bdf8;
-    border: 2px solid #ffffff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
-    cursor: pointer;
-    -webkit-appearance: none;
-    margin-top: -10px;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background: #38bdf8 !important;
+    border: 3px solid #ffffff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7) !important;
+    cursor: pointer !important;
+    -webkit-appearance: none !important;
+    margin-top: -12px !important;
+    touch-action: pan-y !important;
   }
 
   input[type="range"]::-webkit-slider-runnable-track {
@@ -3065,13 +3069,96 @@
   }
 
   input[type="range"]::-moz-range-thumb {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: #38bdf8;
-    border: 2px solid #ffffff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background: #38bdf8 !important;
+    border: 3px solid #ffffff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7) !important;
+    cursor: pointer !important;
+    touch-action: pan-y !important;
+  }
+
+  /* Safe scrolling gutter & touch-action on buttons/toggles */
+  button, .btn-tactile, .btn-compact-subtab, .btn-icon-fmt, .btn-stepper, input[type="checkbox"], input[type="radio"], label {
+    touch-action: manipulation !important;
+  }
+
+  .btn-stepper {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #0f172a;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 800;
     cursor: pointer;
+    touch-action: manipulation;
+    user-select: none;
+    transition: all 0.15s ease;
+  }
+  .btn-stepper:active {
+    background: #0284c7;
+    border-color: #38bdf8;
+    transform: scale(0.94);
+  }
+
+  /* EDIT LOCK BAR & EDIT-LOCKED STATES */
+  .edit-lock-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+  .btn-edit-lock {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #0284c7;
+    color: #ffffff;
+    border: 1px solid #38bdf8;
+    border-radius: 7px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: all 0.2s ease;
+  }
+  .btn-edit-lock.unlocked {
+    background: #15803d;
+    border-color: #4ade80;
+    color: #f0fdf4;
+  }
+  .edit-lock-hint {
+    font-size: 10.5px;
+    color: #94a3b8;
+    font-weight: 600;
+  }
+
+  .inspector-deck.edit-locked input[type="range"],
+  .inspector-deck.edit-locked .btn-icon-fmt,
+  .inspector-deck.edit-locked .btn-stepper,
+  .inspector-deck.edit-locked .btn-filter-pill,
+  .inspector-deck.edit-locked .dpad-pill,
+  .inspector-deck.edit-locked select,
+  .inspector-deck.edit-locked input[type="checkbox"],
+  .inspector-deck.edit-locked input[type="color"] {
+    pointer-events: none !important;
+    opacity: 0.82 !important;
   }
 
   details.advanced-settings-box {
@@ -3294,7 +3381,9 @@ html, body {
     height: 100% !important;
     max-height: 100% !important;
     overflow-y: auto !important;
+    overscroll-behavior: contain !important;
     -webkit-overflow-scrolling: touch !important;
+    padding-right: 20px !important;
   }
 }
 
@@ -3319,8 +3408,9 @@ html, body {
     flex: 1 !important;
     min-height: 0 !important;
     overflow-y: auto !important;
+    overscroll-behavior: contain !important;
     -webkit-overflow-scrolling: touch !important;
-    padding: 8px 10px calc(68px + env(safe-area-inset-bottom)) 10px !important;
+    padding: 8px 20px calc(68px + env(safe-area-inset-bottom)) 10px !important;
   }
 }
 
@@ -3455,7 +3545,7 @@ html, body {
         </div>
         <div style="margin-top:6px;margin-bottom:8px;">
           <span class="kv-live-tag" style="font-size:10px;padding:3px 10px;border-radius:14px;background:rgba(239,68,68,0.25);border:1px solid #ef4444;color:#fca5a5;display:inline-flex;align-items:center;gap:6px;">
-            <span class="kv-live-dot"></span>🔴 V8.0 LIVE: BROADCAST STUDIO
+            <span class="kv-live-dot"></span>🔴 V8.1.0 LIVE: BROADCAST STUDIO
           </span>
         </div>
         <div class="kv-auth-title">KOZHIKODE VISION NEWS</div>
@@ -3960,6 +4050,15 @@ html, body {
       <button type="button" class="deck-tab-btn" data-tab="export">⬇️ Export</button>
     </div>
 
+    <!-- 🔒 EDIT LOCK BAR (Default ON on mobile to protect scrolling) -->
+    <div class="edit-lock-bar" id="editLockBar">
+      <button type="button" class="btn-edit-lock" id="btnEditLock" title="Toggle Edit Lock">
+        <span id="lblEditLockIcon">🔒</span>
+        <span id="lblEditLockText">എഡിറ്റ് ലോക്ക്: ഓൺ</span>
+      </button>
+      <span class="edit-lock-hint" id="editLockHint">സ്ക്രോളിംഗ് സുരക്ഷിതമാണ് (വാല്യൂ മാറില്ല)</span>
+    </div>
+
       <!-- Hidden Step Indicator Compatibility -->
       <div class="step-progress-row" style="display:none !important;">
         <button id="tabStep1" type="button" class="btn-tactile step-tab-btn active">1</button>
@@ -4060,20 +4159,31 @@ html, body {
                   </div>
                   <input id="zoom2Range" type="range" min="0.5" max="3" step="0.05" value="1">
                 </div>
-                <div class="slider-item">
-                  <div class="slider-head">
-                    <span>↔ Photo 2 Position X:</span>
-                    <span id="pos2XVal" class="val">0px</span>
+                <details class="advanced-settings-box" style="margin-top:6px; margin-bottom:8px;">
+                  <summary>⚙️ Photo 2 Position Steppers (- / +)</summary>
+                  <div class="stepper-group" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+                    <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                      <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↔ X Pos:</span>
+                      <div style="display:flex; align-items:center; gap:4px;">
+                        <button type="button" class="btn-stepper" id="btnPhoto2XDecr" title="Move Left">-</button>
+                        <span id="photo2XValBadge" style="font-size:11px; font-weight:800; color:#38bdf8; min-width:32px; text-align:center;">0</span>
+                        <button type="button" class="btn-stepper" id="btnPhoto2XIncr" title="Move Right">+</button>
+                      </div>
+                    </div>
+                    <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                      <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↕ Y Pos:</span>
+                      <div style="display:flex; align-items:center; gap:4px;">
+                        <button type="button" class="btn-stepper" id="btnPhoto2YDecr" title="Move Up">-</button>
+                        <span id="photo2YValBadge" style="font-size:11px; font-weight:800; color:#38bdf8; min-width:32px; text-align:center;">0</span>
+                        <button type="button" class="btn-stepper" id="btnPhoto2YIncr" title="Move Down">+</button>
+                      </div>
+                    </div>
                   </div>
-                  <input id="pos2XRange" type="range" min="-500" max="500" step="5" value="0">
-                </div>
-                <div class="slider-item">
-                  <div class="slider-head">
-                    <span>↕ Photo 2 Position Y:</span>
-                    <span id="pos2YVal" class="val">0px</span>
-                  </div>
-                  <input id="pos2YRange" type="range" min="-500" max="500" step="5" value="0">
-                </div>
+                  <input id="pos2XRange" type="range" min="-500" max="500" step="5" value="0" style="display:none;">
+                  <input id="pos2YRange" type="range" min="-500" max="500" step="5" value="0" style="display:none;">
+                  <span id="pos2XVal" style="display:none;">0px</span>
+                  <span id="pos2YVal" style="display:none;">0px</span>
+                </details>
                 <div style="display:flex; gap:6px; margin-top:6px;">
                   <button id="btnFlipPhoto2" type="button" class="btn-tactile dpad-pill" style="flex:1;">🔄 Flip Horizontal</button>
                   <button id="btnResetPhoto2" type="button" class="btn-tactile dpad-pill" style="flex:1;">🎯 Reset Pos</button>
@@ -4090,30 +4200,41 @@ html, body {
               <input id="zoomRange" type="range" min="0.5" max="3" step="0.05" value="1">
             </div>
 
-            <div class="slider-item">
-              <div class="slider-head">
-                <span>↕ Position Y (Up/Down):</span>
-                <span id="posYVal" class="val">0px</span>
-              </div>
-              <input id="posYRange" type="range" min="-400" max="400" step="5" value="0">
-            </div>
-
-            <div class="slider-item">
-              <div class="slider-head">
-                <span>↔ Position X (Left/Right):</span>
-                <span id="posXVal" class="val">0px</span>
-              </div>
-              <input id="posXRange" type="range" min="-400" max="400" step="5" value="0">
-            </div>
-
-            <!-- D-Pad Directional Row -->
+            <!-- D-Pad Directional Row (Touch-Friendly Arrow Grid) -->
             <div class="dpad-container">
-              <button id="btnPhotoLeft" type="button" class="btn-tactile dpad-pill">◀</button>
-              <button id="btnPhotoDown" type="button" class="btn-tactile dpad-pill">▼</button>
-              <button id="btnPhotoCenter" type="button" class="btn-tactile dpad-pill center">🎯 Center</button>
-              <button id="btnPhotoUp" type="button" class="btn-tactile dpad-pill">▲</button>
-              <button id="btnPhotoRight" type="button" class="btn-tactile dpad-pill">▶</button>
+              <button id="btnPhotoLeft" type="button" class="btn-tactile dpad-pill" title="Move Left">◀</button>
+              <button id="btnPhotoDown" type="button" class="btn-tactile dpad-pill" title="Move Down">▼</button>
+              <button id="btnPhotoCenter" type="button" class="btn-tactile dpad-pill center" title="Center Photo">🎯 Center</button>
+              <button id="btnPhotoUp" type="button" class="btn-tactile dpad-pill" title="Move Up">▲</button>
+              <button id="btnPhotoRight" type="button" class="btn-tactile dpad-pill" title="Move Right">▶</button>
             </div>
+
+            <!-- ⚙️ Collapsible Steppers (Replaces Accidental-Touch Sliders) -->
+            <details class="advanced-settings-box" style="margin-top:6px; margin-bottom:8px;">
+              <summary>⚙️ Advanced Position Steppers (- / +)</summary>
+              <div class="stepper-group" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+                <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↔ X Pos:</span>
+                  <div style="display:flex; align-items:center; gap:4px;">
+                    <button type="button" class="btn-stepper" id="btnPhotoXDecr" title="Move Left">-</button>
+                    <span id="photoXValBadge" style="font-size:11px; font-weight:800; color:#38bdf8; min-width:32px; text-align:center;">0</span>
+                    <button type="button" class="btn-stepper" id="btnPhotoXIncr" title="Move Right">+</button>
+                  </div>
+                </div>
+                <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↕ Y Pos:</span>
+                  <div style="display:flex; align-items:center; gap:4px;">
+                    <button type="button" class="btn-stepper" id="btnPhotoYDecr" title="Move Up">-</button>
+                    <span id="photoYValBadge" style="font-size:11px; font-weight:800; color:#38bdf8; min-width:32px; text-align:center;">0</span>
+                    <button type="button" class="btn-stepper" id="btnPhotoYIncr" title="Move Down">+</button>
+                  </div>
+                </div>
+              </div>
+              <input id="posYRange" type="range" min="-400" max="400" step="5" value="0" style="display:none;">
+              <input id="posXRange" type="range" min="-400" max="400" step="5" value="0" style="display:none;">
+              <span id="posYVal" style="display:none;">0px</span>
+              <span id="posXVal" style="display:none;">0px</span>
+            </details>
 
             <!-- ✨ Photo Clarity & Enhancer Filters -->
             <div class="form-group" style="margin-top:10px;">
@@ -4410,12 +4531,9 @@ html, body {
             </div>
           </div>
 
-          <!-- Step 1 Navigation -->
-        <div class="step-nav-footer">
-          <button id="btnToStep2" type="button" class="btn-tactile btn-next-step">
-            <span>Next Step ➔</span>
-            <span>➔</span>
-          </button>
+          <!-- Step 1 Navigation (Hidden legacy buttons) -->
+        <div class="step-nav-footer" style="display:none !important;">
+          <button id="btnToStep2" type="button" class="btn-tactile btn-next-step">Next Step</button>
         </div>
       </div><!-- close step1View -->
     </div><!-- close panePhoto -->
@@ -4449,7 +4567,7 @@ html, body {
   <!-- SECTION 1: HEADLINE BOX (Active by default) -->
   <div id="secHeadlineBox" class="text-input-section" style="display:block;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-      <label class="form-label" style="margin-bottom:0; font-weight:800; color:#f8fafc; font-size:11.5px;">📰 Main Headline (വാർത്ത):</label>
+      <label class="form-label" style="margin-bottom:0; font-weight:800; color:#f8fafc; font-size:11.5px;">📰 പ്രധാന വാർത്ത:</label>
       <button id="btnVoiceHeadline" type="button" class="btn-voice-mic" title="Voice Dictation in Malayalam" style="padding:2px 8px; font-size:10px;">🎙️ Voice</button>
     </div>
     <textarea id="txtHeadline" class="form-textarea" rows="2" style="font-size:15px; font-weight:700; width:100%; border-radius:8px; padding:8px;">കോഴിക്കോട് ബീച്ചിൽ പുതിയ ടൂറിസം പദ്ധതിക്ക് തുടക്കമായി</textarea>
@@ -4458,7 +4576,7 @@ html, body {
   <!-- SECTION 2: SUMMARY BOX (Hidden until Summary tab clicked) -->
   <div id="secSummaryBox" class="text-input-section" style="display:none;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-      <label class="form-label" style="margin-bottom:0; font-weight:800; color:#f8fafc; font-size:11.5px;">📝 News Summary / Subline (വിവരണം):</label>
+      <label class="form-label" style="margin-bottom:0; font-weight:800; color:#f8fafc; font-size:11.5px;">📝 വാർത്താ വിവരണം:</label>
       <button id="btnVoiceSummary" type="button" class="btn-voice-mic" title="Voice Dictation in Malayalam" style="padding:2px 8px; font-size:10px;">🎙️ Voice</button>
     </div>
     <textarea id="txtSummary" class="form-textarea" rows="2" placeholder="Type news summary here..." style="font-size:14px; width:100%; border-radius:8px; padding:8px;">മന്ത്രി മുഹമ്മദ് റിയാസ് ഉദ്ഘാടനം ചെയ്തു; ആദ്യഘട്ടത്തിൽ 10 കോടിയുടെ സമഗ്ര വികസനം നടപ്പാക്കും.</textarea>
@@ -4500,7 +4618,7 @@ html, body {
     <!-- Row 1: Font Family (Left) & Font Size with live badge (Right) -->
     <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:8px; align-items:center;">
       <div>
-        <label style="font-size:10px; color:#94a3b8; font-weight:700; display:block; margin-bottom:3px;">Font (ഫോണ്ട്):</label>
+        <label style="font-size:10px; color:#94a3b8; font-weight:700; display:block; margin-bottom:3px;">ഫോണ്ട്:</label>
         <select id="selUnifiedFont" class="form-input" style="padding:6px; font-size:11.5px; font-weight:700; background:#1e293b; border:1px solid #475569; color:#fff; width:100%; border-radius:6px;">
           <option value="Anek Malayalam" selected>🅰️ Anek Malayalam</option>
           <option value="Baloo Chettan 2">💥 Baloo Chettan 2</option>
@@ -4511,7 +4629,7 @@ html, body {
       </div>
       <div>
         <div style="display:flex; justify-content:space-between; font-size:10px; color:#94a3b8; font-weight:700; margin-bottom:3px;">
-          <span>Size (വലിപ്പം):</span>
+          <span>വലിപ്പം:</span>
           <span id="headlineSizeVal" style="color:#38bdf8; font-weight:800;">54px</span>
         </div>
         <input id="headlineSizeRange" type="range" min="28" max="84" step="2" value="54" style="width:100%; accent-color:#38bdf8; cursor:pointer;">
@@ -4602,7 +4720,7 @@ html, body {
 </div>
 
 <!-- 🎛️ UNIFIED BROADCAST TEXT & BOX STUDIO TOOLBAR (Headline & Summary Switcher) -->
-              <div id="unifiedTextToolbar" style="margin-top:4px; margin-bottom:12px; padding:12px; background:#0f172a; border:1px solid #334155; border-radius:12px;">
+              <div id="unifiedTextToolbar" style="display:none !important;">
                 <!-- Target Switcher Tabs: Headline vs Summary -->
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #334155;">
                   <span style="font-size:11px; font-weight:800; color:#38bdf8; text-transform:uppercase; letter-spacing:0.5px;">🔤 Text &amp; Box Studio</span>
@@ -4784,58 +4902,45 @@ html, body {
             
             <!-- NEWS TEXT CONTROLS -->
             <div id="newsTextAdjustWrap" style="display:flex; flex-direction:column; gap:8px;">
-              <span class="col-title">📐 Text Adjustments</span>
+              <span class="col-title">🎨 ബാക്ക്ഗ്രൗണ്ട് കളർ &amp; സ്റ്റൈൽ</span>
 
-              <div class="slider-item">
-                <div class="slider-head">
-                  <span>Headline Size:</span>
-                  <span id="headlineSizeVal" class="val">54px</span>
+              <!-- Advanced Settings Details for Shape & Fine-Tuning -->
+              <details class="advanced-settings-box" style="margin-bottom:8px;">
+                <summary>⚙️ അഡ്വാൻസ്ഡ് ടെക്സ്റ്റ് സ്റ്റെപ്പർ (- / +)</summary>
+                <div class="stepper-group" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+                  <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↔ X Pos:</span>
+                    <div style="display:flex; align-items:center; gap:4px;">
+                      <button type="button" class="btn-stepper" id="btnTextXDecr" title="Move Left">-</button>
+                      <span id="textXValBadge" style="font-size:11px; font-weight:800; color:#38bdf8; min-width:32px; text-align:center;">0</span>
+                      <button type="button" class="btn-stepper" id="btnTextXIncr" title="Move Right">+</button>
+                    </div>
+                  </div>
+                  <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↕ Y Pos:</span>
+                    <div style="display:flex; align-items:center; gap:4px;">
+                      <button type="button" class="btn-stepper" id="btnTextYDecr" title="Move Up">-</button>
+                      <span id="textYValBadge" style="font-size:11px; font-weight:800; color:#38bdf8; min-width:32px; text-align:center;">0</span>
+                      <button type="button" class="btn-stepper" id="btnTextYIncr" title="Move Down">+</button>
+                    </div>
+                  </div>
                 </div>
-                <input id="headlineSizeRange" type="range" min="32" max="84" step="2" value="54">
-              </div>
-
-              <div class="slider-item">
-                <div class="slider-head">
-                  <span>Summary Size:</span>
-                  <span id="summarySizeVal" class="val">26px</span>
+                <!-- Max Lines Allowed Slider -->
+                <div class="slider-item" style="margin-top:8px;">
+                  <div class="slider-head">
+                    <span>≡ Max Lines:</span>
+                    <span id="summaryMaxLinesVal" class="val">4 lines</span>
+                  </div>
+                  <input id="summaryMaxLinesRange" type="range" min="1" max="6" step="1" value="4">
                 </div>
-                <input id="summarySizeRange" type="range" min="18" max="42" step="1" value="26">
-              </div>
-
-              <div class="slider-item">
-                <div class="slider-head">
-                  <span>↕ Summary Position Y:</span>
-                  <span id="summaryYVal" class="val">0px</span>
-                </div>
-                <input id="summaryYRange" type="range" min="-120" max="120" step="2" value="0">
-              </div>
-
-              <!-- Line Space (Line Height) Slider -->
-              <div class="slider-item">
-                <div class="slider-head">
-                  <span>↕ Line Spacing:</span>
-                  <span id="summaryLineHeightVal" class="val">1.35x</span>
-                </div>
-                <input id="summaryLineHeightRange" type="range" min="1.0" max="2.3" step="0.05" value="1.35">
-              </div>
-
-              <!-- Max Lines Allowed Slider -->
-              <div class="slider-item">
-                <div class="slider-head">
-                  <span>≡ Max Lines:</span>
-                  <span id="summaryMaxLinesVal" class="val">4 lines</span>
-                </div>
-                <input id="summaryMaxLinesRange" type="range" min="1" max="6" step="1" value="4">
-              </div>
-
-              <!-- Summary X Position (Left/Right) -->
-              <div class="slider-item">
-                <div class="slider-head">
-                  <span>↔ Summary Position X:</span>
-                  <span id="summaryXVal" class="val">0px</span>
-                </div>
-                <input id="summaryXRange" type="range" min="-100" max="100" step="2" value="0">
-              </div>
+                <!-- Hidden compatibility inputs -->
+                <input id="summarySizeRange" type="range" min="18" max="42" step="1" value="26" style="display:none;">
+                <span id="summarySizeVal" style="display:none;">26px</span>
+                <input id="summaryLineHeightRange" type="range" min="1.0" max="2.3" step="0.05" value="1.35" style="display:none;">
+                <span id="summaryLineHeightVal" style="display:none;">1.35x</span>
+                <input id="summaryXRange" type="range" min="-100" max="100" step="2" value="0" style="display:none;">
+                <span id="summaryXVal" style="display:none;">0px</span>
+              </details>
 
               <div class="form-group">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
@@ -4947,16 +5052,10 @@ html, body {
 
         </div>
 
-        <!-- Step 2 Navigation -->
-        <div class="step-nav-footer">
-          <button id="btnBackToStep1" type="button" class="btn-tactile btn-prev-step">
-            <span>◀</span>
-            <span>⬅ Previous Step</span>
-          </button>
-          <button id="btnToStep3" type="button" class="btn-tactile btn-next-step">
-            <span>Next Step ➔</span>
-            <span>➔</span>
-          </button>
+        <!-- Step 2 Navigation (Hidden legacy buttons) -->
+        <div class="step-nav-footer" style="display:none !important;">
+          <button id="btnBackToStep1" type="button" class="btn-tactile btn-prev-step">Prev</button>
+          <button id="btnToStep3" type="button" class="btn-tactile btn-next-step">Next</button>
         </div>
       </div><!-- close step2View -->
     </div><!-- close paneText -->
@@ -5142,15 +5241,9 @@ html, body {
 
           </div><!-- close col-card -->
 
-          <!-- Step 3 Navigation -->
-          <div class="step-nav-footer">
-            <button id="btnBackToStep2" type="button" class="btn-tactile btn-prev-step">
-              <span>◀</span>
-              <span>⬅ Previous Step</span>
-            </button>
-            <div style="font-size:11px; font-weight:800; color:#10b981;">
-              ✓ Card Ready!
-            </div>
+          <!-- Step 3 Navigation (Hidden legacy button) -->
+          <div class="step-nav-footer" style="display:none !important;">
+            <button id="btnBackToStep2" type="button" class="btn-tactile btn-prev-step">Prev</button>
           </div>
 
     </div><!-- close paneExport -->
@@ -5187,7 +5280,7 @@ html, body {
         <span class="dev-badge-icon">⚡</span>
         <span class="dev-title">Developed by <span class="dev-name">Ranju</span></span>
         <span class="dev-sep">•</span>
-        <span class="dev-studio-tag">Kozhikode Vision Official Media Studio v7.0</span>
+        <span class="dev-studio-tag">Kozhikode Vision Official Media Studio v8.1.0</span>
       </div>
       <div class="dev-copyright-text">
         &copy; 2026 Kozhikode Vision News &amp; Entertainment. All Rights Reserved.
@@ -5343,11 +5436,11 @@ html, body {
       <!-- Action Footer -->
       <div class="kv-live-tv-actions" style="justify-content: space-between; align-items:center; flex-wrap:wrap; gap:8px;">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-          <a id="btnDirectWatchLink" href="http://103.146.174.75/watch" target="_blank" rel="noopener noreferrer" class="btn-tactile" style="font-size:11px; font-weight:800; background:linear-gradient(135deg, #ef4444, #b91c1c); color:#ffffff; padding:7px 14px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:5px; box-shadow:0 3px 10px rgba(239,68,68,0.4); border:1px solid #f87171;">
+          <a id="btnDirectWatchLink" href="javascript:void(0)" class="btn-tactile" style="font-size:11px; font-weight:800; background:linear-gradient(135deg, #ef4444, #b91c1c); color:#ffffff; padding:7px 14px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:5px; box-shadow:0 3px 10px rgba(239,68,68,0.4); border:1px solid #f87171;">
             <span>🔴 Kozhikode Vision Player</span>
             <span>↗</span>
           </a>
-          <a id="btnMediaMtxLink" href="http://103.146.174.75:8888/out/c2-social/" target="_blank" rel="noopener noreferrer" class="btn-tactile" style="font-size:11px; font-weight:800; background:linear-gradient(135deg, #0284c7, #0369a1); color:#ffffff; padding:7px 14px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:5px; box-shadow:0 3px 10px rgba(2,132,199,0.4); border:1px solid #38bdf8;">
+          <a id="btnMediaMtxLink" href="javascript:void(0)" class="btn-tactile" style="font-size:11px; font-weight:800; background:linear-gradient(135deg, #0284c7, #0369a1); color:#ffffff; padding:7px 14px; border-radius:8px; text-decoration:none; display:inline-flex; align-items:center; gap:5px; box-shadow:0 3px 10px rgba(2,132,199,0.4); border:1px solid #38bdf8;">
             <span>📺 MediaMTX Player</span>
             <span>↗</span>
           </a>
@@ -7853,7 +7946,7 @@ html, body {
       const jpgData = canvas.toDataURL('image/jpeg', 0.94);
       const w = window.open('');
       if (w) {
-        w.document.write('<title>Kozhikode Vision Card</title><body style="margin:0; background:#060913; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; padding:10px;"><img src="' + jpgData + '" style="max-width:100%; height:auto; box-shadow:0 8px 30px rgba(0,0,0,0.8); border-radius:12px;"><p style="color:#6ee7b7; font-family:sans-serif; margin-top:14px; font-weight:bold;">📱 ഗാലറിയിൽ സേവ് ചെയ്യാൻ ചിത്രത്തിൽ അമർത്തിപ്പിടിക്കുക (Long press to Save)</p></body>');
+        w.document.write('<title>Kozhikode Vision Card</title><body style="margin:0; background:#060913; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; padding:10px;"><img src="' + jpgData + '" style="max-width:100%; height:auto; box-shadow:0 8px 30px rgba(0,0,0,0.8); border-radius:12px;"><p style="color:#6ee7b7; font-family:sans-serif; margin-top:14px; font-weight:bold;">📱 സേവ് ചെയ്യാൻ ചിത്രത്തിൽ അമർത്തിപ്പിടിക്കുക (Long Press)</p></body>');
       } else {
         alert('Please allow popups to open card in new tab');
       }
@@ -9969,7 +10062,7 @@ html, body {
             presenceBadge +
             ' <span class="kv-status-pill ' + (isBlocked ? 'blocked' : 'active') + '">' + (isBlocked ? '\u{1F6AB} Blocked' : '\u2705 Active') + '</span>' +
           '</div>' +
-          '<div class="kv-user-sub">Username: <b style="color:#38bdf8;">' + escapeHtml(u.username || extractUsername(u.email)) + '</b> &nbsp;|&nbsp; Password: <span style="color:#fbbf24;font-weight:700;">' + escapeHtml(u.password || '1234') + '</span> &nbsp;|&nbsp; 📍 Location: <span style="color:#6ee7b7;font-weight:700;">' + escapeHtml(u.location || 'കോഴിക്കോട്') + '</span>' + (isSelf ? ' <b style="color:#6ee7b7;">(You)</b>' : '') + (isOnline ? ' &nbsp;|&nbsp; <span style="color:#10b981;font-weight:700;">\u25CF Active on site</span>' : '') + '</div>';
+          '<div class="kv-user-sub">Username: <b style="color:#38bdf8;">' + escapeHtml(u.username || extractUsername(u.email)) + '</b> &nbsp;|&nbsp; Password: <span style="color:#10b981;font-weight:700;">●●●●●● (Secured)</span> &nbsp;|&nbsp; 📍 Location: <span style="color:#6ee7b7;font-weight:700;">' + escapeHtml(u.location || 'കോഴിക്കോട്') + '</span>' + (isSelf ? ' <b style="color:#6ee7b7;">(You)</b>' : '') + (isOnline ? ' &nbsp;|&nbsp; <span style="color:#10b981;font-weight:700;">\u25CF Active on site</span>' : '') + '</div>';
 
         row.appendChild(meta);
 
@@ -11191,19 +11284,37 @@ html, body {
   }
 
   if (authForm) {
-    authForm.addEventListener('submit', function(e) {
+    authForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       showAuthError('');
       const typed = norm(inpUser ? inpUser.value : '');
       const pass = String(inpPass ? inpPass.value : '').trim();
 
       const users = getDemoUsers();
-      const match = users.find(function(u) {
+      let match = null;
+      for (const u of users) {
         const matchUser = u.username && norm(u.username) === typed;
         const matchName = u.name && norm(u.name) === typed;
         const matchEmail = u.email && norm(u.email) === typed;
-        return (matchUser || matchName || matchEmail) && String(u.password || '').trim() === pass;
-      });
+        if (matchUser || matchName || matchEmail) {
+          const passValid = await verifyKvPassword(pass, u.passwordHash || u.password);
+          if (passValid) {
+            match = u;
+            // Seamless auto-migration: if still plain text, hash it now!
+            if (u.password && !u.passwordHash) {
+              u.passwordHash = await hashKvPassword(pass);
+              delete u.password;
+              try {
+                localStorage.setItem('kv_all_registered_users', JSON.stringify(users));
+                if (typeof firebaseDb !== 'undefined' && firebaseDb) {
+                  firebaseDb.collection('kv_users').doc(u.uid).set({ passwordHash: u.passwordHash }, { merge: true }).catch(function(){});
+                }
+              } catch(err) {}
+            }
+            break;
+          }
+        }
+      }
 
       if (!match) {
         showAuthError('\u274C Invalid username or password.');
@@ -11711,6 +11822,233 @@ html, body {
       const r = document.getElementById('summaryXRange');
       if (r) { r.value = parseInt(r.value || 0) + 5; r.dispatchEvent(new Event('input')); }
     });
+
+    // ==========================================================================
+    // 🛡️ PRIORITY 1: SAFE SCROLLING, EDIT LOCK & STEPPERS ENGINE
+    // ==========================================================================
+    const inspectorDeck = document.getElementById('inspectorDeck');
+    const btnEditLock = document.getElementById('btnEditLock');
+    const lblEditLockIcon = document.getElementById('lblEditLockIcon');
+    const lblEditLockText = document.getElementById('lblEditLockText');
+    const editLockHint = document.getElementById('editLockHint');
+
+    let isControlsLocked = window.innerWidth < 768; // Default ON on mobile
+    if (inspectorDeck) {
+      inspectorDeck.classList.toggle('edit-locked', isControlsLocked);
+      if (btnEditLock) {
+        btnEditLock.classList.toggle('unlocked', !isControlsLocked);
+        if (lblEditLockIcon) lblEditLockIcon.textContent = isControlsLocked ? '🔒' : '🔓';
+        if (lblEditLockText) lblEditLockText.textContent = isControlsLocked ? 'എഡിറ്റ് ലോക്ക്: ഓൺ' : 'എഡിറ്റ് ലോക്ക്: ഓഫ്';
+        if (editLockHint) editLockHint.textContent = isControlsLocked ? 'സ്ക്രോളിംഗ് സുരക്ഷിതമാണ്' : 'എഡിറ്റിംഗ് സജീവമാണ്';
+      }
+    }
+
+    if (btnEditLock) {
+      btnEditLock.addEventListener('click', function(e) {
+        e.preventDefault();
+        isControlsLocked = !isControlsLocked;
+        if (inspectorDeck) inspectorDeck.classList.toggle('edit-locked', isControlsLocked);
+        btnEditLock.classList.toggle('unlocked', !isControlsLocked);
+        if (lblEditLockIcon) lblEditLockIcon.textContent = isControlsLocked ? '🔒' : '🔓';
+        if (lblEditLockText) lblEditLockText.textContent = isControlsLocked ? 'എഡിറ്റ് ലോക്ക്: ഓൺ' : 'എഡിറ്റ് ലോക്ക്: ഓഫ്';
+        if (editLockHint) editLockHint.textContent = isControlsLocked ? 'സ്ക്രോളിംഗ് സുരക്ഷിതമാണ്' : 'എഡിറ്റിംഗ് സജീവമാണ്';
+        if (typeof showToast === 'function') {
+          showToast(isControlsLocked ? '🔒 Edit Lock ON: Scrolling is safe' : '🔓 Edit Lock OFF: Controls unlocked');
+        }
+      });
+    }
+
+    // 1. All input[type=range]: tapping the track must NOT change the value (only dragging thumb does)
+    function attachRangeTrackGuard() {
+      document.querySelectorAll('input[type="range"]').forEach(slider => {
+        slider.addEventListener('pointerdown', function(e) {
+          if (isControlsLocked) {
+            e.preventDefault();
+            if (typeof showToast === 'function') showToast('🔒 Controls locked. Tap Unlock above to edit.');
+            return;
+          }
+          const rect = slider.getBoundingClientRect();
+          const min = parseFloat(slider.min) || 0;
+          const max = parseFloat(slider.max) || 100;
+          const val = parseFloat(slider.value) || min;
+          const ratio = (val - min) / (max - min);
+          const thumbRadius = 16;
+          const thumbX = rect.left + thumbRadius + ratio * (rect.width - 2 * thumbRadius);
+          // If click is more than 24px away from the center of the thumb, it was a tap on track!
+          if (Math.abs(e.clientX - thumbX) > 24) {
+            e.preventDefault();
+          }
+        }, { passive: false });
+      });
+    }
+    attachRangeTrackGuard();
+
+    // 2. All buttons: cancel action if finger moves > 10px (treat as scroll). Suppress press-and-hold during scroll
+    (function installScrollProtection() {
+      let touchStartX = 0, touchStartY = 0, isScrollMotion = false;
+      window.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          touchStartX = e.touches[0].clientX;
+          touchStartY = e.touches[0].clientY;
+          isScrollMotion = false;
+        }
+      }, { passive: true });
+
+      window.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 1) {
+          const dx = Math.abs(e.touches[0].clientX - touchStartX);
+          const dy = Math.abs(e.touches[0].clientY - touchStartY);
+          if (dx > 10 || dy > 10) {
+            isScrollMotion = true;
+          }
+        }
+      }, { passive: true });
+
+      window.addEventListener('click', (e) => {
+        if (isScrollMotion) {
+          const btn = e.target.closest('button, .btn-tactile, .btn-icon-fmt, .btn-stepper, select, input[type="checkbox"], input[type="radio"]');
+          if (btn && !btn.id.includes('EditLock')) {
+            e.preventDefault();
+            e.stopPropagation();
+            isScrollMotion = false;
+          }
+        }
+      }, true);
+    })();
+
+    // 3. X / Y Position Steppers (- / +) for Photo 1, Photo 2, and Text
+    // Photo 1 Steppers
+    const btnPhotoXDecr = document.getElementById('btnPhotoXDecr');
+    const btnPhotoXIncr = document.getElementById('btnPhotoXIncr');
+    const btnPhotoYDecr = document.getElementById('btnPhotoYDecr');
+    const btnPhotoYIncr = document.getElementById('btnPhotoYIncr');
+    const photoXValBadge = document.getElementById('photoXValBadge');
+    const photoYValBadge = document.getElementById('photoYValBadge');
+
+    function updatePhoto1SteppersUI() {
+      if (photoXValBadge) photoXValBadge.textContent = photoPosX + 'px';
+      if (photoYValBadge) photoYValBadge.textContent = photoPosY + 'px';
+      const rX = document.getElementById('posXRange'); if (rX) rX.value = photoPosX;
+      const rY = document.getElementById('posYRange'); if (rY) rY.value = photoPosY;
+    }
+
+    btnPhotoXDecr?.addEventListener('click', () => { photoPosX -= 10; updatePhoto1SteppersUI(); renderCard(); });
+    btnPhotoXIncr?.addEventListener('click', () => { photoPosX += 10; updatePhoto1SteppersUI(); renderCard(); });
+    btnPhotoYDecr?.addEventListener('click', () => { photoPosY -= 10; updatePhoto1SteppersUI(); renderCard(); });
+    btnPhotoYIncr?.addEventListener('click', () => { photoPosY += 10; updatePhoto1SteppersUI(); renderCard(); });
+
+    // Photo 2 Steppers
+    const btnPhoto2XDecr = document.getElementById('btnPhoto2XDecr');
+    const btnPhoto2XIncr = document.getElementById('btnPhoto2XIncr');
+    const btnPhoto2YDecr = document.getElementById('btnPhoto2YDecr');
+    const btnPhoto2YIncr = document.getElementById('btnPhoto2YIncr');
+    const photo2XValBadge = document.getElementById('photo2XValBadge');
+    const photo2YValBadge = document.getElementById('photo2YValBadge');
+
+    btnPhoto2XDecr?.addEventListener('click', () => { photo2PosX -= 10; if (photo2XValBadge) photo2XValBadge.textContent = photo2PosX + 'px'; renderCard(); });
+    btnPhoto2XIncr?.addEventListener('click', () => { photo2PosX += 10; if (photo2XValBadge) photo2XValBadge.textContent = photo2PosX + 'px'; renderCard(); });
+    btnPhoto2YDecr?.addEventListener('click', () => { photo2PosY -= 10; if (photo2YValBadge) photo2YValBadge.textContent = photo2PosY + 'px'; renderCard(); });
+    btnPhoto2YIncr?.addEventListener('click', () => { photo2PosY += 10; if (photo2YValBadge) photo2YValBadge.textContent = photo2PosY + 'px'; renderCard(); });
+
+    // Text Steppers
+    const btnTextXDecr = document.getElementById('btnTextXDecr');
+    const btnTextXIncr = document.getElementById('btnTextXIncr');
+    const btnTextYDecr = document.getElementById('btnTextYDecr');
+    const btnTextYIncr = document.getElementById('btnTextYIncr');
+    const textXValBadge = document.getElementById('textXValBadge');
+    const textYValBadge = document.getElementById('textYValBadge');
+
+    btnTextXDecr?.addEventListener('click', () => {
+      const r = document.getElementById('summaryXRange');
+      if (r) { r.value = parseInt(r.value || 0) - 5; if (textXValBadge) textXValBadge.textContent = r.value + 'px'; r.dispatchEvent(new Event('input')); }
+    });
+    btnTextXIncr?.addEventListener('click', () => {
+      const r = document.getElementById('summaryXRange');
+      if (r) { r.value = parseInt(r.value || 0) + 5; if (textXValBadge) textXValBadge.textContent = r.value + 'px'; r.dispatchEvent(new Event('input')); }
+    });
+    btnTextYDecr?.addEventListener('click', () => {
+      const r = document.getElementById('summaryYRange');
+      if (r) { r.value = parseInt(r.value || 0) - 5; if (textYValBadge) textYValBadge.textContent = r.value + 'px'; r.dispatchEvent(new Event('input')); }
+    });
+    btnTextYIncr?.addEventListener('click', () => {
+      const r = document.getElementById('summaryYRange');
+      if (r) { r.value = parseInt(r.value || 0) + 5; if (textYValBadge) textYValBadge.textContent = r.value + 'px'; r.dispatchEvent(new Event('input')); }
+    });
+
+    // ==========================================================================
+    // 📺 PRIORITY 5: SECURE STREAM (HTTPS Mixed-Content Guard & Player Links)
+    // ==========================================================================
+    const btnDirectWatch = document.getElementById('btnDirectWatchLink');
+    const btnMediaMtx = document.getElementById('btnMediaMtxLink');
+
+    btnDirectWatch?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const currentUrl = (typeof getSavedLiveStreamUrl === 'function') ? getSavedLiveStreamUrl() : '';
+      if (currentUrl) {
+        if (typeof openLiveTvModal === 'function') openLiveTvModal();
+      } else {
+        if (typeof showToast === 'function') showToast('📺 Please configure an official stream URL in Admin Console.');
+      }
+    });
+
+    btnMediaMtx?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const currentUrl = (typeof getSavedLiveStreamUrl === 'function') ? getSavedLiveStreamUrl() : '';
+      if (currentUrl && currentUrl.startsWith('https://')) {
+        window.open(currentUrl, '_blank', 'noopener,noreferrer');
+      } else {
+        if (typeof openLiveTvModal === 'function') openLiveTvModal();
+      }
+    });
+
+    // Guard on admin stream URL input: warn if http:// entered
+    const inpStreamLink = document.getElementById('kvInpLiveStreamUrl');
+    const inpRadioLink = document.getElementById('kvInpRadioStreamUrl');
+    function checkInsecureStreamWarning(inp) {
+      if (!inp) return;
+      const val = inp.value.trim().toLowerCase();
+      if (val.startsWith('http://')) {
+        if (typeof showAdminStatus === 'function') {
+          showAdminStatus('⚠️ Warning: Browser will block insecure HTTP streams on HTTPS sites (Mixed Content error). Use https://', true);
+        }
+      }
+    }
+    inpStreamLink?.addEventListener('blur', () => checkInsecureStreamWarning(inpStreamLink));
+    inpRadioLink?.addEventListener('blur', () => checkInsecureStreamWarning(inpRadioLink));
+
+    // ==========================================================================
+    // 🔐 PRIORITY 6: SALTED SHA-256 PASSWORD SECURITY ENGINE
+    // ==========================================================================
+    async function hashKvPassword(plainPassword, salt) {
+      if (!salt) salt = 'kv_' + Math.random().toString(36).substring(2, 9);
+      if (typeof window.crypto !== 'undefined' && window.crypto.subtle) {
+        const enc = new TextEncoder();
+        const data = enc.encode(salt + '::' + plainPassword);
+        const hashBuf = await window.crypto.subtle.digest('SHA-256', data);
+        const hashArr = Array.from(new Uint8Array(hashBuf));
+        const hashHex = hashArr.map(b => b.toString(16).padStart(2, '0')).join('');
+        return 'sha256$' + salt + '$' + hashHex;
+      } else {
+        // Fallback salt hash
+        return 'salt$' + salt + '$' + btoa(salt + ':' + plainPassword);
+      }
+    }
+
+    async function verifyKvPassword(inputPassword, storedHashOrPassword) {
+      if (!storedHashOrPassword) return false;
+      const trimmed = String(storedHashOrPassword).trim();
+      if (!trimmed.startsWith('sha256$') && !trimmed.startsWith('salt$')) {
+        // Legacy plain-text password match
+        return String(inputPassword).trim() === trimmed;
+      }
+      const parts = trimmed.split('$');
+      if (parts.length === 3) {
+        const salt = parts[1];
+        const computed = await hashKvPassword(inputPassword, salt);
+        return computed === trimmed;
+      }
+      return false;
+    }
 </script>
 </body>
 </html>
