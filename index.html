@@ -9,8 +9,8 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    // === AUTO-UPDATE & PWA ENGINE v8.0.5 ===
-    var KV_LATEST_BUILD = '8.0.5';
+    // === AUTO-UPDATE & PWA ENGINE v8.0.6 ===
+    var KV_LATEST_BUILD = '8.0.6';
     (function() {
       try {
         if ('serviceWorker' in navigator) {
@@ -3245,6 +3245,196 @@
     padding: 6px 10px !important;
   }
 }
+/* ==========================================================================
+   COMPACT ICON-DRIVEN UI & PERMANENT STICKY PREVIEW (Matching Reference Images)
+   ========================================================================== */
+
+/* Universal lock: prevent window/body scroll so preview never disappears */
+html, body {
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+}
+
+@media (max-width: 767px) {
+  html, body {
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    overflow: hidden !important;
+  }
+}
+
+.app-wrapper {
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.kv-studio-layout {
+  flex: 1 !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+/* DESKTOP & TABLET: Left Canvas Stage is permanently PINNED */
+@media (min-width: 768px) {
+  .canvas-stage-area {
+    height: 100% !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
+    position: sticky !important;
+    top: 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  .inspector-deck {
+    height: 100% !important;
+    max-height: 100% !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+/* MOBILE: Sticky preview pinned to top (max 34dvh), inspector scrolls underneath */
+@media (max-width: 767px) {
+  .canvas-stage-area {
+    position: sticky !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 34dvh !important;
+    max-height: 34dvh !important;
+    min-height: 180px !important;
+    flex-shrink: 0 !important;
+    z-index: 999 !important;
+    overflow: hidden !important;
+    background: #02040a !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8) !important;
+  }
+
+  .inspector-deck {
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 8px 10px calc(68px + env(safe-area-inset-bottom)) 10px !important;
+  }
+}
+
+/* Compact Sub-Tabs (Headline Edit | Summary Edit | Place/Date) */
+.compact-text-nav {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+  background: #1e293b;
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  flex-shrink: 0;
+}
+
+.btn-compact-subtab {
+  flex: 1;
+  padding: 7px 4px;
+  font-size: 11px;
+  font-weight: 800;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.btn-compact-subtab.active {
+  background: #0284c7;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+}
+
+/* Compact Formatting Toolbars & Icon Buttons */
+.compact-toolbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+}
+
+.btn-icon-fmt {
+  padding: 4px 8px;
+  font-size: 11.5px;
+  font-weight: 800;
+  border-radius: 5px;
+  border: 1px solid #475569;
+  background: #1e293b;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon-fmt:hover, .btn-icon-fmt.active {
+  background: #0284c7;
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+/* Inline D-Pad with Zoom Slider (Matching Image 1) */
+.inline-dpad-zoom-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+}
+
+.inline-dpad-cluster {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.inline-dpad-btn {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 11px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  border: 1px solid #475569;
+  background: #1e293b;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+
+.inline-dpad-btn:hover {
+  background: #0284c7;
+  color: #fff;
+}
 </style>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
@@ -4239,73 +4429,177 @@
           <div class="col-card">
             
             <!-- NEWS MODE DETAILS -->
-            <div id="newsDetailsWrap" style="display:flex; flex-direction:column; gap:8px;">
-              <!-- 🎛️ STUDIO MODE SWITCHER: Simple Mode (Compact) vs Advanced Settings -->
-              <div style="display:flex; justify-content:space-between; align-items:center; padding:7px 10px; background:#0f172a; border-radius:10px; border:1px solid #334155; margin-bottom:4px;">
-                <span style="font-size:11.5px; font-weight:800; color:#38bdf8; letter-spacing:0.4px;">✍️ NEWS STUDIO</span>
-                <div style="display:flex; gap:3px; background:#1e293b; padding:2px; border-radius:7px; border:1px solid #475569;">
-                  <button id="btnTextModeSimple" type="button" class="btn-tactile active" style="font-size:10px; font-weight:800; padding:3px 9px; border-radius:5px; border:none; background:#0284c7; color:#fff; cursor:pointer;">⚡ Simple Mode</button>
-                  <button id="btnTextModeAdvanced" type="button" class="btn-tactile" style="font-size:10px; font-weight:800; padding:3px 9px; border-radius:5px; border:none; background:transparent; color:#94a3b8; cursor:pointer;">⚙️ Advanced Settings</button>
-                </div>
-              </div>
+            <div id="newsDetailsWrap" style="display:flex; flex-direction:column; gap:6px;">
 
-              <div class="col-title" style="margin-top:0;">
-                <span>📰 Content &amp; Headlines</span>
-                <div style="display:flex; gap:4px;">
-                  <button id="btnFontDecr" type="button" class="btn-tactile" style="font-size:9px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; padding:2px 6px; border-radius:4px;">A- Smaller</button>
-                  <button id="btnFontIncr" type="button" class="btn-tactile" style="font-size:9px; background:#1e293b; border:1px solid #475569; color:#cbd5e1; padding:2px 6px; border-radius:4px;">A+ Larger</button>
-                </div>
-              </div>
+  <!-- 📑 TEXT EDITOR SUBTABS: Headline | Summary | Place/Date (Matching User Reference Image 2) -->
+  <div class="compact-text-nav" id="compactTextNav">
+    <button id="subtabHeadline" type="button" class="btn-compact-subtab active">
+      <span>📰 Headline</span>
+    </button>
+    <button id="subtabSummary" type="button" class="btn-compact-subtab">
+      <span>📝 Summary</span>
+    </button>
+    <button id="subtabPlaceDate" type="button" class="btn-compact-subtab">
+      <span>📍 Place / Date</span>
+    </button>
+  </div>
 
-              <!-- Date & Location in place of Category -->
-              <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:6px;">
-                <div class="form-group">
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
-                    <label class="form-label" style="margin-bottom:0;">📅 Date Badge:</label>
-                    <button id="btnSetTodayDate" type="button" class="btn-tactile" style="font-size:9.5px; font-weight:800; background:rgba(56,189,248,0.18); border:1px solid #0284c7; color:#38bdf8; padding:2px 7px; border-radius:5px; cursor:pointer;" title="Set Today's Date">⚡ Today</button>
-                  </div>
-                  <input id="txtCardDate" type="text" class="form-input" value="">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">📍 Location:</label>
-                  <input id="txtLocation" type="text" class="form-input" value="കോഴിക്കോട്">
-                </div>
-              </div>
+  <!-- SECTION 1: HEADLINE BOX (Active by default) -->
+  <div id="secHeadlineBox" class="text-input-section" style="display:block;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+      <label class="form-label" style="margin-bottom:0; font-weight:800; color:#f8fafc; font-size:11.5px;">📰 Main Headline (വാർത്ത):</label>
+      <button id="btnVoiceHeadline" type="button" class="btn-voice-mic" title="Voice Dictation in Malayalam" style="padding:2px 8px; font-size:10px;">🎙️ Voice</button>
+    </div>
+    <textarea id="txtHeadline" class="form-textarea" rows="2" style="font-size:15px; font-weight:700; width:100%; border-radius:8px; padding:8px;">കോഴിക്കോട് ബീച്ചിൽ പുതിയ ടൂറിസം പദ്ധതിക്ക് തുടക്കമായി</textarea>
+  </div>
 
-              <!-- ✍️ Main Headline Input & Styling Controls -->
-              <div class="form-group">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-                  <label class="form-label" style="margin-bottom:0;font-weight:800;color:#f8fafc;">📰 Main Headline *:</label>
-                  <button id="btnVoiceHeadline" type="button" class="btn-voice-mic" title="Click to speak and type in Malayalam">🎙️ Voice Dictation</button>
-                </div>
-                <textarea id="txtHeadline" class="form-textarea" rows="2">കോഴിക്കോട് ബീച്ചിൽ പുതിയ ടൂറിസം പദ്ധതിക്ക് തുടക്കമായി</textarea>
-              </div>
+  <!-- SECTION 2: SUMMARY BOX (Hidden until Summary tab clicked) -->
+  <div id="secSummaryBox" class="text-input-section" style="display:none;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+      <label class="form-label" style="margin-bottom:0; font-weight:800; color:#f8fafc; font-size:11.5px;">📝 News Summary / Subline (വിവരണം):</label>
+      <button id="btnVoiceSummary" type="button" class="btn-voice-mic" title="Voice Dictation in Malayalam" style="padding:2px 8px; font-size:10px;">🎙️ Voice</button>
+    </div>
+    <textarea id="txtSummary" class="form-textarea" rows="2" placeholder="Type news summary here..." style="font-size:14px; width:100%; border-radius:8px; padding:8px;">മന്ത്രി മുഹമ്മദ് റിയാസ് ഉദ്ഘാടനം ചെയ്തു; ആദ്യഘട്ടത്തിൽ 10 കോടിയുടെ സമഗ്ര വികസനം നടപ്പാക്കും.</textarea>
+  </div>
 
-              <!-- ✍️ Summary / Subline Input (Directly below Headline) -->
-              <div class="form-group" style="margin-top:6px; margin-bottom:8px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-                  <label class="form-label" style="margin-bottom:0;font-weight:800;color:#f8fafc;">📝 News Summary / Subline:</label>
-                  <button id="btnVoiceSummary" type="button" class="btn-voice-mic" title="Click to speak and type in Malayalam">🎙️ Voice Dictation</button>
-                </div>
-                <textarea id="txtSummary" class="form-textarea" rows="2" placeholder="Type news summary here...">മന്ത്രി മുഹമ്മദ് റിയാസ് ഉദ്ഘാടനം ചെയ്തു; ആദ്യഘട്ടത്തിൽ 10 കോടിയുടെ സമഗ്ര വികസനം നടപ്പാക്കും.</textarea>
-              </div>
+  <!-- SECTION 3: PLACE & DATE BOX (Hidden until Place/Date tab clicked) -->
+  <div id="secPlaceDateBox" class="text-input-section" style="display:none;">
+    <div style="display:grid; grid-template-columns:1.1fr 1fr; gap:6px; margin-bottom:6px;">
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+          <label class="form-label" style="font-size:10.5px; margin-bottom:0; font-weight:700;">📅 Date:</label>
+          <button id="btnSetTodayDate" type="button" class="btn-tactile" style="font-size:9px; padding:1px 5px; background:rgba(56,189,248,0.2); border:1px solid #38bdf8; color:#38bdf8; border-radius:4px; cursor:pointer;">⚡ Today</button>
+        </div>
+        <input id="txtCardDate" type="text" class="form-input" value="" style="font-size:12px; padding:6px 8px;">
+      </div>
+      <div>
+        <label class="form-label" style="font-size:10.5px; margin-bottom:2px; font-weight:700;">📍 Location:</label>
+        <input id="txtLocation" type="text" class="form-input" value="കോഴിക്കോട്" style="font-size:12px; padding:6px 8px;">
+      </div>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1.1fr; gap:6px;">
+      <div>
+        <label class="form-label" style="font-size:10px; color:#cbd5e1; margin-bottom:2px;">🎯 Punchline:</label>
+        <input id="txtPunchline" type="text" class="form-input" placeholder="തീരുമാനം ഉടൻ" style="font-size:11px; padding:5px 7px;">
+      </div>
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+          <label class="form-label" style="font-size:10px; margin-bottom:0;">👤 Byline:</label>
+          <button id="btnSyncMyByline" type="button" class="btn-tactile" style="font-size:9px; padding:1px 5px; background:rgba(56,189,248,0.2); border:1px solid #38bdf8; color:#38bdf8; border-radius:4px; cursor:pointer;">My Name</button>
+        </div>
+        <input id="txtReporter" type="text" class="form-input" value="വിഷൻ ന്യൂസ് കോഴിക്കോട്" style="font-size:11px; padding:5px 7px;">
+      </div>
+    </div>
+  </div>
 
-              <!-- 🎯 Punchline Tag & 👤 Reporter Byline (Compact Side-by-Side Row) -->
-              <div style="display:grid; grid-template-columns:1.1fr 1fr; gap:8px; margin-bottom:10px;">
-                <div>
-                  <label class="form-label" style="font-size:10.5px; color:#cbd5e1; margin-bottom:2px; font-weight:700;">🎯 Punchline / Sub-badge (e.g. തീരുമാനം ഉടൻ):</label>
-                  <input id="txtPunchline" type="text" class="form-input" placeholder="തീരുമാനം ഉടൻ" style="font-size:11.5px; font-weight:700; padding:6px 8px;">
-                </div>
-                <div>
-                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
-                    <label class="form-label" style="font-size:10.5px; margin-bottom:0; font-weight:700;">👤 Reporter Byline:</label>
-                    <button id="btnSyncMyByline" type="button" class="btn-tactile" style="font-size:9.5px;padding:1px 6px;background:rgba(56,189,248,0.18);border:1px solid #38bdf8;color:#38bdf8;border-radius:4px;cursor:pointer;">My Name</button>
-                  </div>
-                  <input id="txtReporter" type="text" class="form-input" value="വിഷൻ ന്യൂസ് കോഴിക്കോട്" style="font-size:11.5px; padding:6px 8px;">
-                </div>
-              </div>
+  <!-- 🎛️ COMPACT TYPOGRAPHY & FORMATTING TOOLBAR (Matching Reference Image 2) -->
+  <div class="compact-text-controls-box" style="background:#0f172a; border:1px solid #334155; border-radius:10px; padding:10px; display:flex; flex-direction:column; gap:8px;">
+    
+    <!-- Row 1: Font Family (Left) & Font Size with live badge (Right) -->
+    <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:8px; align-items:center;">
+      <div>
+        <label style="font-size:10px; color:#94a3b8; font-weight:700; display:block; margin-bottom:3px;">Font (ഫോണ്ട്):</label>
+        <select id="selUnifiedFont" class="form-input" style="padding:6px; font-size:11.5px; font-weight:700; background:#1e293b; border:1px solid #475569; color:#fff; width:100%; border-radius:6px;">
+          <option value="Anek Malayalam" selected>🅰️ Anek Malayalam</option>
+          <option value="Baloo Chettan 2">💥 Baloo Chettan 2</option>
+          <option value="Gayathri">📰 Gayathri</option>
+          <option value="Manjari">✒️ Manjari</option>
+          <option value="Noto Sans Malayalam">🌐 Noto Sans</option>
+        </select>
+      </div>
+      <div>
+        <div style="display:flex; justify-content:space-between; font-size:10px; color:#94a3b8; font-weight:700; margin-bottom:3px;">
+          <span>Size (വലിപ്പം):</span>
+          <span id="headlineSizeVal" style="color:#38bdf8; font-weight:800;">54px</span>
+        </div>
+        <input id="headlineSizeRange" type="range" min="28" max="84" step="2" value="54" style="width:100%; accent-color:#38bdf8; cursor:pointer;">
+      </div>
+    </div>
 
-              <!-- 🎛️ UNIFIED BROADCAST TEXT & BOX STUDIO TOOLBAR (Headline & Summary Switcher) -->
+    <!-- Row 2: Line Spacing (Left) & Position Y / Fine Adjust (Right) -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; align-items:center;">
+      <div>
+        <div style="display:flex; justify-content:space-between; font-size:10px; color:#94a3b8; font-weight:700; margin-bottom:3px;">
+          <span>Line Spacing:</span>
+          <span id="unifiedLineHeightVal" style="color:#38bdf8; font-weight:800;">1.25x</span>
+        </div>
+        <input id="unifiedLineHeightRange" type="range" min="1.0" max="2.3" step="0.05" value="1.25" style="width:100%; accent-color:#38bdf8; cursor:pointer;">
+      </div>
+      <div>
+        <div style="display:flex; justify-content:space-between; font-size:10px; color:#94a3b8; font-weight:700; margin-bottom:3px;">
+          <span>Position Y:</span>
+          <span id="summaryYVal" style="color:#38bdf8; font-weight:800;">0px</span>
+        </div>
+        <input id="summaryYRange" type="range" min="-120" max="120" step="2" value="0" style="width:100%; accent-color:#38bdf8; cursor:pointer;">
+      </div>
+    </div>
+
+    <!-- Row 3: Formatting Icons (Alignment | Style B/I/U | Color Dots) Matching Image 2 -->
+    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px;">
+      <!-- Alignment -->
+      <div style="display:flex; align-items:center; gap:3px;">
+        <button type="button" class="btn-icon-fmt btn-unified-align active" data-align="left" title="Left Align">⬅️</button>
+        <button type="button" class="btn-icon-fmt btn-unified-align" data-align="center" title="Center Align">↔️</button>
+        <button type="button" class="btn-icon-fmt btn-unified-align" data-align="right" title="Right Align">➡️</button>
+      </div>
+
+      <!-- Styles: Bold, Italic, Underline -->
+      <div style="display:flex; align-items:center; gap:3px;">
+        <button id="btnFmtBold" type="button" class="btn-icon-fmt active" style="font-weight:900;" title="Bold">B</button>
+        <button id="btnFmtItalic" type="button" class="btn-icon-fmt" style="font-style:italic;" title="Italic">I</button>
+        <button id="btnFmtUnderline" type="button" class="btn-icon-fmt" style="text-decoration:underline;" title="Underline">U</button>
+        <input id="chkUnifiedUnderline" type="checkbox" style="display:none;">
+      </div>
+
+      <!-- Color Dots & Picker -->
+      <div style="display:flex; align-items:center; gap:4px;">
+        <button type="button" class="btn-uni-col-pill" data-col="#ffffff" style="width:18px; height:18px; border-radius:50%; background:#ffffff; border:2px solid #38bdf8; cursor:pointer;" title="White"></button>
+        <button type="button" class="btn-uni-col-pill" data-col="#ffd700" style="width:18px; height:18px; border-radius:50%; background:#ffd700; border:1px solid #64748b; cursor:pointer;" title="Gold"></button>
+        <button type="button" class="btn-uni-col-pill" data-col="#38bdf8" style="width:18px; height:18px; border-radius:50%; background:#38bdf8; border:1px solid #64748b; cursor:pointer;" title="Sky Blue"></button>
+        <button type="button" class="btn-uni-col-pill" data-col="#ef4444" style="width:18px; height:18px; border-radius:50%; background:#ef4444; border:1px solid #64748b; cursor:pointer;" title="Red"></button>
+        <input id="colUnifiedTextColor" type="color" value="#ffffff" style="width:20px; height:20px; border:none; border-radius:4px; cursor:pointer; background:none; padding:0;" title="Custom Color">
+      </div>
+    </div>
+
+    <!-- Row 4: Clean Switch Toggles (Text Box & Accent Bar) -->
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+      <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:11px; font-weight:700; color:#cbd5e1; margin:0; background:#1e293b; padding:6px 10px; border-radius:6px; flex:1; border:1px solid #334155;">
+        <input id="chkUnifiedBox" type="checkbox" style="width:16px; height:16px; accent-color:#38bdf8; cursor:pointer;">
+        <span>📦 Text BG Box</span>
+      </label>
+      <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:11px; font-weight:700; color:#cbd5e1; margin:0; background:#1e293b; padding:6px 10px; border-radius:6px; flex:1; border:1px solid #334155;">
+        <input id="chkUnifiedVerticalBar" type="checkbox" checked style="width:16px; height:16px; accent-color:#ef4444; cursor:pointer;">
+        <span>▎ Accent Bar</span>
+      </label>
+    </div>
+
+    <!-- Row 5: Position Arrows & Reset -->
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:4px; background:#1e293b; padding:5px 8px; border-radius:6px; border:1px solid #334155;">
+      <span style="font-size:10px; color:#94a3b8; font-weight:700;">Position:</span>
+      <div style="display:flex; gap:3px;">
+        <button id="btnTextLeft" type="button" class="btn-icon-fmt" style="padding:2px 6px; font-size:10px;">◀</button>
+        <button id="btnTextUp" type="button" class="btn-icon-fmt" style="padding:2px 6px; font-size:10px;">▲</button>
+        <button id="btnTextDown" type="button" class="btn-icon-fmt" style="padding:2px 6px; font-size:10px;">▼</button>
+        <button id="btnTextRight" type="button" class="btn-icon-fmt" style="padding:2px 6px; font-size:10px;">▶</button>
+      </div>
+      <button id="btnTextReset" type="button" class="btn-icon-fmt" style="padding:2px 8px; font-size:10px;" title="Reset Text Position">↺ Reset</button>
+    </div>
+
+  </div>
+
+  <!-- Hidden compatibility buttons for old JS -->
+  <div style="display:none !important;">
+    <button id="btnTargetHeadline" type="button">Headline</button>
+    <button id="btnTargetSummary" type="button">Summary</button>
+    <span id="lblUnifiedFontSize">54px</span>
+    <button id="btnUnifiedFontDecr" type="button">A-</button>
+    <button id="btnUnifiedFontIncr" type="button">A+</button>
+    <button id="btnFontDecr" type="button">A-</button>
+    <button id="btnFontIncr" type="button">A+</button>
+  </div>
+</div>
+
+<!-- 🎛️ UNIFIED BROADCAST TEXT & BOX STUDIO TOOLBAR (Headline & Summary Switcher) -->
               <div id="unifiedTextToolbar" style="margin-top:4px; margin-bottom:12px; padding:12px; background:#0f172a; border:1px solid #334155; border-radius:12px;">
                 <!-- Target Switcher Tabs: Headline vs Summary -->
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #334155;">
@@ -11363,6 +11657,59 @@
         }
       }, true);
     }
+    // ==========================================================================
+    // COMPACT TEXT EDITOR SUBTABS & ICON CONTROLS ENGINE
+    // ==========================================================================
+    const subtabHeadline = document.getElementById('subtabHeadline');
+    const subtabSummary = document.getElementById('subtabSummary');
+    const subtabPlaceDate = document.getElementById('subtabPlaceDate');
+
+    const secHeadlineBox = document.getElementById('secHeadlineBox');
+    const secSummaryBox = document.getElementById('secSummaryBox');
+    const secPlaceDateBox = document.getElementById('secPlaceDateBox');
+
+    function activateTextSubtab(target) {
+      [subtabHeadline, subtabSummary, subtabPlaceDate].forEach(b => b?.classList.remove('active'));
+      [secHeadlineBox, secSummaryBox, secPlaceDateBox].forEach(s => { if (s) s.style.display = 'none'; });
+
+      if (target === 'headline') {
+        subtabHeadline?.classList.add('active');
+        if (secHeadlineBox) secHeadlineBox.style.display = 'block';
+        document.getElementById('btnTargetHeadline')?.click();
+      } else if (target === 'summary') {
+        subtabSummary?.classList.add('active');
+        if (secSummaryBox) secSummaryBox.style.display = 'block';
+        document.getElementById('btnTargetSummary')?.click();
+      } else if (target === 'placedate') {
+        subtabPlaceDate?.classList.add('active');
+        if (secPlaceDateBox) secPlaceDateBox.style.display = 'block';
+      }
+    }
+
+    subtabHeadline?.addEventListener('click', () => activateTextSubtab('headline'));
+    subtabSummary?.addEventListener('click', () => activateTextSubtab('summary'));
+    subtabPlaceDate?.addEventListener('click', () => activateTextSubtab('placedate'));
+
+    // Formatting Icon: Underline toggle
+    const btnFmtUnderline = document.getElementById('btnFmtUnderline');
+    const chkUnderline = document.getElementById('chkUnifiedUnderline');
+    if (btnFmtUnderline && chkUnderline) {
+      btnFmtUnderline.addEventListener('click', () => {
+        chkUnderline.checked = !chkUnderline.checked;
+        btnFmtUnderline.classList.toggle('active', chkUnderline.checked);
+        chkUnderline.dispatchEvent(new Event('change'));
+      });
+    }
+
+    // Arrow keys Left & Right for Text
+    document.getElementById('btnTextLeft')?.addEventListener('click', () => {
+      const r = document.getElementById('summaryXRange');
+      if (r) { r.value = parseInt(r.value || 0) - 5; r.dispatchEvent(new Event('input')); }
+    });
+    document.getElementById('btnTextRight')?.addEventListener('click', () => {
+      const r = document.getElementById('summaryXRange');
+      if (r) { r.value = parseInt(r.value || 0) + 5; r.dispatchEvent(new Event('input')); }
+    });
 </script>
 </body>
 </html>
