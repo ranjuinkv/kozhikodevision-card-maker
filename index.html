@@ -3164,6 +3164,87 @@
     display: none;
   }
 }
+/* --- EXTRA RESPONSIVE FIXES (No Overflow on 360px & Perfect Canvas Fit on Desktop) --- */
+.inspector-deck .two-col-grid {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  gap: 12px !important;
+}
+
+.stage-canvas-viewport {
+  flex: 1 !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.stage-canvas-viewport .canvas-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+.stage-canvas-viewport #newsCanvas {
+  max-width: 95% !important;
+  max-height: 95% !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+  display: block !important;
+  margin: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8) !important;
+}
+
+@media (max-width: 767px) {
+  html, body {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+    width: 100% !important;
+  }
+  .app-wrapper, .kv-studio-layout {
+    max-width: 100vw !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+  .canvas-stage-area {
+    height: 38dvh !important;
+    max-height: 38dvh !important;
+    min-height: 190px !important;
+    width: 100% !important;
+    flex-shrink: 0 !important;
+  }
+  .two-col-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  .col-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .header-btn {
+    min-height: 36px !important;
+    padding: 6px 10px !important;
+  }
+}
 </style>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
@@ -3647,45 +3728,33 @@
       </div>
     </div>
 
+    <!-- Clean Center Viewport: contains ONLY canvasContainer and newsCanvas -->
     <div class="stage-canvas-viewport" id="stageCanvasViewport">
-      <div class="preview-header-bar">
-        <div class="preview-badge-live">
-          <span class="preview-dot"></span>
-          <span>Live Card Preview</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;">
-          <button id="canvasQuickLockBadge" type="button" class="canvas-quick-lock-btn" title="Toggle Canvas Position Lock">
-            🔒 Locked
-          </button>
-          <div id="previewDimBadge" class="preview-res-badge">1:1 POST (1080 × 1080)</div>
-        </div>
-      </div>
-
-      <!-- Quick Interactive Touch / Mouse Drag Mode Selector -->
-      <div class="drag-control-toolbar">
-        <div class="drag-toolbar-head">
-          <div style="display:flex;align-items:center;gap:5px;">
-            <span id="dragLockStatusIcon">🔒</span>
-            <span style="font-weight:700;">Canvas Control:</span>
-            <span id="dragStatusLabel" style="color:#34d399; font-size:9.5px; font-weight:800;">🔒 Locked (Safe Mobile Scroll)</span>
-          </div>
-          <span style="font-size:9px;color:#94a3b8;">Accidental Move Protection ON</span>
-        </div>
-        <div class="drag-target-pills">
-          <button id="dragPillLock" type="button" class="btn-tactile drag-pill-btn lock active" style="font-weight:800;">
-            🔒 Lock (Safe Scroll)
-          </button>
-          <button id="dragPillAuto" type="button" class="btn-tactile drag-pill-btn" title="Touch/Drag freely">
-            🔓 Move Mode
-          </button>
-          <button id="dragPillPhoto" type="button" class="btn-tactile drag-pill-btn">📷 Photo</button>
-          <button id="dragPillLogo" type="button" class="btn-tactile drag-pill-btn">🏷️ Logo</button>
-          <button id="dragPillText" type="button" class="btn-tactile drag-pill-btn">✍️ Text</button>
-        </div>
-      </div>
-
       <div class="canvas-container" id="canvasContainer">
         <canvas id="newsCanvas" width="1080" height="1080"></canvas>
+      </div>
+    </div>
+
+    <!-- Drag Target Selector Toolbar (Desktop stage bottom / hidden on mobile) -->
+    <div class="drag-control-toolbar" id="dragControlToolbar">
+      <div class="drag-toolbar-head">
+        <div style="display:flex;align-items:center;gap:5px;">
+          <span id="dragLockStatusIcon">🔒</span>
+          <span style="font-weight:700;">Canvas Control:</span>
+          <span id="dragStatusLabel" style="color:#34d399; font-size:9.5px; font-weight:800;">🔒 Locked (Safe Mobile Scroll)</span>
+        </div>
+        <span style="font-size:9px;color:#94a3b8;">Accidental Move Protection ON</span>
+      </div>
+      <div class="drag-target-pills">
+        <button id="dragPillLock" type="button" class="btn-tactile drag-pill-btn lock active" style="font-weight:800;">
+          🔒 Lock (Safe Scroll)
+        </button>
+        <button id="dragPillAuto" type="button" class="btn-tactile drag-pill-btn" title="Touch/Drag freely">
+          🔓 Move Mode
+        </button>
+        <button id="dragPillPhoto" type="button" class="btn-tactile drag-pill-btn">📷 Photo</button>
+        <button id="dragPillLogo" type="button" class="btn-tactile drag-pill-btn">🏷️ Logo</button>
+        <button id="dragPillText" type="button" class="btn-tactile drag-pill-btn">✍️ Text</button>
       </div>
     </div>
   </section>
