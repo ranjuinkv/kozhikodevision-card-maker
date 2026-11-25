@@ -9552,6 +9552,23 @@ service cloud.firestore {
     { uid: 'u-staff', name: 'Staff Desk', username: 'staff', email: 'staff@kozhikodevision.app', password: '123456', passwordHash: 'sha256$kv_sec01$f87a4686e73db4929e95efefe2e4b17994f1e2b8999bff7bd727f64405927b67', role: 'user', location: 'കൊയിലാണ്ടി', active: true, deleted: false }
   ];
 
+    // Admin password helper: returns the readable password for Admin view
+  function getUserVisiblePassword(u) {
+    if (!u) return '1234';
+    if (u.password && typeof u.password === 'string' && u.password.trim()) {
+      return u.password.trim();
+    }
+    const uname = (u.username || u.name || (typeof extractUsername === 'function' ? extractUsername(u.email) : '') || '').toLowerCase();
+    if (uname.indexOf('admin') !== -1 || uname.indexOf('ranju') !== -1 || uname.indexOf('staff') !== -1) {
+      return '123456';
+    }
+    if (uname.indexOf('reporter') !== -1) {
+      return '1234';
+    }
+    return '1234';
+  }
+  window.getUserVisiblePassword = getUserVisiblePassword;
+
   let inMemoryUsers = null;
 
   // COMPREHENSIVE SCANNER: Finds all users from ALL storage layers and keys ever created
@@ -9576,13 +9593,17 @@ service cloud.firestore {
       if (!key) return;
 
       if (!userMap[key]) {
-        userMap[key] = Object.assign({}, u, { uid: uid, location: u.location || 'കോഴിക്കോട്' });
+        userMap[key] = Object.assign({}, u, {
+          uid: uid,
+          password: u.password || getUserVisiblePassword(u),
+          location: u.location || 'കോഴിക്കോട്'
+        });
       } else {
         // Merge preserving existing password, custom name, photo, status, location
         const cur = userMap[key];
         userMap[key] = Object.assign({}, cur, u, {
           photo: u.photo || cur.photo || '',
-          password: u.password || cur.password || '1234',
+          password: u.password || cur.password || getUserVisiblePassword(u),
           name: (u.name && u.name !== 'User') ? u.name : (cur.name || u.name),
           location: u.location || cur.location || 'കോഴിക്കോട്',
           deleted: (u.deleted !== undefined) ? u.deleted : (cur.deleted || false),
@@ -11342,11 +11363,11 @@ service cloud.firestore {
             // Seamless auto-migration: if still plain text, hash it now!
             if (u.password && !u.passwordHash) {
               u.passwordHash = await hashKvPassword(pass);
-              delete u.password;
+              // Preserve u.password so Admin Console always displays the password!
               try {
                 localStorage.setItem('kv_all_registered_users', JSON.stringify(users));
                 if (typeof firebaseDb !== 'undefined' && firebaseDb) {
-                  firebaseDb.collection('kv_users').doc(u.uid).set({ passwordHash: u.passwordHash }, { merge: true }).catch(function(){});
+                  firebaseDb.collection('kv_users').doc(u.uid).set({ password: u.password, passwordHash: u.passwordHash }, { merge: true }).catch(function(){});
                 }
               } catch(err) {}
             }
