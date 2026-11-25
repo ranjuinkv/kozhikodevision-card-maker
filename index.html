@@ -9543,6 +9543,54 @@ service cloud.firestore {
     // Re-render card automatically whenever login/logout occurs
     window.addEventListener('kv-auth-changed', renderCard);
 
+    // =========================================================================
+    // 📄 TEXT ONLY / FLASH CARD UI EVENT LISTENERS
+    // =========================================================================
+    const btnTextThemeBreaking = document.getElementById('btnTextThemeBreaking');
+    const btnTextThemeStatement = document.getElementById('btnTextThemeStatement');
+    const btnTextThemeAlert = document.getElementById('btnTextThemeAlert');
+    const btnTextThemeQuote = document.getElementById('btnTextThemeQuote');
+    const allThemeBtns = [btnTextThemeBreaking, btnTextThemeStatement, btnTextThemeAlert, btnTextThemeQuote];
+
+    function setTextCardTheme(theme) {
+      textCardTheme = theme;
+      allThemeBtns.forEach(b => { if (b) b.classList.remove('active'); });
+      if (theme === 'breaking' && btnTextThemeBreaking) btnTextThemeBreaking.classList.add('active');
+      if (theme === 'statement' && btnTextThemeStatement) btnTextThemeStatement.classList.add('active');
+      if (theme === 'alert' && btnTextThemeAlert) btnTextThemeAlert.classList.add('active');
+      if (theme === 'quote' && btnTextThemeQuote) btnTextThemeQuote.classList.add('active');
+      renderCard();
+    }
+
+    btnTextThemeBreaking?.addEventListener('click', () => setTextCardTheme('breaking'));
+    btnTextThemeStatement?.addEventListener('click', () => setTextCardTheme('statement'));
+    btnTextThemeAlert?.addEventListener('click', () => setTextCardTheme('alert'));
+    btnTextThemeQuote?.addEventListener('click', () => setTextCardTheme('quote'));
+
+    // Category / Alert Badge Quick Presets
+    const inpCustomTextBadge = document.getElementById('inpCustomTextBadge');
+    document.querySelectorAll('.btn-text-badge-pill').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.btn-text-badge-pill').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        textCardBadge = this.getAttribute('data-badge') || this.textContent;
+        if (inpCustomTextBadge) inpCustomTextBadge.value = textCardBadge;
+        renderCard();
+      });
+    });
+
+    inpCustomTextBadge?.addEventListener('input', function() {
+      textCardBadge = this.value;
+      renderCard();
+    });
+
+    // Big Quotes Toggle
+    const chkShowTextQuotes = document.getElementById('chkShowTextQuotes');
+    chkShowTextQuotes?.addEventListener('change', function() {
+      showTextCardQuotes = !!this.checked;
+      renderCard();
+    });
+
     // Initial render
     renderCard();
 
