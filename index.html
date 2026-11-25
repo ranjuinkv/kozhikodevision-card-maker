@@ -9,8 +9,8 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    // === AUTO-UPDATE & PWA ENGINE v8.0.7 ===
-    var KV_LATEST_BUILD = '8.0.7';
+    // === AUTO-UPDATE & PWA ENGINE v8.0.8 ===
+    var KV_LATEST_BUILD = '8.0.8';
     (function() {
       try {
         if ('serviceWorker' in navigator) {
@@ -4722,8 +4722,6 @@ html, body {
                 </div>
               </div>
 
-            </div>
-
             <!-- OBITUARY MODE DETAILS -->
             <div id="obitDetailsWrap" style="display:none; flex-direction:column; gap:8px;">
               <span class="col-title">🕯️ Obituary Details</span>
@@ -5039,9 +5037,9 @@ html, body {
               <button id="btnLogoRight" type="button" class="btn-tactile dpad-pill">▶ Right</button>
             </div>
 
-          </div>
-
-                </div><!-- close col-card (logo) -->
+          </div><!-- close col-card -->
+        </div><!-- close two-col-grid -->
+      </div><!-- close step3View -->
     </div><!-- close paneLogo -->
 
     <!-- ==============================================
@@ -5142,23 +5140,18 @@ html, body {
               </div>
             </div>
 
+          </div><!-- close col-card -->
+
+          <!-- Step 3 Navigation -->
+          <div class="step-nav-footer">
+            <button id="btnBackToStep2" type="button" class="btn-tactile btn-prev-step">
+              <span>◀</span>
+              <span>⬅ Previous Step</span>
+            </button>
+            <div style="font-size:11px; font-weight:800; color:#10b981;">
+              ✓ Card Ready!
+            </div>
           </div>
-
-        </div>
-
-        <!-- Step 3 Navigation -->
-        <div class="step-nav-footer">
-          <button id="btnBackToStep2" type="button" class="btn-tactile btn-prev-step">
-            <span>◀</span>
-            <span>⬅ Previous Step</span>
-          </button>
-          <div style="font-size:11px; font-weight:800; color:#10b981;">
-            ✓ Card Ready!
-          </div>
-        </div>
-      </div>
-
-        </section>
 
     </div><!-- close paneExport -->
   </div><!-- close inspectorDeck -->
