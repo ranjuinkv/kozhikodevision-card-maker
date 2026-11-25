@@ -9,8 +9,8 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    // === AUTO-UPDATE & PWA ENGINE v8.2.0 ===
-    var KV_LATEST_BUILD = '8.2.0';
+    // === AUTO-UPDATE & PWA ENGINE v8.2.1 ===
+    var KV_LATEST_BUILD = '8.2.1';
     (function() {
       try {
         if ('serviceWorker' in navigator) {
@@ -1753,38 +1753,75 @@
       color: #38bdf8;
       margin: 0 0 11px 0;
     }
-    .kv-admin-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+        .kv-admin-grid {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+      width: 100% !important;
     }
-    @media (max-width: 520px) {
-      .kv-admin-grid {
-        grid-template-columns: 1fr;
-      }
-      .app-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-        padding: 10px 12px;
-      }
-      .header-right {
-        justify-content: space-between;
-        width: 100%;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        padding-top: 8px;
-      }
+    .kv-admin-grid > div {
+      width: 100% !important;
+      box-sizing: border-box !important;
     }
     .kv-admin-input {
-      width: 100%;
+      width: 100% !important;
       background: #0b1220;
       border: 1px solid #334155;
       color: #ffffff;
       border-radius: 8px;
-      padding: 9px 11px;
-      font-size: 13px;
+      padding: 10px 12px !important;
+      min-height: 44px !important;
+      font-size: 14.5px !important;
       font-family: inherit;
-      outline: none;
+      box-sizing: border-box !important;
+    }
+    @media (max-width: 768px) {
+      #kvAdminModal {
+        padding: 0 !important;
+        align-items: flex-end !important;
+      }
+      .kv-admin-dialog {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 94dvh !important;
+        max-height: 94dvh !important;
+        border-radius: 20px 20px 0 0 !important;
+        border-bottom: none !important;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8) !important;
+      }
+      .kv-admin-body {
+        padding: 12px 14px 40px 14px !important;
+        gap: 12px !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+      }
+      .kv-user-row {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+        padding: 12px !important;
+      }
+      .kv-user-meta {
+        width: 100% !important;
+      }
+      .kv-user-actions {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+        width: 100% !important;
+      }
+      .kv-act-btn {
+        min-height: 40px !important;
+        font-size: 12px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 8px 6px !important;
+      }
+      .kv-admin-nav-tabs button {
+        font-size: 11px !important;
+        padding: 8px 4px !important;
+      }
     }
     .kv-admin-input:focus {
       border-color: #38bdf8;
@@ -3545,7 +3582,7 @@ html, body {
         </div>
         <div style="margin-top:6px;margin-bottom:8px;">
           <span class="kv-live-tag" style="font-size:10px;padding:3px 10px;border-radius:14px;background:rgba(239,68,68,0.25);border:1px solid #ef4444;color:#fca5a5;display:inline-flex;align-items:center;gap:6px;">
-            <span class="kv-live-dot"></span>🔴 V8.2.0 LIVE: BROADCAST STUDIO
+            <span class="kv-live-dot"></span>🔴 V8.2.1 LIVE: BROADCAST STUDIO
           </span>
         </div>
         <div class="kv-auth-title">KOZHIKODE VISION NEWS</div>
@@ -3676,7 +3713,7 @@ html, body {
   <div id="kvAdminModal" class="kv-hidden">
     <div class="kv-admin-dialog">
       <div class="kv-admin-header">
-        <h3>👑 Admin Console &amp; User Control <span style="background:#0284c7;color:#fff;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;">v8.2.0</span></h3>
+        <h3>👑 Admin Console &amp; User Control <span style="background:#0284c7;color:#fff;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;">v8.2.1</span></h3>
         <button id="kvBtnCloseAdmin" type="button" class="kv-admin-close">✕</button>
       </div>
       <div class="kv-admin-body">
@@ -3735,30 +3772,38 @@ html, body {
             <div id="kvAdminAddFormBox">
               <div class="kv-admin-grid">
                 <div>
-                  <label style="font-size:11px; color:#cbd5e1; display:block; margin-bottom:4px;">1. Full Name *</label>
+                  <label style="font-size:12px; color:#cbd5e1; font-weight:700; display:block; margin-bottom:5px;">1. Full Name *</label>
                   <input id="kvNewName" type="text" class="kv-admin-input" placeholder="e.g. Arun (Reporter)">
                 </div>
                 <div>
-                  <label style="font-size:11px; color:#cbd5e1; display:block; margin-bottom:4px;">2. Username *</label>
+                  <label style="font-size:12px; color:#cbd5e1; font-weight:700; display:block; margin-bottom:5px;">2. Username *</label>
                   <input id="kvNewUser" type="text" class="kv-admin-input" placeholder="e.g. arun">
                 </div>
                 <div>
-                  <label style="font-size:11px; color:#cbd5e1; display:block; margin-bottom:4px;">3. Password *</label>
-                  <input id="kvNewPass" type="text" class="kv-admin-input" placeholder="e.g. 1234">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                    <label style="font-size:12px; color:#cbd5e1; font-weight:700; margin:0;">3. Password *</label>
+                    <span style="font-size:11px; color:#38bdf8; font-weight:600;">(Default: 1234)</span>
+                  </div>
+                  <div style="position:relative; display:flex; align-items:center; width:100%;">
+                    <input id="kvNewPass" type="text" class="kv-admin-input" value="1234" placeholder="Enter password (e.g. 1234)" style="padding-right:45px;">
+                    <button id="btnToggleNewPass" type="button" class="btn-tactile" style="position:absolute; right:6px; background:#1e293b; border:1px solid #475569; border-radius:6px; padding:6px 10px; font-size:12px; cursor:pointer;" title="Toggle Password">👁️</button>
+                  </div>
                 </div>
                 <div>
-                  <label style="font-size:11px; color:#cbd5e1; display:block; margin-bottom:4px;">4. Account Role</label>
+                  <label style="font-size:12px; color:#cbd5e1; font-weight:700; display:block; margin-bottom:5px;">4. Account Role</label>
                   <select id="kvNewRole" class="kv-admin-input">
                     <option value="user">Staff User (Card Maker Access Only)</option>
                     <option value="admin">Admin (Full Control)</option>
                   </select>
                 </div>
-                <div style="grid-column: span 2;">
-                  <label style="font-size:11px; color:#cbd5e1; display:block; margin-bottom:4px;">5. Default Location (Bureau / Area)</label>
-                  <input id="kvNewLocation" type="text" class="kv-admin-input" placeholder="e.g. കോഴിക്കോട്, വടകര, കൊയിലാണ്ടി">
+                <div>
+                  <label style="font-size:12px; color:#cbd5e1; font-weight:700; display:block; margin-bottom:5px;">5. Default Location (Bureau / Area)</label>
+                  <input id="kvNewLocation" type="text" class="kv-admin-input" placeholder="e.g. കോഴിക്കോട്, വടകര, കൊയിലാണ്ടി" value="കോഴിക്കോട്">
                 </div>
               </div>
-              <button id="kvBtnAddUser" type="button" class="kv-admin-create-btn" style="cursor:pointer; margin-top:12px;">➕ Create User Account</button>
+              <button id="kvBtnAddUser" type="button" class="kv-admin-create-btn" style="cursor:pointer; margin-top:14px; width:100%; min-height:46px; font-size:14px; font-weight:800; background:linear-gradient(135deg, #0284c7, #0369a1); border:none; border-radius:10px; color:#fff; box-shadow:0 4px 14px rgba(2,132,199,0.4);">
+                ➕ Create User Account
+              </button>
             </div>
             <div id="kvAdminStatusMsg" class="kv-admin-status-msg" style="margin-top:8px;"></div>
           </div>
@@ -5221,7 +5266,7 @@ service cloud.firestore {
         <span class="dev-badge-icon">⚡</span>
         <span class="dev-title">Developed by <span class="dev-name">Ranju</span></span>
         <span class="dev-sep">•</span>
-        <span class="dev-studio-tag">Kozhikode Vision Official Media Studio v8.2.0</span>
+        <span class="dev-studio-tag">Kozhikode Vision Official Media Studio v8.2.1</span>
       </div>
       <div class="dev-copyright-text">
         &copy; 2026 Kozhikode Vision News &amp; Entertainment. All Rights Reserved.
@@ -9500,11 +9545,11 @@ service cloud.firestore {
   const SESSION_USER_KEY = 'kv_active_session_uid_v3';
 
   const DEFAULT_USERS = [
-    { uid: 'u-admin', name: 'Channel Admin', username: 'admin', email: 'admin@kozhikodevision.app', passwordHash: 'sha256$kv_sec01$f87a4686e73db4929e95efefe2e4b17994f1e2b8999bff7bd727f64405927b67', role: 'admin', location: 'കോഴിക്കോട്', active: true, deleted: false },
-    { uid: 'u-ranju', name: 'Ranju (Chief Editor)', username: 'ranju', email: 'ranju@kozhikodevision.app', passwordHash: 'sha256$kv_sec01$f87a4686e73db4929e95efefe2e4b17994f1e2b8999bff7bd727f64405927b67', role: 'admin', location: 'കോഴിക്കോട്', active: true, deleted: false },
-    { uid: 'u-reporter1', name: 'Arun (Reporter)', username: 'reporter1', email: 'reporter1@kozhikodevision.app', passwordHash: 'sha256$kv_sec02$c28f305b9c57911fd8bd4d40aa6840bd3db3d53da5079bf18f9d22715c30b4b2', role: 'user', location: 'കോഴിക്കോട്', active: true, deleted: false },
-    { uid: 'u-reporter2', name: 'Rahul (Reporter)', username: 'reporter2', email: 'reporter2@kozhikodevision.app', passwordHash: 'sha256$kv_sec02$c28f305b9c57911fd8bd4d40aa6840bd3db3d53da5079bf18f9d22715c30b4b2', role: 'user', location: 'വടകര', active: true, deleted: false },
-    { uid: 'u-staff', name: 'Staff Desk', username: 'staff', email: 'staff@kozhikodevision.app', passwordHash: 'sha256$kv_sec01$f87a4686e73db4929e95efefe2e4b17994f1e2b8999bff7bd727f64405927b67', role: 'user', location: 'കൊയിലാണ്ടി', active: true, deleted: false }
+    { uid: 'u-admin', name: 'Channel Admin', username: 'admin', email: 'admin@kozhikodevision.app', password: '123456', passwordHash: 'sha256$kv_sec01$f87a4686e73db4929e95efefe2e4b17994f1e2b8999bff7bd727f64405927b67', role: 'admin', location: 'കോഴിക്കോട്', active: true, deleted: false },
+    { uid: 'u-ranju', name: 'Ranju (Chief Editor)', username: 'ranju', email: 'ranju@kozhikodevision.app', password: '123456', passwordHash: 'sha256$kv_sec01$f87a4686e73db4929e95efefe2e4b17994f1e2b8999bff7bd727f64405927b67', role: 'admin', location: 'കോഴിക്കോട്', active: true, deleted: false },
+    { uid: 'u-reporter1', name: 'Arun (Reporter)', username: 'reporter1', email: 'reporter1@kozhikodevision.app', password: '1234', passwordHash: 'sha256$kv_sec02$c28f305b9c57911fd8bd4d40aa6840bd3db3d53da5079bf18f9d22715c30b4b2', role: 'user', location: 'കോഴിക്കോട്', active: true, deleted: false },
+    { uid: 'u-reporter2', name: 'Rahul (Reporter)', username: 'reporter2', email: 'reporter2@kozhikodevision.app', password: '1234', passwordHash: 'sha256$kv_sec02$c28f305b9c57911fd8bd4d40aa6840bd3db3d53da5079bf18f9d22715c30b4b2', role: 'user', location: 'വടകര', active: true, deleted: false },
+    { uid: 'u-staff', name: 'Staff Desk', username: 'staff', email: 'staff@kozhikodevision.app', password: '123456', passwordHash: 'sha256$kv_sec01$f87a4686e73db4929e95efefe2e4b17994f1e2b8999bff7bd727f64405927b67', role: 'user', location: 'കൊയിലാണ്ടി', active: true, deleted: false }
   ];
 
   let inMemoryUsers = null;
@@ -10024,15 +10069,26 @@ service cloud.firestore {
           ' <span class="kv-presence-pill online"><span class="kv-pulse-dot online"></span> \u{1F7E2} Active Now</span>' :
           ' <span class="kv-presence-pill offline"><span class="kv-pulse-dot offline"></span> \u26AA Offline</span>';
 
+        const displayPwd = getUserVisiblePassword(u);
         meta.innerHTML =
           '<div class="kv-user-name' + (isOnline ? ' is-online' : '') + '">' +
-            '<span style="color:' + (isOnline ? '#6ee7b7' : '#f8fafc') + ';font-weight:700;">' + escapeHtml(u.name || u.username) + '</span>' +
+            '<span style="color:' + (isOnline ? '#6ee7b7' : '#f8fafc') + ';font-weight:700;font-size:14px;">' + escapeHtml(u.name || u.username) + '</span>' +
             newBadge +
             ' <span class="kv-role-tag' + (u.role === 'admin' ? ' admin' : '') + '">' + (u.role === 'admin' ? 'ADMIN' : 'STAFF') + '</span>' +
             presenceBadge +
-            ' <span class="kv-status-pill ' + (isBlocked ? 'blocked' : 'active') + '">' + (isBlocked ? '\u{1F6AB} Blocked' : '\u2705 Active') + '</span>' +
+            ' <span class="kv-status-pill ' + (isBlocked ? 'blocked' : 'active') + '">' + (isBlocked ? '🚫 Blocked' : '✅ Active') + '</span>' +
           '</div>' +
-          '<div class="kv-user-sub">Username: <b style="color:#38bdf8;">' + escapeHtml(u.username || extractUsername(u.email)) + '</b> &nbsp;|&nbsp; 📍 Location: <span style="color:#6ee7b7;font-weight:700;">' + escapeHtml(u.location || 'കോഴിക്കോട്') + '</span>' + (isSelf ? ' <b style="color:#6ee7b7;">(You)</b>' : '') + (isOnline ? ' &nbsp;|&nbsp; <span style="color:#10b981;font-weight:700;">\u25CF Active on site</span>' : '') + '</div>';
+          '<div class="kv-user-sub" style="display:flex; flex-direction:column; gap:4px; margin-top:5px; font-size:12px;">' +
+            '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">' +
+              '<span>👤 Username: <b style="color:#38bdf8;">' + escapeHtml(u.username || extractUsername(u.email)) + '</b></span>' +
+              '<span>📍 Location: <b style="color:#6ee7b7;">' + escapeHtml(u.location || 'കോഴിക്കോട്') + '</b></span>' +
+              (isSelf ? ' <span style="color:#a7f3d0; font-weight:800;">(You)</span>' : '') +
+            '</div>' +
+            '<div style="display:inline-flex; align-items:center; gap:6px; background:rgba(250,204,21,0.12); border:1px solid rgba(250,204,21,0.35); border-radius:6px; padding:3px 10px; width:fit-content; margin-top:2px;">' +
+              '<span style="color:#fef08a; font-weight:700;">🔑 Password:</span>' +
+              '<b style="color:#facc15; font-family:monospace; font-size:13.5px; letter-spacing:0.8px;">' + escapeHtml(displayPwd) + '</b>' +
+            '</div>' +
+          '</div>';
 
         row.appendChild(meta);
 
@@ -10149,20 +10205,33 @@ service cloud.firestore {
           showToast('\u{1F680} Switched to: ' + (u.name || u.username));
         }
       },
-      onResetPassword: function(u) {
-        const newP = prompt('Enter new password for ' + (u.name || u.username) + ':', u.password || '1234');
-        if (newP && newP.trim()) {
+      onResetPassword: async function(u) {
+        const curP = getUserVisiblePassword(u);
+        const newP = prompt('Enter new password for ' + (u.name || u.username) + ':', curP || '1234');
+        if (newP !== null && newP.trim()) {
+          const pass = newP.trim();
           const list = getDemoUsers();
           const item = list.find(function(x) { return x.uid === u.uid; });
           if (item) {
-            item.password = newP.trim();
+            item.password = pass;
+            if (typeof hashKvPassword === 'function') {
+              try {
+                item.passwordHash = await hashKvPassword(pass);
+              } catch(e) {}
+            }
             saveDemoUsers(list);
             if (firebaseDb && isFirebaseLive) {
-              firebaseDb.collection('kv_users').doc(item.uid).update({ password: item.password }).catch(function(){});
+              firebaseDb.collection('kv_users').doc(item.uid).update({
+                password: item.password,
+                passwordHash: item.passwordHash || ''
+              }).catch(function(){});
             }
-            refreshDemoAdminList();
+            refreshDemoAdminList(false);
             renderQuickUserPills();
-            showAdminStatus('\u{1F511} Password updated for ' + item.name + '!', false);
+            showAdminStatus('\u{1F511} Password updated for ' + (item.name || item.username) + ' to: ' + pass + '!', false);
+            if (typeof showToast === 'function') {
+              showToast('🔑 Password changed: ' + pass);
+            }
           }
         }
       },
