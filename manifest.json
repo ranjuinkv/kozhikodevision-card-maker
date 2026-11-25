@@ -1,21 +1,25 @@
 {
-  "name": "Kozhikode Vision News Card Maker",
-  "short_name": "Vision News",
+  "name": "Kozhikode Vision News & Video Studio",
+  "short_name": "KV Studio",
+  "description": "Official Broadcast News, Obituary & Video Card Studio for Kozhikode Vision",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#dc2626",
-  "orientation": "portrait",
+  "orientation": "any",
+  "background_color": "#070b14",
+  "theme_color": "#0b1120",
   "icons": [
     {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "src": "logo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "clean_logo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

@@ -9,22 +9,21 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    // === AUTO-UPDATE & CACHE-PURGE ENGINE ===
+    // === AUTO-UPDATE & PWA ENGINE v8.0.5 ===
+    var KV_LATEST_BUILD = '8.0.5';
     (function() {
       try {
         if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistrations().then(function(regs) {
-            for (var i = 0; i < regs.length; i++) { regs[i].unregister(); }
-          }).catch(function() {});
-        }
-        if ('caches' in window) {
-          caches.keys().then(function(names) {
-            for (var j = 0; j < names.length; j++) { caches.delete(names[j]); }
-          }).catch(function() {});
+          window.addEventListener('load', function() {
+            navigator.serviceWorker.register('sw.js').then(function(reg) {
+              console.log('KV PWA ServiceWorker active');
+            }).catch(function(err) {
+              console.log('SW registration note:', err);
+            });
+          });
         }
       } catch (e) {}
 
-      var KV_LATEST_BUILD = '8.0.4';
       if (window.location.hostname.indexOf('github.io') !== -1) {
         var sp = new URLSearchParams(window.location.search);
         var curVer = sp.get('v');
@@ -36,6 +35,11 @@
       }
     })();
   </script>
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="KV News Studio">
+  <link rel="apple-touch-icon" href="logo.png">
 
   <!-- Google Fonts for Malayalam -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2407,6 +2411,759 @@
       justify-content: center;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
     }
+/* ==========================================================================
+   KOZHIKODE VISION v8.0.5 - RESPONSIVE BROADCAST STUDIO STYLES
+   ========================================================================== */
+
+.kv-studio-layout {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+/* DESKTOP STUDIO (>= 1024px): 3-Pane Broadcast Studio Layout */
+@media (min-width: 1024px) {
+  body {
+    height: 100vh;
+    overflow: hidden;
+    padding: 8px 14px 10px 14px;
+  }
+
+  .app-wrapper {
+    max-width: 1680px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .app-header {
+    margin-bottom: 8px;
+    padding: 8px 14px;
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+
+  .header-center-desktop {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 10px;
+    padding: 4px 10px;
+  }
+
+  .top-bar-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .top-type-pill, .top-ratio-pill {
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 800;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(30, 41, 59, 0.7);
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .top-type-pill.active, .top-ratio-pill.active {
+    background: #0284c7;
+    border-color: #38bdf8;
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+  }
+
+  .top-icon-btn {
+    padding: 5px 9px;
+    font-size: 11px;
+    font-weight: 800;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(30, 41, 59, 0.7);
+    color: #e2e8f0;
+    cursor: pointer;
+  }
+
+  .top-icon-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  .btn-quick-export {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff;
+    border: 1px solid #34d399;
+    box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35);
+  }
+
+  .kv-studio-layout {
+    display: grid;
+    grid-template-columns: 72px 1fr 410px;
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .desktop-tool-rail {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.96);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 14px;
+    padding: 10px 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  }
+
+  .rail-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 12px 2px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .rail-btn .rail-icon {
+    font-size: 20px;
+  }
+
+  .rail-btn .rail-label {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .rail-btn:hover {
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.08);
+  }
+
+  .rail-btn.active {
+    background: linear-gradient(135deg, rgba(2, 132, 199, 0.3), rgba(14, 165, 233, 0.15));
+    border-color: #38bdf8;
+    color: #ffffff;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+  }
+
+  .canvas-stage-area {
+    display: flex;
+    flex-direction: column;
+    background: rgba(11, 18, 34, 0.85);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 14px;
+    min-height: 0;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  }
+
+  .stage-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    background: rgba(15, 23, 42, 0.95);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+  }
+
+  .stage-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .stage-zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 3px 8px;
+  }
+
+  .btn-stage-ctrl {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: #cbd5e1;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 7px;
+    cursor: pointer;
+  }
+
+  .btn-stage-ctrl:hover {
+    background: #0284c7;
+    color: #ffffff;
+  }
+
+  .canvas-zoom-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #38bdf8;
+    min-width: 38px;
+    text-align: center;
+  }
+
+  .stage-mob-history {
+    display: none;
+  }
+
+  .stage-canvas-viewport {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 16px;
+    background: radial-gradient(circle at center, rgba(30, 41, 59, 0.4) 0%, rgba(2, 6, 23, 0.9) 100%);
+    position: relative;
+  }
+
+  .stage-canvas-viewport .canvas-container {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .stage-canvas-viewport #newsCanvas {
+    max-width: 100%;
+    max-height: calc(100vh - 220px);
+    width: auto;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.12);
+    transition: transform 0.15s ease;
+  }
+
+  .drag-control-toolbar {
+    flex-shrink: 0;
+    margin: 0;
+    border-radius: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .inspector-deck {
+    background: rgba(15, 23, 42, 0.96);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  }
+
+  .inspector-deck-tabs {
+    display: none;
+  }
+
+  .inspector-pane {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 14px;
+  }
+
+  .inspector-pane.active {
+    display: flex;
+  }
+
+  details.advanced-settings-box {
+    display: block;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 10px;
+    padding: 10px;
+    background: rgba(15, 23, 42, 0.5);
+  }
+
+  details.advanced-settings-box > summary {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: #38bdf8;
+    cursor: default;
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  details.advanced-settings-box > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+
+  .app-page-footer {
+    display: none;
+  }
+}
+
+/* TABLET WORKSPACE (768px - 1023px): 2-Column Split */
+@media (min-width: 768px) and (max-width: 1023px) {
+  body {
+    height: 100vh;
+    overflow: hidden;
+    padding: 6px 8px;
+  }
+
+  .app-wrapper {
+    max-width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .header-center-desktop {
+    display: none;
+  }
+
+  .kv-studio-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .desktop-tool-rail {
+    display: none !important;
+  }
+
+  .canvas-stage-area {
+    display: flex;
+    flex-direction: column;
+    background: #070a13;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 12px;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .stage-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    background: #0f172a;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .stage-zoom-controls {
+    display: flex;
+  }
+
+  .stage-mob-history {
+    display: none;
+  }
+
+  .stage-canvas-viewport {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 10px;
+  }
+
+  .stage-canvas-viewport #newsCanvas {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+
+  .inspector-deck {
+    background: #0f172a;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .inspector-deck-tabs {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    padding: 6px;
+    background: #1e293b;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .deck-tab-btn {
+    padding: 8px 4px;
+    font-size: 11px;
+    font-weight: 800;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    cursor: pointer;
+  }
+
+  .deck-tab-btn.active {
+    background: #0284c7;
+    color: #ffffff;
+  }
+
+  .inspector-pane {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 12px;
+  }
+
+  .inspector-pane.active {
+    display: flex;
+  }
+
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+
+  .app-page-footer {
+    display: none;
+  }
+}
+
+/* MOBILE APP (< 768px): Modern App Layout with Sticky Preview & Bottom Nav */
+@media (max-width: 767px) {
+  body {
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .app-wrapper {
+    max-width: 100%;
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .app-header {
+    margin-bottom: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    padding: 6px 10px;
+    flex-shrink: 0;
+    z-index: 101;
+  }
+
+  .header-center-desktop {
+    display: none;
+  }
+
+  .desktop-tool-rail {
+    display: none !important;
+  }
+
+  .stage-zoom-controls {
+    display: none !important;
+  }
+
+  .canvas-stage-area {
+    height: 38dvh;
+    max-height: 38dvh;
+    min-height: 200px;
+    width: 100%;
+    flex-shrink: 0;
+    background: #02040a;
+    border-bottom: 2px solid rgba(56, 189, 248, 0.35);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 99;
+  }
+
+  .stage-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 8px;
+    background: rgba(15, 23, 42, 0.95);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+  }
+
+  .stage-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .stage-mob-history {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .mob-history-btn {
+    width: 32px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(30, 41, 59, 0.8);
+    color: #fff;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .mob-history-btn:disabled {
+    opacity: 0.3;
+  }
+
+  .stage-canvas-viewport {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 4px;
+    touch-action: none;
+  }
+
+  .stage-canvas-viewport .canvas-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    padding: 0;
+  }
+
+  .stage-canvas-viewport #newsCanvas {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8);
+  }
+
+  .drag-control-toolbar {
+    display: none;
+  }
+
+  .inspector-deck {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background: #090e1a;
+    border: none;
+    border-radius: 0;
+    padding: 10px 10px calc(64px + env(safe-area-inset-bottom)) 10px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .inspector-deck-tabs {
+    display: none;
+  }
+
+  .inspector-pane {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .inspector-pane.active {
+    display: flex;
+  }
+
+  .btn-tactile, .type-pill, .size-item-btn, .upload-action-btn, .pill-btn, .download-hd-btn, .share-btn-wa, .share-btn-fb {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13.5px;
+  }
+
+  .form-input, .form-textarea, .admin-input, .kv-auth-input, select {
+    font-size: 16px !important;
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+
+  input[type="range"] {
+    height: 36px;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #38bdf8;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -10px;
+  }
+
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 8px;
+    border-radius: 4px;
+    background: #334155;
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #38bdf8;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    cursor: pointer;
+  }
+
+  details.advanced-settings-box {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 12px;
+    padding: 8px 10px;
+    margin-top: 6px;
+  }
+
+  details.advanced-settings-box > summary {
+    font-size: 12.5px;
+    font-weight: 800;
+    color: #38bdf8;
+    cursor: pointer;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    list-style: none;
+  }
+
+  details.advanced-settings-box > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  details.advanced-settings-box > summary .chevron {
+    transition: transform 0.2s ease;
+  }
+
+  details.advanced-settings-box[open] > summary .chevron {
+    transform: rotate(180deg);
+  }
+
+  .mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    height: calc(58px + env(safe-area-inset-bottom));
+    background: rgba(11, 17, 32, 0.98);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(56, 189, 248, 0.3);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.7);
+  }
+
+  .mob-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 4px 0;
+    transition: all 0.15s ease;
+  }
+
+  .mob-nav-btn .mob-icon {
+    font-size: 19px;
+    line-height: 1;
+    transition: transform 0.2s ease;
+  }
+
+  .mob-nav-btn .mob-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+
+  .mob-nav-btn.active {
+    color: #38bdf8;
+    font-weight: 800;
+  }
+
+  .mob-nav-btn.active .mob-icon {
+    transform: scale(1.18);
+    filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.8));
+  }
+
+  .app-page-footer {
+    display: none;
+  }
+}
 </style>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
@@ -2434,17 +3191,14 @@
         <div class="kv-auth-sub">Official News Card &amp; Video Studio</div>
       </div>
 
-      <div id="kvDemoBanner" class="kv-demo-banner kv-hidden" style="display:none!important;">
-        ⚠️ <b>Staff &amp; Admin Test Mode</b><br>
-        👑 Admin: <b>admin</b> (Pass: <b>123456</b>) &nbsp;|&nbsp; 👤 Staff: <b>reporter1</b> (Pass: <b>1234</b>)
-      </div>
+      <!-- Test credentials removed for security -->
 
       <div id="kvAuthError" class="kv-auth-error"></div>
 
       <form id="kvAuthForm" autocomplete="off">
         <div class="kv-auth-field">
           <label for="kvAuthUsername">Username:</label>
-          <input id="kvAuthUsername" type="text" class="kv-auth-input" placeholder="Enter username (e.g. admin)" required autofocus>
+          <input id="kvAuthUsername" type="text" class="kv-auth-input" placeholder="Enter username" required autofocus>
         </div>
 
         <div class="kv-auth-field">
@@ -2787,7 +3541,34 @@
         </div>
       </div>
 
-            <div id="kvHeaderAuthBar" class="header-right kv-hidden">
+                  <!-- DESKTOP TOP BAR CENTER (>= 1024px) -->
+      <div class="header-center-desktop">
+        <!-- Card Type Selector -->
+        <div class="top-bar-group top-types">
+          <button id="topOptTypeNews" type="button" class="btn-tactile top-type-pill active">📰 News</button>
+          <button id="topOptTypeObit" type="button" class="btn-tactile top-type-pill">🕯️ Obit</button>
+          <button id="topOptTypeVideo" type="button" class="btn-tactile top-type-pill">🎥 Video</button>
+        </div>
+
+        <!-- Aspect Ratio Selector -->
+        <div class="top-bar-group top-ratios">
+          <button id="topBtnRatio1" type="button" class="btn-tactile top-ratio-pill active" title="1:1 Post">1:1</button>
+          <button id="topBtnRatio2" type="button" class="btn-tactile top-ratio-pill" title="4:5 Feed">4:5</button>
+          <button id="topBtnRatio3" type="button" class="btn-tactile top-ratio-pill" title="9:16 Story">9:16</button>
+          <button id="topBtnRatio4" type="button" class="btn-tactile top-ratio-pill" title="16:9 Screen">16:9</button>
+        </div>
+
+        <!-- History: Undo / Redo -->
+        <div class="top-bar-group top-history">
+          <button id="btnTopUndo" type="button" class="btn-tactile top-icon-btn" title="Undo (Ctrl+Z)" disabled>↩️ Undo</button>
+          <button id="btnTopRedo" type="button" class="btn-tactile top-icon-btn" title="Redo (Ctrl+Y)" disabled>↪️ Redo</button>
+        </div>
+      </div>
+
+      <div id="kvHeaderAuthBar" class="header-right kv-hidden">
+        <button id="btnTopQuickExport" type="button" class="header-btn btn-quick-export" title="Quick HD 1080P Export">
+          <span>⬇️ HD Export</span>
+        </button>
         <button id="kvBtnOpenLiveTv" type="button" class="header-btn" style="background:linear-gradient(135deg, #dc2626, #991b1b);color:#ffffff;box-shadow:0 0 12px rgba(239,68,68,0.45);border:1px solid #f87171;font-weight:800;">
           <span style="font-size:13px;">📺</span>
           <span>LIVE TV</span>
@@ -2819,7 +3600,54 @@
     
 
     <!-- 2. FIXED LIVE CARD PREVIEW AREA (Always Stays Here!) -->
-    <section class="card-preview-area">
+    <div class="kv-studio-layout" id="kvStudioLayout">
+  <!-- PANE 1: DESKTOP LEFT TOOL RAIL -->
+  <nav id="desktopToolRail" class="desktop-tool-rail" aria-label="Studio Tools">
+    <button type="button" class="rail-btn active" data-tab="photo" id="railBtnPhoto" title="Photo & Media">
+      <span class="rail-icon">📷</span>
+      <span class="rail-label">Photo</span>
+    </button>
+    <button type="button" class="rail-btn" data-tab="text" id="railBtnText" title="Text Studio">
+      <span class="rail-icon">✍️</span>
+      <span class="rail-label">Text</span>
+    </button>
+    <button type="button" class="rail-btn" data-tab="box" id="railBtnBox" title="Box & Background">
+      <span class="rail-icon">📦</span>
+      <span class="rail-label">Box</span>
+    </button>
+    <button type="button" class="rail-btn" data-tab="logo" id="railBtnLogo" title="Official Logo">
+      <span class="rail-icon">🏷️</span>
+      <span class="rail-label">Logo</span>
+    </button>
+    <button type="button" class="rail-btn" data-tab="export" id="railBtnExport" title="Export & Share">
+      <span class="rail-icon">⬇️</span>
+      <span class="rail-label">Export</span>
+    </button>
+  </nav>
+
+  <!-- PANE 2: CENTER CANVAS STAGE (Desktop) / STICKY PREVIEW (Mobile) -->
+  <section id="canvasStageArea" class="canvas-stage-area">
+    <div class="stage-top-bar" id="stageTopBar">
+      <div class="stage-bar-left">
+        <button id="canvasQuickLockBadge" type="button" class="canvas-quick-lock-btn" title="Toggle Canvas Position Lock">
+          🔒 Locked
+        </button>
+        <div id="previewDimBadge" class="preview-res-badge">1:1 POST (1080 × 1080)</div>
+      </div>
+      <div class="stage-zoom-controls" id="stageZoomControls">
+        <button id="btnCanvasFit" type="button" class="btn-stage-ctrl" title="Fit to Screen">📐 Fit</button>
+        <button id="btnCanvas100" type="button" class="btn-stage-ctrl" title="Actual 100% Size">100%</button>
+        <button id="btnCanvasZoomOut" type="button" class="btn-stage-ctrl" title="Zoom Out">🔍 -</button>
+        <span id="lblCanvasZoom" class="canvas-zoom-label">100%</span>
+        <button id="btnCanvasZoomIn" type="button" class="btn-stage-ctrl" title="Zoom In">🔍 +</button>
+      </div>
+      <div class="stage-mob-history" id="stageMobHistory">
+        <button id="btnMobUndo" type="button" class="mob-history-btn" title="Undo" disabled>↩️</button>
+        <button id="btnMobRedo" type="button" class="mob-history-btn" title="Redo" disabled>↪️</button>
+      </div>
+    </div>
+
+    <div class="stage-canvas-viewport" id="stageCanvasViewport">
       <div class="preview-header-bar">
         <div class="preview-badge-live">
           <span class="preview-dot"></span>
@@ -2859,28 +3687,31 @@
       <div class="canvas-container" id="canvasContainer">
         <canvas id="newsCanvas" width="1080" height="1080"></canvas>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- 3. DASHED CYAN SETTINGS BOX WITH MULTI-STEP WIZARD -->
-    <section class="settings-dashed-box">
+  <!-- PANE 3: INSPECTOR DECK (Right panel on desktop, bottom sheet on mobile) -->
+  <div id="inspectorDeck" class="inspector-deck">
+    <!-- Tablet / Mobile Tab Switcher Pills Header -->
+    <div class="inspector-deck-tabs" id="inspectorDeckTabs">
+      <button type="button" class="deck-tab-btn active" data-tab="photo">📷 Photo</button>
+      <button type="button" class="deck-tab-btn" data-tab="text">✍️ Text</button>
+      <button type="button" class="deck-tab-btn" data-tab="box">📦 Box</button>
+      <button type="button" class="deck-tab-btn" data-tab="logo">🏷️ Logo</button>
+      <button type="button" class="deck-tab-btn" data-tab="export">⬇️ Export</button>
+    </div>
 
-      <!-- Step Indicator Bar -->
-      <div class="step-progress-row">
-        <button id="tabStep1" type="button" class="btn-tactile step-tab-btn active">
-          1. Type &amp; Photo
-        </button>
-        <button id="tabStep2" type="button" class="btn-tactile step-tab-btn">
-          2. Details &amp; Text
-        </button>
-        <button id="tabStep3" type="button" class="btn-tactile step-tab-btn">
-          3. Logo &amp; Export
-        </button>
+      <!-- Hidden Step Indicator Compatibility -->
+      <div class="step-progress-row" style="display:none !important;">
+        <button id="tabStep1" type="button" class="btn-tactile step-tab-btn active">1</button>
+        <button id="tabStep2" type="button" class="btn-tactile step-tab-btn">2</button>
+        <button id="tabStep3" type="button" class="btn-tactile step-tab-btn">3</button>
       </div>
 
       <!-- ==============================================
            STEP 1: CARD TYPE, SIZE & PHOTO ADJUSTMENTS
            ============================================== -->
-      <div id="step1View" class="step-view active">
+      <div id="panePhoto" class="inspector-pane active" data-tab="photo"><div id="step1View" class="step-view active" style="display:contents;">
         <div class="two-col-grid">
           
           <!-- Left Column: Type & Size -->
@@ -2947,8 +3778,8 @@
             <!-- Secondary Photo (Photo 2) for Duo Cutout / Multi-Person -->
             <div id="secPhotoBox" style="display:none !important;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                <span style="font-size:12px; font-weight:800; color:#38bdf8;">👥 രണ്ടാമത്തെ ഫോട്ടോ (Photo 2 - Right Person):</span>
-                <button id="btnRemovePhoto2" type="button" class="btn-tactile" style="display:none; background:#ef4444; color:#fff; border:none; padding:2px 8px; border-radius:6px; font-size:11px; cursor:pointer;">❌ കളയുക</button>
+                <span style="font-size:12px; font-weight:800; color:#38bdf8;">👥 Photo 2 (Right Person):</span>
+                <button id="btnRemovePhoto2" type="button" class="btn-tactile" style="display:none; background:#ef4444; color:#fff; border:none; padding:2px 8px; border-radius:6px; font-size:11px; cursor:pointer;">✕ Remove</button>
               </div>
               <input id="photo2Inp" type="file" accept="image/*" style="display:none;">
               <div style="display:flex; gap:6px;">
@@ -3332,7 +4163,7 @@
       <!-- ==============================================
            STEP 2: NEWS / OBITUARY DETAILS & TEXT ADJUSTMENTS
            ============================================== -->
-      <div id="step2View" class="step-view">
+      </div></div><div id="paneText" class="inspector-pane" data-tab="text"><div id="step2View" class="step-view" style="display:contents;">
         <div class="two-col-grid">
 
           <!-- Left Column: Details -->
@@ -3770,7 +4601,7 @@
            STEP 3: LOGO, WATERMARK, DATE & HD DOWNLOAD
            (DOWNLOAD IS LOCATED HERE ON THE LAST PAGE AS REQUESTED!)
            ============================================== -->
-      <div id="step3View" class="step-view">
+      </div></div><div id="paneLogo" class="inspector-pane" data-tab="logo"><div id="step3View" class="step-view" style="display:contents;">
         <div class="two-col-grid">
 
           <!-- Left Column: Logo Adjustments -->
@@ -3844,7 +4675,9 @@
 
           </div>
 
-          <!-- Right Column: Watermark, Social & THE DOWNLOAD BUTTON -->
+          </div></div>
+<div id="paneExport" class="inspector-pane" data-tab="export">
+<!-- Right Column: Watermark, Social & THE DOWNLOAD BUTTON -->
           <div class="col-card">
             
             <!-- Watermark (Thin Font with Admin Brand Protection) -->
@@ -3955,6 +4788,34 @@
       </div>
 
         </section>
+
+  </div></div><!-- close step3View & paneExport -->
+  </div><!-- close inspectorDeck -->
+</div><!-- close kvStudioLayout -->
+
+<!-- MOBILE BOTTOM NAVIGATION (Fixed on < 768px) -->
+<nav id="mobileBottomNav" class="mobile-bottom-nav" aria-label="Mobile Navigation">
+  <button type="button" class="mob-nav-btn active" data-tab="photo" id="mobBtnPhoto">
+    <span class="mob-icon">📷</span>
+    <span class="mob-label">Photo</span>
+  </button>
+  <button type="button" class="mob-nav-btn" data-tab="text" id="mobBtnText">
+    <span class="mob-icon">✍️</span>
+    <span class="mob-label">Text</span>
+  </button>
+  <button type="button" class="mob-nav-btn" data-tab="box" id="mobBtnBox">
+    <span class="mob-icon">📦</span>
+    <span class="mob-label">Box</span>
+  </button>
+  <button type="button" class="mob-nav-btn" data-tab="logo" id="mobBtnLogo">
+    <span class="mob-icon">🏷️</span>
+    <span class="mob-label">Logo</span>
+  </button>
+  <button type="button" class="mob-nav-btn" data-tab="export" id="mobBtnExport">
+    <span class="mob-icon">⬇️</span>
+    <span class="mob-label">Export</span>
+  </button>
+</nav>
 
     <!-- OFFICIAL PAGE FOOTER WITH DEVELOPER CREDITS -->
     <footer class="app-page-footer">
@@ -10081,6 +10942,358 @@
 
 })();
 
+    // ==========================================================================
+    // KOZHIKODE VISION v8.0.5 - RESPONSIVE ARCHITECTURE & UNDO/REDO ENGINE
+    // ==========================================================================
+
+    // 1. DUAL-LAYOUT TAB SWITCHER ENGINE (Desktop Rail + Tablet + Mobile Bottom Nav)
+    let activeInspectorTab = 'photo';
+
+    function switchInspectorTab(tabId) {
+      if (!tabId) return;
+      activeInspectorTab = tabId;
+
+      // Update Desktop Left Tool Rail
+      document.querySelectorAll('.rail-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId);
+      });
+
+      // Update Tablet Header Tabs
+      document.querySelectorAll('.deck-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId);
+      });
+
+      // Update Mobile Bottom Nav
+      document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId);
+      });
+
+      // Show matching inspector pane
+      document.querySelectorAll('.inspector-pane').forEach(pane => {
+        const pTab = pane.getAttribute('data-tab');
+        if (pTab === tabId) {
+          pane.classList.add('active');
+          pane.style.display = 'flex';
+        } else {
+          pane.classList.remove('active');
+          pane.style.display = 'none';
+        }
+      });
+
+      // If 'box' tab selected, scroll to Box section or highlight it
+      if (tabId === 'box') {
+        const pText = document.getElementById('paneText');
+        if (pText) {
+          pText.classList.add('active');
+          pText.style.display = 'flex';
+          const boxSec = document.getElementById('unifiedTextToolbar') || document.getElementById('chkUnifiedBox');
+          if (boxSec) boxSec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
+
+      // Scroll inspector deck to top smoothly
+      const deck = document.getElementById('inspectorDeck');
+      if (deck) deck.scrollTop = 0;
+    }
+
+    // Attach listeners to all tab buttons across desktop, tablet, and mobile
+    document.querySelectorAll('[data-tab]').forEach(el => {
+      el.addEventListener('click', (e) => {
+        const tab = el.getAttribute('data-tab');
+        if (tab) switchInspectorTab(tab);
+      });
+    });
+
+    // 2. DESKTOP TOP BAR CONTROLS SYNCHRONIZATION
+    // Card Types
+    const topOptTypeNews = document.getElementById('topOptTypeNews');
+    const topOptTypeObit = document.getElementById('topOptTypeObit');
+    const topOptTypeVideo = document.getElementById('topOptTypeVideo');
+    if (topOptTypeNews) topOptTypeNews.addEventListener('click', () => { document.getElementById('optTypeNews')?.click(); syncTopTypePills('news'); });
+    if (topOptTypeObit) topOptTypeObit.addEventListener('click', () => { document.getElementById('optTypeObit')?.click(); syncTopTypePills('obit'); });
+    if (topOptTypeVideo) topOptTypeVideo.addEventListener('click', () => { document.getElementById('optTypeVideo')?.click(); syncTopTypePills('video'); });
+
+    function syncTopTypePills(type) {
+      if (topOptTypeNews) topOptTypeNews.classList.toggle('active', type === 'news');
+      if (topOptTypeObit) topOptTypeObit.classList.toggle('active', type === 'obit');
+      if (topOptTypeVideo) topOptTypeVideo.classList.toggle('active', type === 'video');
+    }
+
+    // Aspect Ratios
+    const topBtnRatio1 = document.getElementById('topBtnRatio1');
+    const topBtnRatio2 = document.getElementById('topBtnRatio2');
+    const topBtnRatio3 = document.getElementById('topBtnRatio3');
+    const topBtnRatio4 = document.getElementById('topBtnRatio4');
+    if (topBtnRatio1) topBtnRatio1.addEventListener('click', () => { document.getElementById('btnRatio1')?.click(); syncTopRatioPills('1:1'); });
+    if (topBtnRatio2) topBtnRatio2.addEventListener('click', () => { document.getElementById('btnRatio2')?.click(); syncTopRatioPills('4:5'); });
+    if (topBtnRatio3) topBtnRatio3.addEventListener('click', () => { document.getElementById('btnRatio3')?.click(); syncTopRatioPills('9:16'); });
+    if (topBtnRatio4) topBtnRatio4.addEventListener('click', () => { document.getElementById('btnRatio4')?.click(); syncTopRatioPills('16:9'); });
+
+    function syncTopRatioPills(ratio) {
+      if (topBtnRatio1) topBtnRatio1.classList.toggle('active', ratio === '1:1');
+      if (topBtnRatio2) topBtnRatio2.classList.toggle('active', ratio === '4:5');
+      if (topBtnRatio3) topBtnRatio3.classList.toggle('active', ratio === '9:16');
+      if (topBtnRatio4) topBtnRatio4.classList.toggle('active', ratio === '16:9');
+    }
+
+    // Top Quick Export
+    const btnTopQuickExport = document.getElementById('btnTopQuickExport');
+    if (btnTopQuickExport) {
+      btnTopQuickExport.addEventListener('click', () => {
+        document.getElementById('btnDownloadHD')?.click();
+      });
+    }
+
+    // 3. UNDO / REDO HISTORY STACK ENGINE
+    const kvUndoStack = [];
+    const kvRedoStack = [];
+    const MAX_KV_HISTORY = 30;
+    let isApplyingKvHistory = false;
+
+    function captureKvState() {
+      return {
+        cardType: typeof cardType !== 'undefined' ? cardType : 'news',
+        currentRatio: typeof currentRatio !== 'undefined' ? currentRatio : '1:1',
+        txtHeadline: document.getElementById('txtHeadline') ? document.getElementById('txtHeadline').value : '',
+        txtSummary: document.getElementById('txtSummary') ? document.getElementById('txtSummary').value : '',
+        txtLocation: document.getElementById('txtLocation') ? document.getElementById('txtLocation').value : '',
+        txtCardDate: document.getElementById('txtCardDate') ? document.getElementById('txtCardDate').value : '',
+        txtPunchline: document.getElementById('txtPunchline') ? document.getElementById('txtPunchline').value : '',
+        txtReporter: document.getElementById('txtReporter') ? document.getElementById('txtReporter').value : '',
+        txtCustomTribute: document.getElementById('txtCustomTribute') ? document.getElementById('txtCustomTribute').value : '',
+        txtObitName: document.getElementById('txtObitName') ? document.getElementById('txtObitName').value : '',
+        photoZoom: typeof photoZoom !== 'undefined' ? photoZoom : 1.0,
+        photoPosX: typeof photoPosX !== 'undefined' ? photoPosX : 0,
+        photoPosY: typeof photoPosY !== 'undefined' ? photoPosY : 0,
+        videoZoom: typeof videoZoom !== 'undefined' ? videoZoom : 1.0,
+        videoPosX: typeof videoPosX !== 'undefined' ? videoPosX : 0,
+        videoPosY: typeof videoPosY !== 'undefined' ? videoPosY : 0,
+        logoScale: typeof logoScale !== 'undefined' ? logoScale : 100,
+        logoPosX: typeof logoPosX !== 'undefined' ? logoPosX : 0,
+        logoPosY: typeof logoPosY !== 'undefined' ? logoPosY : 0,
+        selectedFont: typeof selectedFont !== 'undefined' ? selectedFont : 'Anek Malayalam',
+        textColor: typeof textColor !== 'undefined' ? textColor : '#ffffff',
+        boxBgColor: typeof boxBgColor !== 'undefined' ? boxBgColor : '#061129',
+        boxStyle: typeof boxStyle !== 'undefined' ? boxStyle : 'solid',
+        hasBox: typeof hasBox !== 'undefined' ? hasBox : false
+      };
+    }
+
+    function pushKvUndoState() {
+      if (isApplyingKvHistory) return;
+      const snap = captureKvState();
+      kvUndoStack.push(snap);
+      if (kvUndoStack.length > MAX_KV_HISTORY) kvUndoStack.shift();
+      kvRedoStack.length = 0;
+      updateKvHistoryButtons();
+    }
+
+    function applyKvState(state) {
+      if (!state) return;
+      isApplyingKvHistory = true;
+      try {
+        if (state.cardType && typeof setCardType === 'function' && state.cardType !== cardType) {
+          setCardType(state.cardType);
+          syncTopTypePills(state.cardType);
+        }
+        if (state.currentRatio && typeof setRatio === 'function' && state.currentRatio !== currentRatio) {
+          setRatio(state.currentRatio);
+          syncTopRatioPills(state.currentRatio);
+        }
+        const setVal = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined) el.value = val; };
+        setVal('txtHeadline', state.txtHeadline);
+        setVal('txtSummary', state.txtSummary);
+        setVal('txtLocation', state.txtLocation);
+        setVal('txtCardDate', state.txtCardDate);
+        setVal('txtPunchline', state.txtPunchline);
+        setVal('txtReporter', state.txtReporter);
+        setVal('txtCustomTribute', state.txtCustomTribute);
+        setVal('txtObitName', state.txtObitName);
+
+        if (typeof photoZoom !== 'undefined' && state.photoZoom !== undefined) {
+          photoZoom = state.photoZoom;
+          const r = document.getElementById('zoomRange'); if (r) r.value = photoZoom;
+          const v = document.getElementById('zoomVal'); if (v) v.textContent = photoZoom.toFixed(2) + '×';
+        }
+        if (typeof photoPosX !== 'undefined' && state.photoPosX !== undefined) {
+          photoPosX = state.photoPosX;
+          const r = document.getElementById('posXRange'); if (r) r.value = photoPosX;
+        }
+        if (typeof photoPosY !== 'undefined' && state.photoPosY !== undefined) {
+          photoPosY = state.photoPosY;
+          const r = document.getElementById('posYRange'); if (r) r.value = photoPosY;
+        }
+        if (typeof logoScale !== 'undefined' && state.logoScale !== undefined) {
+          logoScale = state.logoScale;
+          const r = document.getElementById('logoScaleRange'); if (r) r.value = logoScale;
+        }
+        if (typeof renderCanvas === 'function') renderCanvas();
+      } finally {
+        isApplyingKvHistory = false;
+      }
+    }
+
+    function kvUndo() {
+      if (kvUndoStack.length <= 1) return;
+      const cur = kvUndoStack.pop();
+      kvRedoStack.push(cur);
+      const prev = kvUndoStack[kvUndoStack.length - 1];
+      applyKvState(prev);
+      updateKvHistoryButtons();
+    }
+
+    function kvRedo() {
+      if (kvRedoStack.length === 0) return;
+      const next = kvRedoStack.pop();
+      kvUndoStack.push(next);
+      applyKvState(next);
+      updateKvHistoryButtons();
+    }
+
+    function updateKvHistoryButtons() {
+      const canUndo = kvUndoStack.length > 1;
+      const canRedo = kvRedoStack.length > 0;
+      ['btnTopUndo', 'btnMobUndo'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.disabled = !canUndo; el.style.opacity = canUndo ? '1' : '0.35'; }
+      });
+      ['btnTopRedo', 'btnMobRedo'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.disabled = !canRedo; el.style.opacity = canRedo ? '1' : '0.35'; }
+      });
+    }
+
+    // Attach undo/redo buttons
+    document.getElementById('btnTopUndo')?.addEventListener('click', kvUndo);
+    document.getElementById('btnTopRedo')?.addEventListener('click', kvRedo);
+    document.getElementById('btnMobUndo')?.addEventListener('click', kvUndo);
+    document.getElementById('btnMobRedo')?.addEventListener('click', kvRedo);
+
+    // Keyboard Shortcuts: Ctrl+Z (Undo) and Ctrl+Y (Redo)
+    window.addEventListener('keydown', (e) => {
+      const tag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+      if (tag === 'input' || tag === 'textarea') return;
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        if (e.shiftKey) kvRedo();
+        else kvUndo();
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+        e.preventDefault();
+        kvRedo();
+      }
+    });
+
+    // Record initial snapshot
+    setTimeout(() => { pushKvUndoState(); }, 500);
+
+    // 4. CANVAS FIT & ZOOM ENGINE (Desktop & Tablet Stage)
+    let currentStageZoom = 1.0;
+    function setStageZoom(val) {
+      currentStageZoom = Math.max(0.25, Math.min(2.5, val));
+      const c = document.getElementById('newsCanvas');
+      const lbl = document.getElementById('lblCanvasZoom');
+      if (lbl) lbl.textContent = Math.round(currentStageZoom * 100) + '%';
+      if (c && window.innerWidth >= 768) {
+        c.style.transform = `scale(${currentStageZoom})`;
+        c.style.transformOrigin = 'center center';
+      }
+    }
+
+    function fitStageCanvas() {
+      const stage = document.getElementById('stageCanvasViewport');
+      const c = document.getElementById('newsCanvas');
+      if (!stage || !c || window.innerWidth < 768) return;
+      const sW = stage.clientWidth - 40;
+      const sH = stage.clientHeight - 40;
+      const scale = Math.min(sW / c.width, sH / c.height, 1.0);
+      setStageZoom(scale);
+    }
+
+    document.getElementById('btnCanvasFit')?.addEventListener('click', fitStageCanvas);
+    document.getElementById('btnCanvas100')?.addEventListener('click', () => setStageZoom(1.0));
+    document.getElementById('btnCanvasZoomIn')?.addEventListener('click', () => setStageZoom(currentStageZoom + 0.15));
+    document.getElementById('btnCanvasZoomOut')?.addEventListener('click', () => setStageZoom(currentStageZoom - 0.15));
+
+    // 5. MOBILE DIRECT CANVAS TWO-FINGER PINCH-TO-ZOOM
+    const cvsElem = document.getElementById('newsCanvas');
+    let pinchStartDist = 0;
+    let pinchStartZoom = 1.0;
+
+    if (cvsElem) {
+      cvsElem.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 2) {
+          e.preventDefault();
+          const t1 = e.touches[0];
+          const t2 = e.touches[1];
+          pinchStartDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+          pinchStartZoom = (typeof cardType !== 'undefined' && cardType === 'video' && typeof videoZoom !== 'undefined') ? videoZoom : (typeof photoZoom !== 'undefined' ? photoZoom : 1.0);
+        }
+      }, { passive: false });
+
+      cvsElem.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 2 && pinchStartDist > 0) {
+          e.preventDefault();
+          const t1 = e.touches[0];
+          const t2 = e.touches[1];
+          const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+          const ratio = dist / pinchStartDist;
+          const newZ = Math.min(3.0, Math.max(0.5, parseFloat((pinchStartZoom * ratio).toFixed(2))));
+          if (typeof cardType !== 'undefined' && cardType === 'video' && typeof videoZoom !== 'undefined') {
+            videoZoom = newZ;
+            const r = document.getElementById('videoZoomRange'); if (r) r.value = newZ;
+            const v = document.getElementById('videoZoomVal'); if (v) v.textContent = newZ.toFixed(2) + '×';
+          } else if (typeof photoZoom !== 'undefined') {
+            photoZoom = newZ;
+            const r = document.getElementById('zoomRange'); if (r) r.value = newZ;
+            const v = document.getElementById('zoomVal'); if (v) v.textContent = newZ.toFixed(2) + '×';
+          }
+          if (typeof renderCanvas === 'function') renderCanvas();
+        }
+      }, { passive: false });
+
+      cvsElem.addEventListener('touchend', (e) => {
+        if (e.touches.length < 2 && pinchStartDist > 0) {
+          pinchStartDist = 0;
+          pushKvUndoState();
+        }
+      });
+    }
+
+    // 6. WEB SHARE API INTEGRATION (Mobile Files Share)
+    async function tryKvWebShare(blob, filename) {
+      if (navigator.canShare && typeof File !== 'undefined') {
+        const file = new File([blob], filename || 'KozhikodeVision.jpg', { type: 'image/jpeg' });
+        if (navigator.canShare({ files: [file] })) {
+          try {
+            const hLine = document.getElementById('txtHeadline') ? document.getElementById('txtHeadline').value : 'Kozhikode Vision News';
+            await navigator.share({
+              title: 'Kozhikode Vision News Card',
+              text: hLine,
+              files: [file]
+            });
+            return true;
+          } catch (err) {
+            if (err.name === 'AbortError') return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    // Enhance Share to WhatsApp to try Web Share files first on mobile
+    const oldShareWABtn = document.getElementById('btnShareWA');
+    if (oldShareWABtn) {
+      oldShareWABtn.addEventListener('click', async (e) => {
+        if (cvsElem && window.innerWidth < 768 && navigator.canShare) {
+          cvsElem.toBlob(async (blob) => {
+            if (blob) {
+              const shared = await tryKvWebShare(blob, 'KV_News_Card.jpg');
+              if (shared) e.stopImmediatePropagation();
+            }
+          }, 'image/jpeg', 0.95);
+        }
+      }, true);
+    }
 </script>
 </body>
 </html>

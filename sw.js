@@ -1,21 +1,24 @@
-const CACHE_NAME = 'vision-news-v1';
-const ASSETS = [
+// Service Worker for Kozhikode Vision Studio PWA
+const CACHE_NAME = 'kv-studio-cache-v805';
+const STATIC_ASSETS = [
   './',
   './index.html',
-  './style.css',
-  './app.js',
-  './manifest.json'
+  './manifest.json',
+  './logo.png',
+  './clean_logo.png',
+  './logo-official.png'
 ];
 
-self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(STATIC_ASSETS);
+    }).then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
@@ -24,15 +27,28 @@ self.addEventListener('activate', (e) => {
           }
         })
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((res) => {
-      return res || fetch(e.request);
+self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+  // Do not cache live streams or Firebase requests
+  if (url.pathname.includes('/live/') || url.hostname.includes('firebase') || url.hostname.includes('firestore')) {
+    return;
+  }
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        // Return cached and update in background
+        fetch(event.request).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse));
+          }
+        }).catch(() => {});
+        return cachedResponse;
+      }
+      return fetch(event.request);
     })
   );
 });
