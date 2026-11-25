@@ -9,8 +9,8 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    // === AUTO-UPDATE & PWA ENGINE v8.1.0 ===
-    var KV_LATEST_BUILD = '8.1.0';
+    // === AUTO-UPDATE & PWA ENGINE v8.1.1 ===
+    var KV_LATEST_BUILD = '8.1.1';
     (function() {
       try {
         if ('serviceWorker' in navigator) {
@@ -11425,7 +11425,7 @@ html, body {
     let activeInspectorTab = 'photo';
 
     function switchInspectorTab(tabId) {
-      if (!tabId) return;
+      if (!tabId || tabId === activeInspectorTab) return;
       activeInspectorTab = tabId;
 
       // Update Desktop Left Tool Rail
@@ -11455,24 +11455,20 @@ html, body {
         }
       });
 
-      // If 'box' tab selected, scroll to Box section or highlight it
+      // If 'box' tab selected, highlight Box section smoothly
       if (tabId === 'box') {
         const pText = document.getElementById('paneText');
         if (pText) {
           pText.classList.add('active');
           pText.style.display = 'flex';
-          const boxSec = document.getElementById('unifiedTextToolbar') || document.getElementById('chkUnifiedBox');
+          const boxSec = document.getElementById('chkUnifiedBox');
           if (boxSec) boxSec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
       }
-
-      // Scroll inspector deck to top smoothly
-      const deck = document.getElementById('inspectorDeck');
-      if (deck) deck.scrollTop = 0;
     }
 
-    // Attach listeners to all tab buttons across desktop, tablet, and mobile
-    document.querySelectorAll('[data-tab]').forEach(el => {
+    // Attach listeners strictly to tab buttons (rail, tablet pills, and mobile bottom nav)
+    document.querySelectorAll('.rail-btn, .deck-tab-btn, .mob-nav-btn').forEach(el => {
       el.addEventListener('click', (e) => {
         const tab = el.getAttribute('data-tab');
         if (tab) switchInspectorTab(tab);
