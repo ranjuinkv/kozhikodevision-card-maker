@@ -4175,6 +4175,42 @@ service cloud.firestore {
                 <span class="ratio-name">WIDE SCREEN</span>
               </button>
             </div>
+
+            <!-- 📄 TEXT ONLY / FLASH CARD CONTROLS -->
+            <div id="textCardControlsWrap" style="display:none; margin-top:10px; background:#0b1329; border:1px solid #38bdf8; border-radius:12px; padding:12px; box-shadow:0 8px 24px rgba(0,0,0,0.5);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span style="font-size:12px; font-weight:800; color:#38bdf8; display:flex; align-items:center; gap:5px;">
+                  📄 Text Only / Flash Card Settings
+                </span>
+                <span style="font-size:10px; background:rgba(56,189,248,0.2); color:#38bdf8; padding:2px 7px; border-radius:4px; font-weight:700;">No Photo Needed</span>
+              </div>
+
+              <!-- Background Theme Selector -->
+              <label style="font-size:11px; font-weight:700; color:#cbd5e1; display:block; margin-bottom:5px;">Background Theme:</label>
+              <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; margin-bottom:10px;">
+                <button id="btnTextThemeBreaking" type="button" class="btn-tactile active" style="padding:6px 2px; font-size:11px; font-weight:700; border-radius:7px; background:#7f1d1d; color:#fff; border:1px solid #ef4444; cursor:pointer;" title="Breaking Alert">🔴 Red</button>
+                <button id="btnTextThemeStatement" type="button" class="btn-tactile" style="padding:6px 2px; font-size:11px; font-weight:700; border-radius:7px; background:#1e3a8a; color:#fff; border:1px solid #3b82f6; cursor:pointer;" title="Press Release">🔵 Blue</button>
+                <button id="btnTextThemeAlert" type="button" class="btn-tactile" style="padding:6px 2px; font-size:11px; font-weight:700; border-radius:7px; background:#9a3412; color:#fff; border:1px solid #f97316; cursor:pointer;" title="Warning / Holiday">⚠️ Orange</button>
+                <button id="btnTextThemeQuote" type="button" class="btn-tactile" style="padding:6px 2px; font-size:11px; font-weight:700; border-radius:7px; background:#1e293b; color:#fff; border:1px solid #94a3b8; cursor:pointer;" title="Quote / Statement">⬛ Slate</button>
+              </div>
+
+              <!-- Category / Alert Badge Quick Presets -->
+              <label style="font-size:11px; font-weight:700; color:#cbd5e1; display:block; margin-bottom:5px;">Category / Alert Badge:</label>
+              <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px;">
+                <button type="button" class="btn-tactile btn-text-badge-pill active" data-badge="🔴 ഫ്ലാഷ് ന്യൂസ്" style="padding:4px 8px; font-size:11px; font-weight:700; border-radius:6px; background:#ef4444; color:#fff; border:none; cursor:pointer;">🔴 ഫ്ലാഷ് ന്യൂസ്</button>
+                <button type="button" class="btn-tactile btn-text-badge-pill" data-badge="📢 പ്രത്യേക അറിയിപ്പ്" style="padding:4px 8px; font-size:11px; font-weight:700; border-radius:6px; background:#1e293b; color:#cbd5e1; border:1px solid #475569; cursor:pointer;">📢 പ്രത്യേക അറിയിപ്പ്</button>
+                <button type="button" class="btn-tactile btn-text-badge-pill" data-badge="💬 പ്രസ്താവന" style="padding:4px 8px; font-size:11px; font-weight:700; border-radius:6px; background:#1e293b; color:#cbd5e1; border:1px solid #475569; cursor:pointer;">💬 പ്രസ്താവന</button>
+                <button type="button" class="btn-tactile btn-text-badge-pill" data-badge="⚠️ ജാഗ്രതാ നിർദ്ദേശം" style="padding:4px 8px; font-size:11px; font-weight:700; border-radius:6px; background:#1e293b; color:#cbd5e1; border:1px solid #475569; cursor:pointer;">⚠️ ജാഗ്രത</button>
+                <button type="button" class="btn-tactile btn-text-badge-pill" data-badge="🏫 അവധി പ്രഖ്യാപനം" style="padding:4px 8px; font-size:11px; font-weight:700; border-radius:6px; background:#1e293b; color:#cbd5e1; border:1px solid #475569; cursor:pointer;">🏫 അവധി</button>
+              </div>
+              <input id="inpCustomTextBadge" type="text" class="kv-admin-input" placeholder="Type custom badge (or click above)..." style="font-size:12px; padding:6px 10px; min-height:36px; margin-bottom:10px;" value="🔴 ഫ്ലാഷ് ന്യൂസ്">
+
+              <!-- Options: Big Quote Marks -->
+              <div style="display:flex; justify-content:space-between; align-items:center; background:#1e293b; padding:8px 10px; border-radius:8px; border:1px solid #334155;">
+                <span style="font-size:12px; font-weight:700; color:#e2e8f0;">Show Big Quotes (“ ”):</span>
+                <input id="chkShowTextQuotes" type="checkbox" style="width:18px; height:18px; accent-color:#38bdf8; cursor:pointer;">
+              </div>
+            </div>
           </div>
 
           <!-- Right Column: Photo Upload (For News/Obit) -->
@@ -8709,7 +8745,7 @@ service cloud.firestore {
 
       // Category / Alert Badge
       const badgeLabel = (textCardBadge || '🔴 ഫ്ലാഷ് ന്യൂസ്').trim();
-      const badgeY = Math.max(160, Math.floor(H * 0.20)) + headlineOffsetY;
+      const badgeY = Math.max(260, Math.floor(H * 0.25)) + headlineOffsetY;
       ctx.font = 'bold 24px "Anek Malayalam", sans-serif';
       const badgeMetrics = ctx.measureText(badgeLabel);
       const badgeW = badgeMetrics.width + 36;
