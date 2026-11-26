@@ -1,5 +1,5 @@
-﻿// Service Worker for Kozhikode Vision Studio PWA
-const CACHE_NAME = 'kv-studio-cache-v831';
+// Service Worker for Kozhikode Vision Studio PWA
+const CACHE_NAME = 'kv-studio-cache-v832';
 const STATIC_ASSETS = [
   './',
   './index.html',

@@ -9,8 +9,8 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    // === AUTO-UPDATE & PWA ENGINE v8.3.1 ===
-    var KV_LATEST_BUILD = '8.3.1';
+    // === AUTO-UPDATE & PWA ENGINE v8.3.2 ===
+    var KV_LATEST_BUILD = '8.3.2';
     (function() {
       try {
         if ('serviceWorker' in navigator) {
@@ -3707,7 +3707,7 @@ html, body {
         </div>
         <div style="margin-top:6px;margin-bottom:8px;">
           <span class="kv-live-tag" style="font-size:10px;padding:3px 10px;border-radius:14px;background:rgba(239,68,68,0.25);border:1px solid #ef4444;color:#fca5a5;display:inline-flex;align-items:center;gap:6px;">
-            <span class="kv-live-dot"></span>🔴 V8.3.1 LIVE: BROADCAST STUDIO
+            <span class="kv-live-dot"></span>🔴 V8.3.2 LIVE: BROADCAST STUDIO
           </span>
         </div>
         <div class="kv-auth-title">KOZHIKODE VISION NEWS</div>
@@ -3838,7 +3838,7 @@ html, body {
   <div id="kvAdminModal" class="kv-hidden">
     <div class="kv-admin-dialog">
       <div class="kv-admin-header">
-        <h3>👑 Admin Console &amp; User Control <span style="background:#0284c7;color:#fff;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;">v8.3.1</span></h3>
+        <h3>👑 Admin Console &amp; User Control <span style="background:#0284c7;color:#fff;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;">v8.3.2</span></h3>
         <button id="kvBtnCloseAdmin" type="button" class="kv-admin-close">✕</button>
       </div>
       <div class="kv-admin-body">
@@ -5038,24 +5038,65 @@ service cloud.firestore {
               <!-- Advanced Settings Details for Shape & Fine-Tuning -->
               <details class="advanced-settings-box" style="margin-bottom:8px;">
                 <summary>⚙️ അഡ്വാൻസ്ഡ് ടെക്സ്റ്റ് സ്റ്റെപ്പർ (- / +)</summary>
-                <div class="stepper-group" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+                
+                <!-- Headline Movement Steppers -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; margin-bottom:4px;">
+                  <span style="font-size:11px; font-weight:800; color:#38bdf8;">📰 തലക്കെട്ട് പൊസിഷൻ (Headline):</span>
+                </div>
+                <div class="stepper-group" style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
                   <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↔ X Pos:</span>
+                    <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↔ Head X:</span>
                     <div style="display:flex; align-items:center; gap:4px;">
-                      <button type="button" class="btn-stepper" id="btnTextXDecr" title="Move Left">-</button>
-                      <span id="textXValBadge" style="font-size:11px; font-weight:800; color:#38bdf8; min-width:32px; text-align:center;">0</span>
-                      <button type="button" class="btn-stepper" id="btnTextXIncr" title="Move Right">+</button>
+                      <button type="button" class="btn-stepper" id="btnHeadXDecr" title="Move Left">-</button>
+                      <span id="headXValBadge" style="font-size:11px; font-weight:800; color:#38bdf8; min-width:32px; text-align:center;">0px</span>
+                      <button type="button" class="btn-stepper" id="btnHeadXIncr" title="Move Right">+</button>
                     </div>
                   </div>
                   <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↕ Y Pos:</span>
+                    <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↕ Head Y:</span>
                     <div style="display:flex; align-items:center; gap:4px;">
-                      <button type="button" class="btn-stepper" id="btnTextYDecr" title="Move Up">-</button>
-                      <span id="textYValBadge" style="font-size:11px; font-weight:800; color:#38bdf8; min-width:32px; text-align:center;">0</span>
-                      <button type="button" class="btn-stepper" id="btnTextYIncr" title="Move Down">+</button>
+                      <button type="button" class="btn-stepper" id="btnHeadYDecr" title="Move Up">-</button>
+                      <span id="headYValBadge" style="font-size:11px; font-weight:800; color:#38bdf8; min-width:32px; text-align:center;">0px</span>
+                      <button type="button" class="btn-stepper" id="btnHeadYIncr" title="Move Down">+</button>
                     </div>
                   </div>
                 </div>
+
+                <!-- Summary Movement Steppers -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; margin-bottom:4px;">
+                  <span style="font-size:11px; font-weight:800; color:#facc15;">📄 വിശദാംശങ്ങൾ പൊസിഷൻ (Summary):</span>
+                </div>
+                <div class="stepper-group" style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                  <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↔ Sum X:</span>
+                    <div style="display:flex; align-items:center; gap:4px;">
+                      <button type="button" class="btn-stepper" id="btnSummaryXDecr" title="Move Left">-</button>
+                      <span id="summaryXValBadge" style="font-size:11px; font-weight:800; color:#facc15; min-width:32px; text-align:center;">0px</span>
+                      <button type="button" class="btn-stepper" id="btnSummaryXIncr" title="Move Right">+</button>
+                    </div>
+                  </div>
+                  <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↕ Sum Y:</span>
+                    <div style="display:flex; align-items:center; gap:4px;">
+                      <button type="button" class="btn-stepper" id="btnSummaryYDecr" title="Move Up">-</button>
+                      <span id="summaryYValBadge" style="font-size:11px; font-weight:800; color:#facc15; min-width:32px; text-align:center;">0px</span>
+                      <button type="button" class="btn-stepper" id="btnSummaryYIncr" title="Move Down">+</button>
+                    </div>
+                  </div>
+                </div>
+                <!-- Hidden compatibility inputs -->
+                <input id="headXRange" type="range" min="-100" max="100" step="2" value="0" style="display:none;">
+                <span id="headXVal" style="display:none;">0px</span>
+                <input id="headYRange" type="range" min="-150" max="150" step="2" value="0" style="display:none;">
+                <span id="headYVal" style="display:none;">0px</span>
+                <input id="summaryYRange" type="range" min="-150" max="150" step="2" value="0" style="display:none;">
+                <span id="summaryYVal" style="display:none;">0px</span>
+                <button type="button" id="btnTextXDecr" style="display:none;"></button>
+                <button type="button" id="btnTextXIncr" style="display:none;"></button>
+                <button type="button" id="btnTextYDecr" style="display:none;"></button>
+                <button type="button" id="btnTextYIncr" style="display:none;"></button>
+                <span id="textXValBadge" style="display:none;">0px</span>
+                <span id="textYValBadge" style="display:none;">0px</span>
                 <!-- Max Lines Allowed Slider -->
                 <div class="slider-item" style="margin-top:8px;">
                   <div class="slider-head">
@@ -5108,7 +5149,19 @@ service cloud.firestore {
 
             <!-- OBITUARY SHAPE, SIZE & POSITION CONTROLS (As Requested!) -->
             <div id="obitShapeAdjustWrap" style="display:none; flex-direction:column; gap:8px;">
-              <span class="col-title">🎨 Frame Size &amp; Position</span>
+              <span class="col-title">🎨 Obituary Presets &amp; Frame</span>
+
+              <!-- Background Preset Selection: Midnight, Charcoal, Navy, Candle, Slate -->
+              <div class="form-group" style="margin-bottom:8px;">
+                <label class="form-label" style="font-weight:700; color:#facc15;">🎨 പശ്ചാത്തലം (BG Theme Preset):</label>
+                <div class="pills-wrap" style="flex-wrap:wrap; gap:5px;" id="obitBgPresetGroup">
+                  <button type="button" class="btn-tactile pill-btn gold active" data-obit-bg="midnight">⬛ Midnight</button>
+                  <button type="button" class="btn-tactile pill-btn gold" data-obit-bg="charcoal">🖤 Charcoal</button>
+                  <button type="button" class="btn-tactile pill-btn gold" data-obit-bg="navy">🌌 Royal Navy</button>
+                  <button type="button" class="btn-tactile pill-btn gold" data-obit-bg="candle">🕯️ Warm Candle</button>
+                  <button type="button" class="btn-tactile pill-btn gold" data-obit-bg="slate">🏛️ Serene Slate</button>
+                </div>
+              </div>
 
               <!-- Photo Shape Selection: Rectangle vs Round/Oval -->
               <div class="form-group">
@@ -5431,7 +5484,7 @@ service cloud.firestore {
         <span class="dev-badge-icon">⚡</span>
         <span class="dev-title">Developed by <span class="dev-name">Ranju</span></span>
         <span class="dev-sep">•</span>
-        <span class="dev-studio-tag">Kozhikode Vision Official Media Studio v8.3.1</span>
+        <span class="dev-studio-tag">Kozhikode Vision Official Media Studio v8.3.2</span>
       </div>
       <div class="dev-copyright-text">
         &copy; 2026 Kozhikode Vision News &amp; Entertainment. All Rights Reserved.
@@ -6058,6 +6111,8 @@ service cloud.firestore {
       initLogoY = logoPosY;
       initTextX = headlineOffsetX;
       initTextY = headlineOffsetY;
+      initSummaryX = summaryOffsetX;
+      initSummaryY = summaryOffsetY;
       initTribX = tributePosX;
       initTribY = tributePosY;
       initObitTextX = obitDetailsOffsetX;
@@ -6107,11 +6162,15 @@ service cloud.firestore {
         }
         // 3. News Mode Hit Test
         else {
-          // News Text block (Date badge, Headline, Summary, Reporter): Lower Area
-          const textTop = (canvas.height * 0.58 + headlineOffsetY) - 60;
-          if (pos.y >= textTop || pos.y >= canvas.height * 0.45) {
-            dragTarget = 'text';
-            dragStatusLabel.textContent = '✍️ Moving News Text';
+          // Check if touch is on summary area vs headline area
+          const headTop = (canvas.height * 0.52 + headlineOffsetY);
+          const summaryEstimatedTop = headTop + 130;
+          if (pos.y >= summaryEstimatedTop) {
+            dragTarget = 'summaryText';
+            dragStatusLabel.textContent = '📄 Moving Summary Text';
+          } else if (pos.y >= headTop - 60 || pos.y >= canvas.height * 0.45) {
+            dragTarget = 'headlineText';
+            dragStatusLabel.textContent = '📰 Moving Headline Text';
           } else {
             dragTarget = 'photo';
             dragStatusLabel.textContent = '📷 Moving Photo';
@@ -6190,7 +6249,7 @@ service cloud.firestore {
         const tributeYVal = document.getElementById('tributeYVal');
         if (tributeYRange) tributeYRange.value = tributePosY;
         if (tributeYVal) tributeYVal.textContent = tributePosY + 'px';
-      } else if (dragTarget === 'text') {
+      } else if (dragTarget === 'headlineText' || dragTarget === 'text') {
         headlineOffsetX = Math.round(initTextX + deltaX);
         headlineOffsetY = Math.round(initTextY + deltaY);
         const headYRange = document.getElementById('headYRange');
@@ -6201,6 +6260,25 @@ service cloud.firestore {
         if (headYVal) headYVal.textContent = headlineOffsetY + 'px';
         if (headXRange) headXRange.value = headlineOffsetX;
         if (headXVal) headXVal.textContent = headlineOffsetX + 'px';
+        const headXBadge = document.getElementById('headXValBadge');
+        const headYBadge = document.getElementById('headYValBadge');
+        if (headXBadge) headXBadge.textContent = headlineOffsetX + 'px';
+        if (headYBadge) headYBadge.textContent = headlineOffsetY + 'px';
+      } else if (dragTarget === 'summaryText') {
+        summaryOffsetX = Math.round(initSummaryX + deltaX);
+        summaryOffsetY = Math.round(initSummaryY + deltaY);
+        const sumYRange = document.getElementById('summaryYRange');
+        const sumYVal = document.getElementById('summaryYVal');
+        const sumXRange = document.getElementById('summaryXRange');
+        const sumXVal = document.getElementById('summaryXVal');
+        if (sumYRange) sumYRange.value = summaryOffsetY;
+        if (sumYVal) sumYVal.textContent = summaryOffsetY + 'px';
+        if (sumXRange) sumXRange.value = summaryOffsetX;
+        if (sumXVal) sumXVal.textContent = summaryOffsetX + 'px';
+        const sumXBadge = document.getElementById('summaryXValBadge') || document.getElementById('textXValBadge');
+        const sumYBadge = document.getElementById('summaryYValBadge') || document.getElementById('textYValBadge');
+        if (sumXBadge) sumXBadge.textContent = summaryOffsetX + 'px';
+        if (sumYBadge) sumYBadge.textContent = summaryOffsetY + 'px';
       } else if (dragTarget === 'obitText') {
         obitDetailsOffsetX = Math.round(initObitTextX + deltaX);
         obitDetailsOffsetY = Math.round(initObitTextY + deltaY);
@@ -9408,20 +9486,100 @@ service cloud.firestore {
       // =====================================
       if (cardType === 'obituary') {
         
-        // Dignified dark background
-        const obitBgGrad = ctx.createLinearGradient(0, 0, 0, H);
-        obitBgGrad.addColorStop(0, '#090d1a');
-        obitBgGrad.addColorStop(0.4, '#060810');
-        obitBgGrad.addColorStop(1, '#0f172a');
-        ctx.fillStyle = obitBgGrad;
-        ctx.fillRect(0, 0, W, H);
-
-        // Elegant gold corner decorative borders
-        ctx.strokeStyle = 'rgba(217, 119, 6, 0.4)';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(30, 30, W - 60, H - 90);
-        ctx.strokeStyle = 'rgba(251, 191, 36, 0.25)';
-        ctx.strokeRect(36, 36, W - 72, H - 102);
+        // Dignified background presets (Midnight, Charcoal, Navy, Candle, Slate)
+        const curObitTheme = window.obitBgTheme || 'midnight';
+        if (curObitTheme === 'charcoal') {
+          // Deep Charcoal / Dark Marble
+          const grad = ctx.createLinearGradient(0, 0, 0, H);
+          grad.addColorStop(0, '#161616');
+          grad.addColorStop(0.45, '#0e0e0e');
+          grad.addColorStop(1, '#1a1a1a');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, W, H);
+          const rad = ctx.createRadialGradient(W/2, H*0.35, 20, W/2, H*0.35, W*0.6);
+          rad.addColorStop(0, 'rgba(234, 179, 8, 0.08)');
+          rad.addColorStop(1, 'transparent');
+          ctx.fillStyle = rad;
+          ctx.fillRect(0, 0, W, H);
+          ctx.strokeStyle = 'rgba(217, 119, 6, 0.45)';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(30, 30, W - 60, H - 90);
+          ctx.strokeStyle = 'rgba(251, 191, 36, 0.3)';
+          ctx.strokeRect(36, 36, W - 72, H - 102);
+        } else if (curObitTheme === 'navy') {
+          // Royal Navy / Deep Sapphire
+          const grad = ctx.createLinearGradient(0, 0, 0, H);
+          grad.addColorStop(0, '#061325');
+          grad.addColorStop(0.45, '#020914');
+          grad.addColorStop(1, '#091c38');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, W, H);
+          const rad = ctx.createRadialGradient(W/2, H*0.35, 20, W/2, H*0.35, W*0.6);
+          rad.addColorStop(0, 'rgba(56, 189, 248, 0.09)');
+          rad.addColorStop(1, 'transparent');
+          ctx.fillStyle = rad;
+          ctx.fillRect(0, 0, W, H);
+          ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(30, 30, W - 60, H - 90);
+          ctx.strokeStyle = 'rgba(251, 191, 36, 0.28)';
+          ctx.strokeRect(36, 36, W - 72, H - 102);
+        } else if (curObitTheme === 'candle') {
+          // Warm Candle Glow / Vintage Bronze
+          const grad = ctx.createLinearGradient(0, 0, 0, H);
+          grad.addColorStop(0, '#1c1005');
+          grad.addColorStop(0.4, '#261507');
+          grad.addColorStop(1, '#120a03');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, W, H);
+          const rad = ctx.createRadialGradient(W/2, H*0.35, 10, W/2, H*0.35, W*0.55);
+          rad.addColorStop(0, 'rgba(245, 158, 11, 0.16)');
+          rad.addColorStop(0.5, 'rgba(217, 119, 6, 0.06)');
+          rad.addColorStop(1, 'transparent');
+          ctx.fillStyle = rad;
+          ctx.fillRect(0, 0, W, H);
+          ctx.strokeStyle = 'rgba(245, 158, 11, 0.45)';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(30, 30, W - 60, H - 90);
+          ctx.strokeStyle = 'rgba(251, 191, 36, 0.3)';
+          ctx.strokeRect(36, 36, W - 72, H - 102);
+        } else if (curObitTheme === 'slate') {
+          // Serene Slate / Platinum Memorial
+          const grad = ctx.createLinearGradient(0, 0, 0, H);
+          grad.addColorStop(0, '#1a1d24');
+          grad.addColorStop(0.4, '#121419');
+          grad.addColorStop(1, '#222731');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, W, H);
+          const rad = ctx.createRadialGradient(W/2, H*0.35, 20, W/2, H*0.35, W*0.6);
+          rad.addColorStop(0, 'rgba(203, 213, 225, 0.08)');
+          rad.addColorStop(1, 'transparent');
+          ctx.fillStyle = rad;
+          ctx.fillRect(0, 0, W, H);
+          ctx.strokeStyle = 'rgba(203, 213, 225, 0.35)';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(30, 30, W - 60, H - 90);
+          ctx.strokeStyle = 'rgba(251, 191, 36, 0.25)';
+          ctx.strokeRect(36, 36, W - 72, H - 102);
+        } else {
+          // Midnight (Default)
+          const grad = ctx.createLinearGradient(0, 0, 0, H);
+          grad.addColorStop(0, '#090d1a');
+          grad.addColorStop(0.4, '#060810');
+          grad.addColorStop(1, '#0f172a');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, W, H);
+          const rad = ctx.createRadialGradient(W/2, H*0.35, 20, W/2, H*0.35, W*0.6);
+          rad.addColorStop(0, 'rgba(251, 191, 36, 0.06)');
+          rad.addColorStop(1, 'transparent');
+          ctx.fillStyle = rad;
+          ctx.fillRect(0, 0, W, H);
+          ctx.strokeStyle = 'rgba(217, 119, 6, 0.4)';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(30, 30, W - 60, H - 90);
+          ctx.strokeStyle = 'rgba(251, 191, 36, 0.25)';
+          ctx.strokeRect(36, 36, W - 72, H - 102);
+        }
 
         // MOVABLE TRIBUTE TITLE ("ആദരാഞ്ജലികൾ" / "ചരമം")
         const tribX = (W / 2) + tributePosX;
@@ -9533,11 +9691,21 @@ service cloud.firestore {
         const sub = (obitAge ? obitAge + '  •  ' : '') + obitPlace;
         ctx.fillText(sub, textBaseX, textBaseY + 40);
 
-        // OBITUARY DATE
+        // OBITUARY DATE (Clean Vector Calendar Icon + Gold Text)
         if (obitDateText) {
           ctx.font = '700 23px "Anek Malayalam", sans-serif';
+          const cleanDate = (obitDateText || '').replace(/^📅\s*/, '').trim();
+          const textMetrics = ctx.measureText(cleanDate);
+          const iconSize = 22;
+          const gap = 10;
+          const totalW = iconSize + gap + textMetrics.width;
+          const startX = textBaseX - (totalW / 2);
+          const dateY = textBaseY + 76;
+          drawVectorCalendar(ctx, startX, dateY - 18, iconSize, true);
           ctx.fillStyle = '#fbbf24'; // Elegant Gold
-          ctx.fillText('📅 ' + obitDateText, textBaseX, textBaseY + 76);
+          ctx.textAlign = 'left';
+          ctx.fillText(cleanDate, startX + iconSize + gap, dateY);
+          ctx.textAlign = 'center'; // Restore center
         }
 
         // Funeral / Ceremony Details
@@ -10095,11 +10263,18 @@ service cloud.firestore {
       return inMemoryUsers;
     }
 
+    let permDeleted = [];
+    try {
+      permDeleted = JSON.parse(localStorage.getItem('kv_perm_deleted_users') || '[]');
+      if (!Array.isArray(permDeleted)) permDeleted = [];
+    } catch (e) { permDeleted = []; }
+
     const userMap = {}; // key: normalized username or uid
 
     function ingestUser(u) {
       if (!u || typeof u !== 'object') return;
       const uname = (u.username || extractUsername(u.email) || '').trim().toLowerCase();
+      if (permDeleted.includes(uname)) return; // Exclude permanently deleted users completely
       const uid = u.uid || ('u-' + (uname || Math.random()).replace(/[^a-z0-9]/g, ''));
       const key = uname || uid;
       if (!key) return;
@@ -10123,11 +10298,12 @@ service cloud.firestore {
         });
       }
 
-      // Safeguard: Core default accounts are ALWAYS active and never blocked
-      var isCore = (uname === 'admin' || uname === 'ranju' || uname === 'reporter1' || uname === 'reporter2' || uname === 'staff');
-      if (isCore && userMap[key]) {
-        userMap[key].deleted = false;
-        userMap[key].active = true;
+      // Core safety: Only keep currently logged in user safe from accidental deletion
+      if (typeof currentProfile !== 'undefined' && currentProfile && currentProfile.username && uname === currentProfile.username.toLowerCase()) {
+        if (userMap[key]) {
+          userMap[key].deleted = false;
+          userMap[key].active = true;
+        }
       }
     }
 
@@ -10705,12 +10881,19 @@ service cloud.firestore {
               '<div class="kv-user-sub" style="color:#ef4444;">Deleted User</div>' +
             '</div>' +
             '<div class="kv-user-actions">' +
-              '<button type="button" class="kv-act-btn unblock" style="background:#059669;color:#fff;">\u267B\uFE0F Restore User</button>' +
+              '<button type="button" class="kv-act-btn unblock" style="background:#059669;color:#fff;">\u267B\uFE0F Restore</button>' +
+              '<button type="button" class="kv-act-btn del" style="background:#dc2626;color:#fff;margin-left:4px;">\u274C Delete Forever</button>' +
             '</div>';
 
-          const restoreBtn = dRow.querySelector('button');
+          const restoreBtn = dRow.querySelector('button.unblock');
           restoreBtn.addEventListener('click', function() {
             handlers.onRestore(du);
+          });
+          const permDelBtn = dRow.querySelector('button.del');
+          permDelBtn.addEventListener('click', function() {
+            if (confirm('Permanently remove user "' + (du.name || du.username) + '" from the system? This cannot be undone.')) {
+              if (handlers.onPermanentDelete) handlers.onPermanentDelete(du);
+            }
           });
 
           deletedContainer.appendChild(dRow);
@@ -10787,7 +10970,10 @@ service cloud.firestore {
       },
       onDelete: function(u) {
         const list = getDemoUsers();
-        const item = list.find(function(x) { return x.uid === u.uid; });
+        const uname = (u.username || extractUsername(u.email) || '').toLowerCase();
+        const item = list.find(function(x) { 
+          return x.uid === u.uid || (x.username && x.username.toLowerCase() === uname);
+        });
         if (item) {
           item.active = false;
           item.deleted = true;
@@ -10796,12 +10982,38 @@ service cloud.firestore {
           if (firebaseDb && isFirebaseLive) {
             firebaseDb.collection('kv_users').doc(item.uid).update({ active: false, deleted: true, isNew: false }).catch(function(){});
           }
-          refreshDemoAdminList();
+          refreshDemoAdminList(true);
           renderQuickUserPills();
-          showAdminStatus('\u{1F5D1}\uFE0F "' + item.name + '" deleted. Can be restored from Recycle Bin below.', false);
+          showAdminStatus('\u{1F5D1}\uFE0F "' + (item.name || item.username) + '" moved to Recycle Bin.', false);
           if (typeof showToast === 'function') {
-            showToast('\u{1F5D1}\uFE0F Deleted: ' + item.name);
+            showToast('\u{1F5D1}\uFE0F Deleted: ' + (item.name || item.username));
           }
+        }
+      },
+      onPermanentDelete: function(u) {
+        const uname = (u.username || extractUsername(u.email) || '').toLowerCase();
+        let permList = [];
+        try {
+          permList = JSON.parse(localStorage.getItem('kv_perm_deleted_users') || '[]');
+          if (!Array.isArray(permList)) permList = [];
+        } catch(e) { permList = []; }
+        if (uname && !permList.includes(uname)) {
+          permList.push(uname);
+          try { localStorage.setItem('kv_perm_deleted_users', JSON.stringify(permList)); } catch(e) {}
+        }
+        let list = getDemoUsers(true).filter(function(x) {
+          const xUname = (x.username || extractUsername(x.email) || '').toLowerCase();
+          return x.uid !== u.uid && xUname !== uname;
+        });
+        saveDemoUsers(list);
+        if (firebaseDb && isFirebaseLive) {
+          firebaseDb.collection('kv_users').doc(u.uid).delete().catch(function(){});
+        }
+        refreshDemoAdminList(true);
+        renderQuickUserPills();
+        showAdminStatus('\u274C User permanently deleted.', false);
+        if (typeof showToast === 'function') {
+          showToast('\u274C Permanently deleted: ' + (u.name || u.username));
         }
       },
       onRestore: function(u) {
@@ -12548,29 +12760,81 @@ service cloud.firestore {
     btnPhoto2YDecr?.addEventListener('click', () => { photo2PosY -= 10; if (photo2YValBadge) photo2YValBadge.textContent = photo2PosY + 'px'; renderCard(); });
     btnPhoto2YIncr?.addEventListener('click', () => { photo2PosY += 10; if (photo2YValBadge) photo2YValBadge.textContent = photo2PosY + 'px'; renderCard(); });
 
-    // Text Steppers
-    const btnTextXDecr = document.getElementById('btnTextXDecr');
-    const btnTextXIncr = document.getElementById('btnTextXIncr');
-    const btnTextYDecr = document.getElementById('btnTextYDecr');
-    const btnTextYIncr = document.getElementById('btnTextYIncr');
-    const textXValBadge = document.getElementById('textXValBadge');
-    const textYValBadge = document.getElementById('textYValBadge');
+    // Headline Steppers (↔ Head X, ↕ Head Y)
+    const btnHeadXDecr = document.getElementById('btnHeadXDecr');
+    const btnHeadXIncr = document.getElementById('btnHeadXIncr');
+    const btnHeadYDecr = document.getElementById('btnHeadYDecr');
+    const btnHeadYIncr = document.getElementById('btnHeadYIncr');
+    const headXValBadge = document.getElementById('headXValBadge');
+    const headYValBadge = document.getElementById('headYValBadge');
 
-    btnTextXDecr?.addEventListener('click', () => {
-      const r = document.getElementById('summaryXRange');
-      if (r) { r.value = parseInt(r.value || 0) - 5; if (textXValBadge) textXValBadge.textContent = r.value + 'px'; r.dispatchEvent(new Event('input')); }
+    btnHeadXDecr?.addEventListener('click', () => {
+      headlineOffsetX -= 5;
+      if (headXValBadge) headXValBadge.textContent = headlineOffsetX + 'px';
+      const r = document.getElementById('headXRange'); if (r) r.value = headlineOffsetX;
+      renderCard();
     });
-    btnTextXIncr?.addEventListener('click', () => {
-      const r = document.getElementById('summaryXRange');
-      if (r) { r.value = parseInt(r.value || 0) + 5; if (textXValBadge) textXValBadge.textContent = r.value + 'px'; r.dispatchEvent(new Event('input')); }
+    btnHeadXIncr?.addEventListener('click', () => {
+      headlineOffsetX += 5;
+      if (headXValBadge) headXValBadge.textContent = headlineOffsetX + 'px';
+      const r = document.getElementById('headXRange'); if (r) r.value = headlineOffsetX;
+      renderCard();
     });
-    btnTextYDecr?.addEventListener('click', () => {
-      const r = document.getElementById('summaryYRange');
-      if (r) { r.value = parseInt(r.value || 0) - 5; if (textYValBadge) textYValBadge.textContent = r.value + 'px'; r.dispatchEvent(new Event('input')); }
+    btnHeadYDecr?.addEventListener('click', () => {
+      headlineOffsetY -= 5;
+      if (headYValBadge) headYValBadge.textContent = headlineOffsetY + 'px';
+      const r = document.getElementById('headYRange'); if (r) r.value = headlineOffsetY;
+      renderCard();
     });
-    btnTextYIncr?.addEventListener('click', () => {
-      const r = document.getElementById('summaryYRange');
-      if (r) { r.value = parseInt(r.value || 0) + 5; if (textYValBadge) textYValBadge.textContent = r.value + 'px'; r.dispatchEvent(new Event('input')); }
+    btnHeadYIncr?.addEventListener('click', () => {
+      headlineOffsetY += 5;
+      if (headYValBadge) headYValBadge.textContent = headlineOffsetY + 'px';
+      const r = document.getElementById('headYRange'); if (r) r.value = headlineOffsetY;
+      renderCard();
+    });
+
+    // Summary Steppers (↔ Sum X, ↕ Sum Y)
+    const btnSummaryXDecr = document.getElementById('btnSummaryXDecr') || document.getElementById('btnTextXDecr');
+    const btnSummaryXIncr = document.getElementById('btnSummaryXIncr') || document.getElementById('btnTextXIncr');
+    const btnSummaryYDecr = document.getElementById('btnSummaryYDecr') || document.getElementById('btnTextYDecr');
+    const btnSummaryYIncr = document.getElementById('btnSummaryYIncr') || document.getElementById('btnTextYIncr');
+    const summaryXValBadge = document.getElementById('summaryXValBadge') || document.getElementById('textXValBadge');
+    const summaryYValBadge = document.getElementById('summaryYValBadge') || document.getElementById('textYValBadge');
+
+    btnSummaryXDecr?.addEventListener('click', () => {
+      summaryOffsetX -= 5;
+      if (summaryXValBadge) summaryXValBadge.textContent = summaryOffsetX + 'px';
+      const r = document.getElementById('summaryXRange'); if (r) r.value = summaryOffsetX;
+      renderCard();
+    });
+    btnSummaryXIncr?.addEventListener('click', () => {
+      summaryOffsetX += 5;
+      if (summaryXValBadge) summaryXValBadge.textContent = summaryOffsetX + 'px';
+      const r = document.getElementById('summaryXRange'); if (r) r.value = summaryOffsetX;
+      renderCard();
+    });
+    btnSummaryYDecr?.addEventListener('click', () => {
+      summaryOffsetY -= 5;
+      if (summaryYValBadge) summaryYValBadge.textContent = summaryOffsetY + 'px';
+      const r = document.getElementById('summaryYRange'); if (r) r.value = summaryOffsetY;
+      renderCard();
+    });
+    btnSummaryYIncr?.addEventListener('click', () => {
+      summaryOffsetY += 5;
+      if (summaryYValBadge) summaryYValBadge.textContent = summaryOffsetY + 'px';
+      const r = document.getElementById('summaryYRange'); if (r) r.value = summaryOffsetY;
+      renderCard();
+    });
+
+    // Wire Obituary Background Theme Presets
+    window.obitBgTheme = 'midnight';
+    document.querySelectorAll('#obitBgPresetGroup button').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#obitBgPresetGroup button').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        window.obitBgTheme = this.getAttribute('data-obit-bg') || 'midnight';
+        renderCard();
+      });
     });
 
     // ==========================================================================
