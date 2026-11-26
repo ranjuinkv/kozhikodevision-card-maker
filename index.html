@@ -9,8 +9,8 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    // === AUTO-UPDATE & PWA ENGINE v8.3.3 ===
-    var KV_LATEST_BUILD = '8.3.3';
+    // === AUTO-UPDATE & PWA ENGINE v8.3.4 ===
+    var KV_LATEST_BUILD = '8.3.4';
     (function() {
       try {
         if ('serviceWorker' in navigator) {
@@ -3707,7 +3707,7 @@ html, body {
         </div>
         <div style="margin-top:6px;margin-bottom:8px;">
           <span class="kv-live-tag" style="font-size:10px;padding:3px 10px;border-radius:14px;background:rgba(239,68,68,0.25);border:1px solid #ef4444;color:#fca5a5;display:inline-flex;align-items:center;gap:6px;">
-            <span class="kv-live-dot"></span>🔴 V8.3.3 LIVE: BROADCAST STUDIO
+            <span class="kv-live-dot"></span>🔴 V8.3.4 LIVE: BROADCAST STUDIO
           </span>
         </div>
         <div class="kv-auth-title">KOZHIKODE VISION NEWS</div>
@@ -3838,7 +3838,7 @@ html, body {
   <div id="kvAdminModal" class="kv-hidden">
     <div class="kv-admin-dialog">
       <div class="kv-admin-header">
-        <h3>👑 Admin Console &amp; User Control <span style="background:#0284c7;color:#fff;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;">v8.3.3</span></h3>
+        <h3>👑 Admin Console &amp; User Control <span style="background:#0284c7;color:#fff;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;">v8.3.4</span></h3>
         <button id="kvBtnCloseAdmin" type="button" class="kv-admin-close">✕</button>
       </div>
       <div class="kv-admin-body">
@@ -5084,6 +5084,29 @@ service cloud.firestore {
                     </div>
                   </div>
                 </div>
+
+                <!-- Reporter Tagline Movement Steppers -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; margin-bottom:4px;">
+                  <span style="font-size:11px; font-weight:800; color:#f87171;">🏷️ റിപ്പോർട്ടർ ബൈലൈൻ പൊസിഷൻ (Report Tagline):</span>
+                </div>
+                <div class="stepper-group" style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                  <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↔ Rep X:</span>
+                    <div style="display:flex; align-items:center; gap:4px;">
+                      <button type="button" class="btn-stepper" id="btnRepXDecr" title="Move Left">-</button>
+                      <span id="repXValBadge" style="font-size:11px; font-weight:800; color:#f87171; min-width:32px; text-align:center;">0px</span>
+                      <button type="button" class="btn-stepper" id="btnRepXIncr" title="Move Right">+</button>
+                    </div>
+                  </div>
+                  <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:6px 8px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:11px; color:#cbd5e1; font-weight:700;">↕ Rep Y:</span>
+                    <div style="display:flex; align-items:center; gap:4px;">
+                      <button type="button" class="btn-stepper" id="btnRepYDecr" title="Move Up">-</button>
+                      <span id="repYValBadge" style="font-size:11px; font-weight:800; color:#f87171; min-width:32px; text-align:center;">0px</span>
+                      <button type="button" class="btn-stepper" id="btnRepYIncr" title="Move Down">+</button>
+                    </div>
+                  </div>
+                </div>
                 <!-- Hidden compatibility inputs -->
                 <input id="headXRange" type="range" min="-100" max="100" step="2" value="0" style="display:none;">
                 <span id="headXVal" style="display:none;">0px</span>
@@ -5484,7 +5507,7 @@ service cloud.firestore {
         <span class="dev-badge-icon">⚡</span>
         <span class="dev-title">Developed by <span class="dev-name">Ranju</span></span>
         <span class="dev-sep">•</span>
-        <span class="dev-studio-tag">Kozhikode Vision Official Media Studio v8.3.3</span>
+        <span class="dev-studio-tag">Kozhikode Vision Official Media Studio v8.3.4</span>
       </div>
       <div class="dev-copyright-text">
         &copy; 2026 Kozhikode Vision News &amp; Entertainment. All Rights Reserved.
@@ -5827,6 +5850,8 @@ service cloud.firestore {
     let initPhotoX = 0, initPhotoY = 0;
     let initLogoX = 0, initLogoY = 0;
     let initTextX = 0, initTextY = 0;
+    let initSummaryX = 0, initSummaryY = 0;
+    let initReporterX = 0, initReporterY = 0;
     let initTribX = 0, initTribY = 0;
     let initObitTextX = 0, initObitTextY = 0;
     let initFrameX = 0, initFrameY = 0;
@@ -5908,6 +5933,8 @@ service cloud.firestore {
     let headlineOffsetY = 0;
     let summaryOffsetY = 0;
     let summaryOffsetX = 0;
+    let reporterOffsetX = 0;
+    let reporterOffsetY = 0;
     let overlayStyle = 'gradient';
     let customNewsColor = '#1e3a8a'; // 'gradient', 'red', 'solid'
 
@@ -6113,6 +6140,8 @@ service cloud.firestore {
       initTextY = headlineOffsetY;
       initSummaryX = summaryOffsetX;
       initSummaryY = summaryOffsetY;
+      initReporterX = reporterOffsetX;
+      initReporterY = reporterOffsetY;
       initTribX = tributePosX;
       initTribY = tributePosY;
       initObitTextX = obitDetailsOffsetX;
@@ -6151,18 +6180,48 @@ service cloud.firestore {
         }
         // 2b. Video Mode Hit Test
         else if (cardType === 'video') {
-          const textTop = (canvas.height * 0.55 + headlineOffsetY);
-          if (pos.y >= textTop) {
-            dragTarget = 'text';
-            dragStatusLabel.textContent = '✍️ Moving News Text';
+          if (window.reporterBounds && pos.y >= window.reporterBounds.y1 - 15 && pos.y <= window.reporterBounds.y2 + 15) {
+            dragTarget = 'reporter';
+            dragStatusLabel.textContent = '🏷️ Moving Reporter Tagline';
+          } else if (window.summaryBounds && pos.y >= window.summaryBounds.y1 - 15 && pos.y <= window.summaryBounds.y2 + 20) {
+            dragTarget = 'summaryText';
+            dragStatusLabel.textContent = '📄 Moving Summary Text';
+          } else if (window.headlineBounds && pos.y >= window.headlineBounds.y1 - 25 && pos.y <= window.headlineBounds.y2 + 20) {
+            dragTarget = 'headlineText';
+            dragStatusLabel.textContent = '📰 Moving Headline Text';
+          } else if (pos.y >= canvas.height * 0.55) {
+            dragTarget = 'headlineText';
+            dragStatusLabel.textContent = '📰 Moving Headline Text';
           } else {
             dragTarget = 'video';
             dragStatusLabel.textContent = '🎥 Moving Video Frame';
           }
         }
+        // 2c. Text-Only Mode Hit Test
+        else if (cardType === 'text') {
+          if (window.reporterBounds && pos.y >= window.reporterBounds.y1 - 15 && pos.y <= window.reporterBounds.y2 + 15) {
+            dragTarget = 'reporter';
+            dragStatusLabel.textContent = '🏷️ Moving Reporter Tagline';
+          } else if (window.summaryBounds && pos.y >= window.summaryBounds.y1 - 20 && pos.y <= window.summaryBounds.y2 + 20) {
+            dragTarget = 'summaryText';
+            dragStatusLabel.textContent = '📄 Moving Summary Text';
+          } else if (window.headlineBounds && pos.y >= window.headlineBounds.y1 - 25 && pos.y <= window.headlineBounds.y2 + 20) {
+            dragTarget = 'headlineText';
+            dragStatusLabel.textContent = '📰 Moving Headline Text';
+          } else if (pos.y >= canvas.height * 0.55) {
+            dragTarget = 'summaryText';
+            dragStatusLabel.textContent = '📄 Moving Summary Text';
+          } else {
+            dragTarget = 'headlineText';
+            dragStatusLabel.textContent = '📰 Moving Headline Text';
+          }
+        }
         // 3. News Mode Hit Test (Using precise bounding boxes!)
         else {
-          if (window.summaryBounds && pos.y >= window.summaryBounds.y1 - 10 && pos.y <= window.summaryBounds.y2 + 25) {
+          if (window.reporterBounds && pos.y >= window.reporterBounds.y1 - 15 && pos.y <= window.reporterBounds.y2 + 15) {
+            dragTarget = 'reporter';
+            dragStatusLabel.textContent = '🏷️ Moving Reporter Tagline';
+          } else if (window.summaryBounds && pos.y >= window.summaryBounds.y1 - 12 && pos.y <= window.summaryBounds.y2 + 20) {
             dragTarget = 'summaryText';
             dragStatusLabel.textContent = '📄 Moving Summary Text';
           } else if (window.headlineBounds && pos.y >= window.headlineBounds.y1 - 25 && pos.y <= window.headlineBounds.y2 + 15) {
@@ -6170,12 +6229,15 @@ service cloud.firestore {
             dragStatusLabel.textContent = '📰 Moving Headline Text';
           } else {
             // Fallback estimation
-            const headTop = (canvas.height * 0.52 + headlineOffsetY);
-            const summaryEstimatedTop = (canvas.height * 0.70 + summaryOffsetY);
-            if (pos.y >= summaryEstimatedTop - 25) {
+            const headTop = window.headlineBounds ? window.headlineBounds.y1 : (canvas.height * 0.52 + headlineOffsetY);
+            const summaryEstimatedTop = window.summaryBounds ? window.summaryBounds.y1 : (canvas.height * 0.70 + summaryOffsetY);
+            if (pos.y >= canvas.height * 0.90 && reporterText) {
+              dragTarget = 'reporter';
+              dragStatusLabel.textContent = '🏷️ Moving Reporter Tagline';
+            } else if (pos.y >= summaryEstimatedTop - 20) {
               dragTarget = 'summaryText';
               dragStatusLabel.textContent = '📄 Moving Summary Text';
-            } else if (pos.y >= headTop - 60 || pos.y >= canvas.height * 0.45) {
+            } else if (pos.y >= headTop - 50 || pos.y >= canvas.height * 0.45) {
               dragTarget = 'headlineText';
               dragStatusLabel.textContent = '📰 Moving Headline Text';
             } else {
@@ -6196,8 +6258,29 @@ service cloud.firestore {
               dragStatusLabel.textContent = '✍️ Move Details';
             }
           } else {
-            dragTarget = 'text';
-            dragStatusLabel.textContent = '✍️ Move News Text';
+            // Smart hit-testing between Reporter Byline, Summary, and Headline
+            if (window.reporterBounds && pos.y >= window.reporterBounds.y1 - 15 && pos.y <= window.reporterBounds.y2 + 15) {
+              dragTarget = 'reporter';
+              dragStatusLabel.textContent = '🏷️ Move Reporter Tagline';
+            } else if (window.summaryBounds && pos.y >= window.summaryBounds.y1 - 15 && pos.y <= window.summaryBounds.y2 + 20) {
+              dragTarget = 'summaryText';
+              dragStatusLabel.textContent = '📄 Move Summary Text';
+            } else if (window.headlineBounds && pos.y >= window.headlineBounds.y1 - 25 && pos.y <= window.headlineBounds.y2 + 15) {
+              dragTarget = 'headlineText';
+              dragStatusLabel.textContent = '📰 Move Headline Text';
+            } else {
+              const midSplit = window.summaryBounds ? window.summaryBounds.y1 : (canvas.height * 0.68);
+              if (pos.y >= canvas.height * 0.90 && reporterText) {
+                dragTarget = 'reporter';
+                dragStatusLabel.textContent = '🏷️ Move Reporter Tagline';
+              } else if (pos.y >= midSplit - 15) {
+                dragTarget = 'summaryText';
+                dragStatusLabel.textContent = '📄 Move Summary Text';
+              } else {
+                dragTarget = 'headlineText';
+                dragStatusLabel.textContent = '📰 Move Headline Text';
+              }
+            }
           }
         } else {
           dragTarget = dragMode;
@@ -6287,6 +6370,13 @@ service cloud.firestore {
         const sumYBadge = document.getElementById('summaryYValBadge') || document.getElementById('textYValBadge');
         if (sumXBadge) sumXBadge.textContent = summaryOffsetX + 'px';
         if (sumYBadge) sumYBadge.textContent = summaryOffsetY + 'px';
+      } else if (dragTarget === 'reporter') {
+        reporterOffsetX = Math.round(initReporterX + deltaX);
+        reporterOffsetY = Math.round(initReporterY + deltaY);
+        const repXBadge = document.getElementById('repXValBadge');
+        const repYBadge = document.getElementById('repYValBadge');
+        if (repXBadge) repXBadge.textContent = reporterOffsetX + 'px';
+        if (repYBadge) repYBadge.textContent = reporterOffsetY + 'px';
       } else if (dragTarget === 'obitText') {
         obitDetailsOffsetX = Math.round(initObitTextX + deltaX);
         obitDetailsOffsetY = Math.round(initObitTextY + deltaY);
@@ -8064,6 +8154,21 @@ service cloud.firestore {
         headlineOffsetX = 0;
         headlineOffsetY = 0;
         summaryOffsetY = 0;
+        summaryOffsetX = 0;
+        reporterOffsetX = 0;
+        reporterOffsetY = 0;
+        const repXValBadge = document.getElementById('repXValBadge');
+        const repYValBadge = document.getElementById('repYValBadge');
+        if (repXValBadge) repXValBadge.textContent = '0px';
+        if (repYValBadge) repYValBadge.textContent = '0px';
+        const sumXValBadge = document.getElementById('summaryXValBadge');
+        const sumYValBadge = document.getElementById('summaryYValBadge');
+        if (sumXValBadge) sumXValBadge.textContent = '0px';
+        if (sumYValBadge) sumYValBadge.textContent = '0px';
+        const headXValBadge = document.getElementById('headXValBadge');
+        const headYValBadge = document.getElementById('headYValBadge');
+        if (headXValBadge) headXValBadge.textContent = '0px';
+        if (headYValBadge) headYValBadge.textContent = '0px';
         if (headYRange) headYRange.value = 0;
         if (headYVal) headYVal.textContent = '0px';
         const headXRange = document.getElementById('headXRange');
@@ -8813,6 +8918,10 @@ service cloud.firestore {
       ctx.shadowColor = 'transparent';
 
       // Summary / Ticker text (Independent of headline offset!)
+      window.headlineBounds = {
+        y1: badgeY - 10,
+        y2: headlineY + (2.5 * headlineFontSize * 1.25)
+      };
       if (summaryText) {
         ctx.font = '500 ' + summaryFontSize + 'px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
         ctx.fillStyle = '#e2e8f0';
@@ -8821,13 +8930,30 @@ service cloud.firestore {
         const summaryY = baseSummaryY + summaryOffsetY;
         const summaryLineHeight = summaryFontSize * summaryLineHeightMult;
         wrapMultilineText(ctx, summaryText, summaryX, summaryY, maxTextWidth, summaryLineHeight, summaryMaxLines);
+        window.summaryBounds = {
+          y1: summaryY - summaryFontSize * 0.9,
+          y2: summaryY + (summaryMaxLines * summaryLineHeight) + 10
+        };
+      } else {
+        window.summaryBounds = null;
       }
 
-      // Reporter Byline
+      // Reporter Byline (100% INDEPENDENT of Headline and Summary!)
       if (reporterText) {
         ctx.font = '600 20px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
         ctx.fillStyle = '#f87171';
-        ctx.fillText('Report: ' + reporterText, textStartX, H - 65);
+        const reporterX = 72 + reporterOffsetX;
+        const reporterY = H - 65 + reporterOffsetY;
+        ctx.fillText('Report: ' + reporterText, reporterX, reporterY);
+        const repW = ctx.measureText('Report: ' + reporterText).width;
+        window.reporterBounds = {
+          x1: reporterX,
+          x2: reporterX + repW,
+          y1: reporterY - 22,
+          y2: reporterY + 8
+        };
+      } else {
+        window.reporterBounds = null;
       }
     }
 
@@ -9105,16 +9231,37 @@ service cloud.firestore {
             curSY += summaryLineHeight;
           }
           ctx.shadowColor = 'transparent';
+          window.summaryBounds = {
+            y1: summaryY - smSize * 0.9,
+            y2: curSY + 10
+          };
+        } else {
+          window.summaryBounds = null;
         }
+      } else {
+        window.summaryBounds = null;
       }
+      window.headlineBounds = {
+        y1: badgeY - 32,
+        y2: (typeof nextY !== 'undefined' ? nextY : headlineY + 120)
+      };
 
-      // Reporter / Newsroom Bureau Credit
+      // Reporter / Newsroom Bureau Credit (100% INDEPENDENT!)
       const reporterLabel = reporterText ? ('റിപ്പോർട്ട്: ' + reporterText) : 'കോഴിക്കോട് വിഷൻ ന്യൂസ് ഡെസ്ക്';
       ctx.font = '600 20px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
       ctx.fillStyle = '#94a3b8';
       ctx.textAlign = 'right';
-      ctx.fillText(reporterLabel, W - 40, H - 65);
+      const repW = ctx.measureText(reporterLabel).width;
+      const reporterX = W - 40 + reporterOffsetX;
+      const reporterY = H - 65 + reporterOffsetY;
+      ctx.fillText(reporterLabel, reporterX, reporterY);
       ctx.textAlign = 'left';
+      window.reporterBounds = {
+        x1: reporterX - repW,
+        x2: reporterX,
+        y1: reporterY - 22,
+        y2: reporterY + 8
+      };
     }
 
     function renderCard() {
@@ -9494,11 +9641,22 @@ service cloud.firestore {
           window.summaryBounds = null;
         }
 
-        // Reporter Byline
+        // Reporter Byline (100% INDEPENDENT of Headline and Summary!)
         if (reporterText) {
           ctx.font = '600 20px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
           ctx.fillStyle = '#f87171';
-          ctx.fillText('Report: ' + reporterText, textStartX, H - 75 + headlineOffsetY);
+          const reporterX = 72 + reporterOffsetX;
+          const reporterY = H - 75 + reporterOffsetY;
+          ctx.fillText('Report: ' + reporterText, reporterX, reporterY);
+          const repW = ctx.measureText('Report: ' + reporterText).width;
+          window.reporterBounds = {
+            x1: reporterX,
+            x2: reporterX + repW,
+            y1: reporterY - 22,
+            y2: reporterY + 8
+          };
+        } else {
+          window.reporterBounds = null;
         }
 
         // Optional Punchline Badge (e.g. 'തീരുമാനം ഉടൻ')
@@ -12850,6 +13008,35 @@ service cloud.firestore {
       summaryOffsetY += 5;
       if (summaryYValBadge) summaryYValBadge.textContent = summaryOffsetY + 'px';
       const r = document.getElementById('summaryYRange'); if (r) r.value = summaryOffsetY;
+      renderCard();
+    });
+
+    // Reporter Tagline Steppers (↔ Rep X, ↕ Rep Y)
+    const btnRepXDecr = document.getElementById('btnRepXDecr');
+    const btnRepXIncr = document.getElementById('btnRepXIncr');
+    const btnRepYDecr = document.getElementById('btnRepYDecr');
+    const btnRepYIncr = document.getElementById('btnRepYIncr');
+    const repXValBadge = document.getElementById('repXValBadge');
+    const repYValBadge = document.getElementById('repYValBadge');
+
+    btnRepXDecr?.addEventListener('click', () => {
+      reporterOffsetX -= 5;
+      if (repXValBadge) repXValBadge.textContent = reporterOffsetX + 'px';
+      renderCard();
+    });
+    btnRepXIncr?.addEventListener('click', () => {
+      reporterOffsetX += 5;
+      if (repXValBadge) repXValBadge.textContent = reporterOffsetX + 'px';
+      renderCard();
+    });
+    btnRepYDecr?.addEventListener('click', () => {
+      reporterOffsetY -= 5;
+      if (repYValBadge) repYValBadge.textContent = reporterOffsetY + 'px';
+      renderCard();
+    });
+    btnRepYIncr?.addEventListener('click', () => {
+      reporterOffsetY += 5;
+      if (repYValBadge) repYValBadge.textContent = reporterOffsetY + 'px';
       renderCard();
     });
 
