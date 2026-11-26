@@ -9,8 +9,8 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    // === AUTO-UPDATE & PWA ENGINE v8.3.2 ===
-    var KV_LATEST_BUILD = '8.3.2';
+    // === AUTO-UPDATE & PWA ENGINE v8.3.3 ===
+    var KV_LATEST_BUILD = '8.3.3';
     (function() {
       try {
         if ('serviceWorker' in navigator) {
@@ -3707,7 +3707,7 @@ html, body {
         </div>
         <div style="margin-top:6px;margin-bottom:8px;">
           <span class="kv-live-tag" style="font-size:10px;padding:3px 10px;border-radius:14px;background:rgba(239,68,68,0.25);border:1px solid #ef4444;color:#fca5a5;display:inline-flex;align-items:center;gap:6px;">
-            <span class="kv-live-dot"></span>🔴 V8.3.2 LIVE: BROADCAST STUDIO
+            <span class="kv-live-dot"></span>🔴 V8.3.3 LIVE: BROADCAST STUDIO
           </span>
         </div>
         <div class="kv-auth-title">KOZHIKODE VISION NEWS</div>
@@ -3838,7 +3838,7 @@ html, body {
   <div id="kvAdminModal" class="kv-hidden">
     <div class="kv-admin-dialog">
       <div class="kv-admin-header">
-        <h3>👑 Admin Console &amp; User Control <span style="background:#0284c7;color:#fff;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;">v8.3.2</span></h3>
+        <h3>👑 Admin Console &amp; User Control <span style="background:#0284c7;color:#fff;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;">v8.3.3</span></h3>
         <button id="kvBtnCloseAdmin" type="button" class="kv-admin-close">✕</button>
       </div>
       <div class="kv-admin-body">
@@ -5484,7 +5484,7 @@ service cloud.firestore {
         <span class="dev-badge-icon">⚡</span>
         <span class="dev-title">Developed by <span class="dev-name">Ranju</span></span>
         <span class="dev-sep">•</span>
-        <span class="dev-studio-tag">Kozhikode Vision Official Media Studio v8.3.2</span>
+        <span class="dev-studio-tag">Kozhikode Vision Official Media Studio v8.3.3</span>
       </div>
       <div class="dev-copyright-text">
         &copy; 2026 Kozhikode Vision News &amp; Entertainment. All Rights Reserved.
@@ -6160,20 +6160,28 @@ service cloud.firestore {
             dragStatusLabel.textContent = '🎥 Moving Video Frame';
           }
         }
-        // 3. News Mode Hit Test
+        // 3. News Mode Hit Test (Using precise bounding boxes!)
         else {
-          // Check if touch is on summary area vs headline area
-          const headTop = (canvas.height * 0.52 + headlineOffsetY);
-          const summaryEstimatedTop = headTop + 130;
-          if (pos.y >= summaryEstimatedTop) {
+          if (window.summaryBounds && pos.y >= window.summaryBounds.y1 - 10 && pos.y <= window.summaryBounds.y2 + 25) {
             dragTarget = 'summaryText';
             dragStatusLabel.textContent = '📄 Moving Summary Text';
-          } else if (pos.y >= headTop - 60 || pos.y >= canvas.height * 0.45) {
+          } else if (window.headlineBounds && pos.y >= window.headlineBounds.y1 - 25 && pos.y <= window.headlineBounds.y2 + 15) {
             dragTarget = 'headlineText';
             dragStatusLabel.textContent = '📰 Moving Headline Text';
           } else {
-            dragTarget = 'photo';
-            dragStatusLabel.textContent = '📷 Moving Photo';
+            // Fallback estimation
+            const headTop = (canvas.height * 0.52 + headlineOffsetY);
+            const summaryEstimatedTop = (canvas.height * 0.70 + summaryOffsetY);
+            if (pos.y >= summaryEstimatedTop - 25) {
+              dragTarget = 'summaryText';
+              dragStatusLabel.textContent = '📄 Moving Summary Text';
+            } else if (pos.y >= headTop - 60 || pos.y >= canvas.height * 0.45) {
+              dragTarget = 'headlineText';
+              dragStatusLabel.textContent = '📰 Moving Headline Text';
+            } else {
+              dragTarget = 'photo';
+              dragStatusLabel.textContent = '📷 Moving Photo';
+            }
           }
         }
       } else {
@@ -8799,16 +8807,18 @@ service cloud.firestore {
 
       const textStartX = 72 + headlineOffsetX;
       const maxTextWidth = W - 120;
-      const headlineY = badgeY + 54 + headlineFontSize;
+      const baseHeadlineY = strapY + 15 + 54 + headlineFontSize;
+      const headlineY = baseHeadlineY + headlineOffsetY;
       const nextY = wrapText(ctx, headlineText || 'KOZHIKODE VISION NEWS', textStartX, headlineY, maxTextWidth, headlineFontSize * 1.25, 3);
       ctx.shadowColor = 'transparent';
 
-      // Summary / Ticker text
+      // Summary / Ticker text (Independent of headline offset!)
       if (summaryText) {
         ctx.font = '500 ' + summaryFontSize + 'px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
         ctx.fillStyle = '#e2e8f0';
-        const summaryX = textStartX + summaryOffsetX;
-        const summaryY = nextY + 14 + summaryOffsetY;
+        const summaryX = 72 + summaryOffsetX;
+        const baseSummaryY = baseHeadlineY + (2.2 * headlineFontSize * 1.25) + 14;
+        const summaryY = baseSummaryY + summaryOffsetY;
         const summaryLineHeight = summaryFontSize * summaryLineHeightMult;
         wrapMultilineText(ctx, summaryText, summaryX, summaryY, maxTextWidth, summaryLineHeight, summaryMaxLines);
       }
@@ -9040,19 +9050,20 @@ service cloud.firestore {
         var nextY = headlineY + headlineLineHeight;
       }
 
-      // Summary / Details Subtext
+      // Summary / Details Subtext (Independent of headline offset!)
       if (summaryText && summaryText.trim()) {
+        const smSize = Math.max(26, Math.min(42, parseInt(summaryFontSize || 30) * 1.1));
+        ctx.font = '500 ' + smSize + 'px "' + selectedSummaryFont + '", "Anek Malayalam", sans-serif';
+        const summaryX = 50 + summaryOffsetX;
+        const baseDefaultNextY = baseHeadlineY + (Math.max(1, hlLines.length) * headlineLineHeight);
+        const summaryY = baseDefaultNextY + 36 + smSize + summaryOffsetY;
+
         ctx.save();
         ctx.fillStyle = accentColor;
         const sepW = Math.min(220, W * 0.35);
-        const sepX = (summaryAlign === 'center') ? ((W - sepW) / 2) : textStartX;
-        ctx.fillRect(sepX, nextY + 14, sepW, 3);
+        const sepX = (summaryAlign === 'center') ? ((W - sepW) / 2) : summaryX;
+        ctx.fillRect(sepX, summaryY - smSize - 16, sepW, 3);
         ctx.restore();
-
-        const smSize = Math.max(26, Math.min(42, parseInt(summaryFontSize || 30) * 1.1));
-        ctx.font = '500 ' + smSize + 'px "' + selectedSummaryFont + '", "Anek Malayalam", sans-serif';
-        const summaryX = textStartX + summaryOffsetX;
-        const summaryY = nextY + 36 + smSize + summaryOffsetY;
         const summaryLineHeight = smSize * summaryLineHeightMult;
 
         const smLines = getHeadlineLines(ctx, summaryText, maxTextWidth, 4);
@@ -9365,11 +9376,13 @@ service cloud.firestore {
           ctx.fillRect(badgeX, badgeY + 20, 6, isDuo ? (H * 0.22) : (H * 0.28));
         }
 
-        // Main Headline
+        // Main Headline (Position completely INDEPENDENT of Summary!)
         ctx.font = '800 ' + headlineFontSize + 'px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
         const textStartX = 72 + headlineOffsetX;
         const maxTextWidth = W - 144;
-        const headlineY = badgeY + 34 + headlineFontSize;
+        const baseBadgeY = (isDuo ? Math.max(240, Math.floor(H * 0.22)) : (H * 0.58));
+        const baseHeadlineY = baseBadgeY + 34 + headlineFontSize;
+        const headlineY = baseHeadlineY + headlineOffsetY;
         const headlineLineHeight = headlineFontSize * headlineLineHeightMult;
 
         const hlLines = getHeadlineLines(ctx, headlineText || 'KOZHIKODE VISION NEWS', maxTextWidth, 4);
@@ -9412,17 +9425,21 @@ service cloud.firestore {
             }
             curHY += headlineLineHeight;
           }
-          var nextY = curHY;
           ctx.shadowColor = 'transparent';
-        } else {
-          var nextY = headlineY + headlineLineHeight;
         }
 
-        // Summary Text (Enhanced Multiline, Typography & Box Controls!)
+        // Bounding box of Headline for canvas touch hit-testing
+        window.headlineBounds = {
+          y1: badgeY - 35,
+          y2: headlineY + (Math.max(1, hlLines.length) * headlineLineHeight)
+        };
+
+        // Summary Text (Position completely INDEPENDENT of Headline!)
         if (summaryText) {
           ctx.font = '500 ' + summaryFontSize + 'px "' + selectedSummaryFont + '", "Anek Malayalam", sans-serif';
-          const summaryX = textStartX + summaryOffsetX;
-          const summaryY = nextY + 16 + summaryOffsetY;
+          const summaryX = 72 + summaryOffsetX;
+          const baseDefaultNextY = baseHeadlineY + (Math.max(1, hlLines.length) * headlineLineHeight);
+          const summaryY = baseDefaultNextY + 16 + summaryOffsetY;
           const summaryLineHeight = summaryFontSize * summaryLineHeightMult;
 
           const smLines = getHeadlineLines(ctx, summaryText, maxTextWidth, summaryMaxLines);
@@ -9464,7 +9481,17 @@ service cloud.firestore {
               curSY += summaryLineHeight;
             }
             ctx.shadowColor = 'transparent';
+
+            // Bounding box of Summary for canvas touch hit-testing
+            window.summaryBounds = {
+              y1: summaryY - summaryFontSize * 0.9,
+              y2: curSY + 10
+            };
+          } else {
+            window.summaryBounds = null;
           }
+        } else {
+          window.summaryBounds = null;
         }
 
         // Reporter Byline
