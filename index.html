@@ -9,8 +9,8 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <script>
-    // === AUTO-UPDATE & PWA ENGINE v8.3.6 ===
-    var KV_LATEST_BUILD = '8.3.6';
+    // === AUTO-UPDATE & PWA ENGINE v8.3.7 ===
+    var KV_LATEST_BUILD = '8.3.7';
     (function() {
       try {
         if ('serviceWorker' in navigator) {
@@ -1059,6 +1059,56 @@
       border-color: #ef4444 !important;
       color: #ffffff !important;
       box-shadow: 0 2px 10px rgba(220, 38, 38, 0.45);
+    }
+
+    /* NEWS CARD MODEL / TEMPLATE SELECTOR PILLS */
+    .news-model-pills-row {
+      display: flex !important;
+      gap: 6px !important;
+      overflow-x: auto !important;
+      padding-bottom: 4px !important;
+      scrollbar-width: thin !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+    .news-model-pills-row::-webkit-scrollbar {
+      height: 4px;
+    }
+    .news-model-pills-row::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    .btn-news-model {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      flex: 0 0 74px !important;
+      min-width: 74px !important;
+      min-height: 46px !important;
+      padding: 5px 3px !important;
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      background: #1e293b !important;
+      color: #cbd5e1 !important;
+      border: 1.5px solid #334155 !important;
+      border-radius: 8px !important;
+      cursor: pointer !important;
+      gap: 2px !important;
+      transition: all 0.16s ease !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+    }
+    .btn-news-model:hover {
+      background: #273549 !important;
+      border-color: #64748b !important;
+      color: #ffffff !important;
+    }
+    .btn-news-model.active {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+      color: #ffffff !important;
+      border-color: #38bdf8 !important;
+      box-shadow: 0 2px 10px rgba(56, 189, 248, 0.45) !important;
+      font-weight: 800 !important;
     }
 
     /* CARD SIZE 2x2 PILLS */
@@ -3707,7 +3757,7 @@ html, body {
         </div>
         <div style="margin-top:6px;margin-bottom:8px;">
           <span class="kv-live-tag" style="font-size:10px;padding:3px 10px;border-radius:14px;background:rgba(239,68,68,0.25);border:1px solid #ef4444;color:#fca5a5;display:inline-flex;align-items:center;gap:6px;">
-            <span class="kv-live-dot"></span>🔴 V8.3.6 LIVE: BROADCAST STUDIO
+            <span class="kv-live-dot"></span>🔴 V8.3.7 LIVE: BROADCAST STUDIO
           </span>
         </div>
         <div class="kv-auth-title">KOZHIKODE VISION NEWS</div>
@@ -3836,7 +3886,7 @@ html, body {
   <div id="kvAdminModal" class="kv-hidden">
     <div class="kv-admin-dialog">
       <div class="kv-admin-header">
-        <h3>👑 Admin Console &amp; User Control <span style="background:#0284c7;color:#fff;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;">v8.3.6</span></h3>
+        <h3>👑 Admin Console &amp; User Control <span style="background:#0284c7;color:#fff;font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;">v8.3.7</span></h3>
         <button id="kvBtnCloseAdmin" type="button" class="kv-admin-close">✕</button>
       </div>
       <div class="kv-admin-body">
@@ -4277,6 +4327,60 @@ service cloud.firestore {
               <button id="optTypeText" type="button" class="btn-tactile type-pill" style="border:1px solid #38bdf8;">
                 <span>📄 Text</span>
               </button>
+            </div>
+
+            <!-- 📰 NEWS CARD MODEL / TEMPLATE SELECTOR (Visible when News card type is active) -->
+            <div id="newsModelSelectorWrap" style="margin-top: 8px; margin-bottom: 6px; background: #0c1529; border: 1.5px solid #1e3a8a; border-radius: 10px; padding: 8px 10px; box-shadow: 0 4px 14px rgba(0,0,0,0.45);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+                <span style="font-size: 11.5px; font-weight: 800; color: #38bdf8; display:flex; align-items:center; gap: 5px;">
+                  🎨 News Model / കാർഡ് ശൈലി:
+                </span>
+                <span id="lblActiveNewsModel" style="font-size: 10.5px; font-weight: 800; color: #f59e0b; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3); padding: 1px 7px; border-radius: 6px;">
+                  📰 Classic
+                </span>
+              </div>
+              <div class="news-model-pills-row">
+                <button type="button" class="btn-tactile btn-news-model active" data-model="classic" title="Classic News Card">
+                  <span style="font-size:14px;">📰</span>
+                  <span>Classic</span>
+                </button>
+                <button type="button" class="btn-tactile btn-news-model" data-model="quote" title="Big Quote / Statement Card">
+                  <span style="font-size:14px;">💬</span>
+                  <span>Quote</span>
+                </button>
+                <button type="button" class="btn-tactile btn-news-model" data-model="breaking" title="Ultra Breaking News Card">
+                  <span style="font-size:14px;">🚨</span>
+                  <span>Breaking</span>
+                </button>
+                <button type="button" class="btn-tactile btn-news-model" data-model="split" title="Split Screen / Debate Card">
+                  <span style="font-size:14px;">⚖️</span>
+                  <span>Debate</span>
+                </button>
+                <button type="button" class="btn-tactile btn-news-model" data-model="minimal" title="Modern Minimal Editorial">
+                  <span style="font-size:14px;">✨</span>
+                  <span>Minimal</span>
+                </button>
+                <button type="button" class="btn-tactile btn-news-model" data-model="magazine" title="Magazine Full Photo Glassmorphism">
+                  <span style="font-size:14px;">📖</span>
+                  <span>Magazine</span>
+                </button>
+                <button type="button" class="btn-tactile btn-news-model" data-model="factcheck" title="Fact Check Verification Card">
+                  <span style="font-size:14px;">🔍</span>
+                  <span>FactCheck</span>
+                </button>
+              </div>
+
+              <!-- Fact Check Stamp Bar (Visible only when factcheck model is selected) -->
+              <div id="factCheckStampBar" style="display:none; margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(56,189,248,0.25);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 4px;">
+                  <span style="font-size: 10.5px; font-weight: 700; color: #cbd5e1;">Verification Stamp:</span>
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 4px;">
+                  <button type="button" class="btn-tactile btn-fact-stamp active" data-stamp="true" style="padding: 4px 2px; font-size: 10.5px; font-weight: 800; border-radius: 6px; background: #064e3b; color: #34d399; border: 1px solid #10b981; cursor: pointer;">✅ സത്യം</button>
+                  <button type="button" class="btn-tactile btn-fact-stamp" data-stamp="fake" style="padding: 4px 2px; font-size: 10.5px; font-weight: 800; border-radius: 6px; background: #1e293b; color: #f87171; border: 1px solid #475569; cursor: pointer;">❌ വ്യാജം</button>
+                  <button type="button" class="btn-tactile btn-fact-stamp" data-stamp="misleading" style="padding: 4px 2px; font-size: 10.5px; font-weight: 800; border-radius: 6px; background: #1e293b; color: #fbbf24; border: 1px solid #475569; cursor: pointer;">⚠️ തെറ്റ്</button>
+                </div>
+              </div>
             </div>
 
             <span class="col-title" style="margin-top:4px;">Select Card size</span>
@@ -5163,6 +5267,43 @@ service cloud.firestore {
                     <button type="button" class="news-color-swatch" data-color="#0f172a" title="Slate Dark (Neutral Official)" style="background:#0f172a;width:24px;height:24px;border-radius:50%;border:2px solid #fff;cursor:pointer;box-shadow:0 0 4px rgba(0,0,0,0.5);"></button>
                   </div>
                 </div>
+
+                <!-- 🎨 Quick News Card Model Switcher in Box tab -->
+                <div style="margin-top:10px; background:#0b1329; border:1px solid #1e3a8a; border-radius:10px; padding:8px 10px;">
+                  <div style="font-size:11.5px; font-weight:800; color:#38bdf8; margin-bottom:6px;">
+                    🎨 News Card Model / കാർഡ് ശൈലി മാറ്റുക:
+                  </div>
+                  <div class="news-model-pills-row">
+                    <button type="button" class="btn-tactile btn-news-model active" data-model="classic" title="Classic News Card">
+                      <span style="font-size:14px;">📰</span>
+                      <span>Classic</span>
+                    </button>
+                    <button type="button" class="btn-tactile btn-news-model" data-model="quote" title="Big Quote / Statement Card">
+                      <span style="font-size:14px;">💬</span>
+                      <span>Quote</span>
+                    </button>
+                    <button type="button" class="btn-tactile btn-news-model" data-model="breaking" title="Ultra Breaking News Card">
+                      <span style="font-size:14px;">🚨</span>
+                      <span>Breaking</span>
+                    </button>
+                    <button type="button" class="btn-tactile btn-news-model" data-model="split" title="Split Screen / Debate Card">
+                      <span style="font-size:14px;">⚖️</span>
+                      <span>Debate</span>
+                    </button>
+                    <button type="button" class="btn-tactile btn-news-model" data-model="minimal" title="Modern Minimal Editorial">
+                      <span style="font-size:14px;">✨</span>
+                      <span>Minimal</span>
+                    </button>
+                    <button type="button" class="btn-tactile btn-news-model" data-model="magazine" title="Magazine Full Photo Glassmorphism">
+                      <span style="font-size:14px;">📖</span>
+                      <span>Magazine</span>
+                    </button>
+                    <button type="button" class="btn-tactile btn-news-model" data-model="factcheck" title="Fact Check Verification Card">
+                      <span style="font-size:14px;">🔍</span>
+                      <span>FactCheck</span>
+                    </button>
+                  </div>
+                </div>
               </div>
 
               
@@ -5640,7 +5781,7 @@ service cloud.firestore {
         <span class="dev-badge-icon">⚡</span>
         <span class="dev-title">Developed by <span class="dev-name">Ranju</span></span>
         <span class="dev-sep">•</span>
-        <span class="dev-studio-tag">Kozhikode Vision Official Media Studio v8.3.6</span>
+        <span class="dev-studio-tag">Kozhikode Vision Official Media Studio v8.3.7</span>
       </div>
       <div class="dev-copyright-text">
         &copy; 2026 Kozhikode Vision News &amp; Entertainment. All Rights Reserved.
@@ -5954,6 +6095,8 @@ service cloud.firestore {
     // STATE VARIABLES
     let currentStep = 1;
         let cardType = 'news'; // 'news', 'obituary', 'video', or 'text'
+    let newsCardModel = localStorage.getItem('kv_news_card_model') || 'classic'; // 'classic', 'quote', 'breaking', 'split', 'minimal', 'magazine', 'factcheck'
+    let factCheckStamp = localStorage.getItem('kv_fact_stamp') || 'true'; // 'true', 'fake', 'misleading'
     let textCardTheme = 'breaking'; // 'breaking', 'statement', 'alert', 'quote'
     let textCardBadge = '🔴 ഫ്ലാഷ് ന്യൂസ്';
     let showTextCardQuotes = false;
@@ -6575,6 +6718,9 @@ service cloud.firestore {
 
       if (typeof syncTopTypePills === 'function') syncTopTypePills(type);
 
+      const newsModelWrap = document.getElementById('newsModelSelectorWrap');
+      if (newsModelWrap) newsModelWrap.style.display = (type === 'news') ? 'block' : 'none';
+
       if (type === 'text') {
         if (photoUploadCol) photoUploadCol.style.display = 'none';
         if (videoUploadCol) videoUploadCol.style.display = 'none';
@@ -6622,6 +6768,67 @@ service cloud.firestore {
     optTypeNews.addEventListener('click', () => updateCardTypeUI('news'));
     optTypeObit.addEventListener('click', () => updateCardTypeUI('obituary'));
     if (optTypeText) optTypeText.addEventListener('click', () => updateCardTypeUI('text'));
+
+    // ==========================================
+    // 📰 NEWS CARD MODEL / TEMPLATE SWITCHER ENGINE
+    // ==========================================
+    function syncNewsModelUI(model) {
+      newsCardModel = model || 'classic';
+      localStorage.setItem('kv_news_card_model', newsCardModel);
+
+      document.querySelectorAll('.btn-news-model').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-model') === newsCardModel);
+      });
+
+      const lbl = document.getElementById('lblActiveNewsModel');
+      if (lbl) {
+        const names = {
+          classic: '📰 Classic',
+          quote: '💬 Big Quote',
+          breaking: '🚨 Breaking',
+          split: '⚖️ Debate',
+          minimal: '✨ Minimal',
+          magazine: '📖 Magazine',
+          factcheck: '🔍 Fact Check'
+        };
+        lbl.textContent = names[newsCardModel] || newsCardModel;
+      }
+
+      const factBar = document.getElementById('factCheckStampBar');
+      if (factBar) factBar.style.display = (newsCardModel === 'factcheck') ? 'block' : 'none';
+
+      renderCard();
+    }
+
+    document.querySelectorAll('.btn-news-model').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const m = this.getAttribute('data-model');
+        if (m) syncNewsModelUI(m);
+      });
+    });
+
+    document.querySelectorAll('.btn-fact-stamp').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const s = this.getAttribute('data-stamp');
+        if (s) {
+          factCheckStamp = s;
+          localStorage.setItem('kv_fact_stamp', s);
+          document.querySelectorAll('.btn-fact-stamp').forEach(b => {
+            const isActive = (b.getAttribute('data-stamp') === s);
+            b.classList.toggle('active', isActive);
+            b.style.background = isActive ? 
+              (s === 'true' ? '#064e3b' : s === 'fake' ? '#450a0a' : '#451a03') : '#1e293b';
+            b.style.borderColor = isActive ? 
+              (s === 'true' ? '#10b981' : s === 'fake' ? '#ef4444' : '#f59e0b') : '#475569';
+          });
+          renderCard();
+        }
+      });
+    });
+
+    setTimeout(() => { syncNewsModelUI(newsCardModel); }, 50);
 
     optTypeObit.addEventListener('click', () => {
       cardType = 'obituary';
@@ -9561,6 +9768,948 @@ service cloud.firestore {
       };
     }
 
+    // ==========================================
+    // 🔒 SELECTIVE PRIVACY CENSOR MASK (Helper)
+    // ==========================================
+    function drawSelectivePrivacyMask(W, H) {
+      if (!enableAreaBlurMask) return;
+      ctx.save();
+      const maskW = Math.max(30, blurMaskW);
+      const maskH = Math.max(30, blurMaskH);
+      const maskX = Math.round((W * (blurMaskX / 100)) - (maskW / 2));
+      const maskY = Math.round((H * (blurMaskY / 100)) - (maskH / 2));
+
+      if (blurMaskType === 'pixel') {
+        const pxFactor = Math.max(4, Math.min(36, blurMaskStrength * 1.8));
+        const smW = Math.max(2, Math.floor(maskW / pxFactor));
+        const smH = Math.max(2, Math.floor(maskH / pxFactor));
+        const smCanvas = document.createElement('canvas');
+        smCanvas.width = smW;
+        smCanvas.height = smH;
+        const smCtx = smCanvas.getContext('2d');
+        if (smCtx) {
+          smCtx.drawImage(canvas, maskX, maskY, maskW, maskH, 0, 0, smW, smH);
+          ctx.imageSmoothingEnabled = false;
+          ctx.drawImage(smCanvas, 0, 0, smW, smH, maskX, maskY, maskW, maskH);
+          ctx.imageSmoothingEnabled = true;
+        }
+      } else {
+        const smCanvas = document.createElement('canvas');
+        smCanvas.width = maskW;
+        smCanvas.height = maskH;
+        const smCtx = smCanvas.getContext('2d');
+        if (smCtx) {
+          smCtx.drawImage(canvas, maskX, maskY, maskW, maskH, 0, 0, maskW, maskH);
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(maskX, maskY, maskW, maskH);
+          ctx.clip();
+          ctx.filter = 'blur(' + Math.max(4, blurMaskStrength * 1.6) + 'px)';
+          ctx.drawImage(smCanvas, maskX, maskY, maskW, maskH);
+          ctx.restore();
+        }
+      }
+
+      if (!window.isExportingCard) {
+        ctx.save();
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 2.5;
+        ctx.setLineDash([8, 5]);
+        ctx.strokeRect(maskX, maskY, maskW, maskH);
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+        ctx.fillRect(maskX, maskY - 22, 130, 20);
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText('🔒 PRIVACY MASK', maskX + 6, maskY - 7);
+        ctx.restore();
+      }
+      ctx.restore();
+    }
+
+    // ==========================================
+    // MODEL 2: BIG QUOTE / STATEMENT CARD (💬 പ്രസ്താവന)
+    // ==========================================
+    function renderQuoteNewsCard(W, H) {
+      if (userImg) {
+        ctx.save();
+        applyPhotoClarityFilter(ctx);
+        const baseScale = Math.max(W / userImg.width, H / userImg.height);
+        const dw = userImg.width * baseScale * 1.15;
+        const dh = userImg.height * baseScale * 1.15;
+        ctx.filter = 'blur(18px) brightness(0.24)';
+        ctx.drawImage(userImg, (W - dw) / 2, (H - dh) / 2, dw, dh);
+        ctx.restore();
+      } else {
+        const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+        bgGrad.addColorStop(0, '#060d24');
+        bgGrad.addColorStop(0.5, '#020612');
+        bgGrad.addColorStop(1, '#0f172a');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      const scrim = ctx.createLinearGradient(0, 0, 0, H);
+      scrim.addColorStop(0, 'rgba(2, 6, 23, 0.55)');
+      scrim.addColorStop(0.5, 'rgba(2, 6, 23, 0.75)');
+      scrim.addColorStop(1, 'rgba(2, 6, 23, 0.96)');
+      ctx.fillStyle = scrim;
+      ctx.fillRect(0, 0, W, H);
+
+      const glow = ctx.createRadialGradient(W * 0.72, H * 0.28, 10, W * 0.72, H * 0.28, W * 0.45);
+      glow.addColorStop(0, 'rgba(245, 158, 11, 0.16)');
+      glow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, W, H);
+
+      const circleR = Math.min(115, Math.floor(W * 0.13));
+      const circleCX = W - circleR - 55 + photoPosX;
+      const circleCY = 155 + photoPosY;
+
+      if (userImg) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(circleCX, circleCY, circleR + 6, 0, Math.PI * 2);
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 4;
+        ctx.shadowColor = 'rgba(251, 191, 36, 0.5)';
+        ctx.shadowBlur = 14;
+        ctx.stroke();
+        ctx.shadowColor = 'transparent';
+
+        ctx.beginPath();
+        ctx.arc(circleCX, circleCY, circleR, 0, Math.PI * 2);
+        ctx.clip();
+        applyPhotoClarityFilter(ctx);
+        const pScale = Math.max((circleR * 2) / userImg.width, (circleR * 2) / userImg.height) * photoZoom;
+        const pw = userImg.width * pScale;
+        const ph = userImg.height * pScale;
+        ctx.drawImage(userImg, circleCX - pw / 2, circleCY - ph / 2, pw, ph);
+        ctx.restore();
+      }
+
+      drawSelectivePrivacyMask(W, H);
+
+      const badgeY = 95 + headlineOffsetY;
+      const displayDate = '📅 ' + (cardDateText || getSystemFormattedDate());
+      ctx.font = '700 21px "Anek Malayalam", sans-serif';
+      const quoteBadgeText = '💬 ' + (punchlineText || 'പ്രസ്താവന');
+      const qbW = ctx.measureText(quoteBadgeText).width + 28;
+      
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.roundRect(50 + headlineOffsetX, badgeY - 26, qbW, 36, 8);
+      ctx.fill();
+      ctx.fillStyle = '#0f172a';
+      ctx.fillText(quoteBadgeText, 64 + headlineOffsetX, badgeY - 1);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '600 20px "Anek Malayalam", sans-serif';
+      const locStr = locationText ? ('  •  📍 ' + locationText) : '';
+      ctx.fillText(displayDate + locStr, 50 + headlineOffsetX + qbW + 14, badgeY - 1);
+
+      ctx.save();
+      ctx.font = '900 170px Georgia, serif';
+      ctx.fillStyle = 'rgba(245, 158, 11, 0.20)';
+      ctx.fillText('“', 45 + headlineOffsetX, H * 0.36 + headlineOffsetY);
+      ctx.restore();
+
+      ctx.font = '800 ' + headlineFontSize + 'px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
+      const maxTextW = W - 120;
+      const startX = 60 + headlineOffsetX;
+      const quoteStartY = Math.max(260, Math.floor(H * 0.33)) + headlineOffsetY;
+      const hlLineH = headlineFontSize * headlineLineHeightMult;
+      const rawHL = (headlineText || 'പ്രസ്താവനയുടെ ഉള്ളടക്കം ഇവിടെ നൽകാം...').replace(/^["“]+|["”]+$/g, '').trim();
+      const fullQuoteText = '“' + rawHL + '”';
+      const hlLines = getHeadlineLines(ctx, fullQuoteText, maxTextW, 5);
+
+      ctx.fillStyle = headlineTextColor || '#fef08a';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
+      ctx.shadowBlur = 10;
+      let curHY = quoteStartY;
+      for (let i = 0; i < hlLines.length; i++) {
+        const lw = ctx.measureText(hlLines[i]).width;
+        const lx = (headlineAlign === 'center') ? (startX + (maxTextW - lw)/2) :
+                   (headlineAlign === 'right') ? (startX + (maxTextW - lw)) : startX;
+        ctx.fillText(hlLines[i], lx, curHY);
+        curHY += hlLineH;
+      }
+      ctx.shadowColor = 'transparent';
+
+      window.headlineBounds = {
+        y1: quoteStartY - headlineFontSize,
+        y2: curHY
+      };
+
+      if (summaryText || reporterText) {
+        const sumLineH = summaryFontSize * summaryLineHeightMult;
+        const attrY = curHY + 25 + summaryOffsetY;
+        ctx.font = '600 ' + summaryFontSize + 'px "' + selectedSummaryFont + '", "Anek Malayalam", sans-serif';
+        const smLines = getHeadlineLines(ctx, summaryText, maxTextW, summaryMaxLines);
+
+        ctx.fillStyle = '#fbbf24';
+        ctx.fillRect(startX, attrY - summaryFontSize + 4, 30, 3.5);
+        ctx.fillStyle = summaryTextColor || '#f1f5f9';
+        ctx.shadowColor = 'rgba(0,0,0,0.8)';
+        ctx.shadowBlur = 6;
+        let curSY = attrY;
+        for (let i = 0; i < smLines.length; i++) {
+          const lw = ctx.measureText(smLines[i]).width;
+          const lx = (summaryAlign === 'center') ? (startX + (maxTextW - lw)/2) :
+                     (summaryAlign === 'right') ? (startX + (maxTextW - lw)) : (startX + 40);
+          ctx.fillText(smLines[i], lx, curSY);
+          curSY += sumLineH;
+        }
+        ctx.shadowColor = 'transparent';
+
+        window.summaryBounds = {
+          y1: attrY - summaryFontSize,
+          y2: curSY + 8
+        };
+      } else {
+        window.summaryBounds = null;
+      }
+
+      if (reporterText) {
+        ctx.font = '600 20px "' + selectedHeadlineFont + '", sans-serif';
+        ctx.fillStyle = '#94a3b8';
+        const repX = 60 + reporterOffsetX;
+        const repY = H - 75 + reporterOffsetY;
+        ctx.fillText('Report: ' + reporterText, repX, repY);
+        const repW = ctx.measureText('Report: ' + reporterText).width;
+        window.reporterBounds = { x1: repX, x2: repX + repW, y1: repY - 22, y2: repY + 8 };
+      } else {
+        window.reporterBounds = null;
+      }
+    }
+
+    // ==========================================
+    // MODEL 3: ULTRA BREAKING NEWS CARD (🚨 ബ്രേക്കിംഗ്)
+    // ==========================================
+    function renderBreakingNewsCard(W, H) {
+      const grad = ctx.createLinearGradient(0, 0, 0, H);
+      grad.addColorStop(0, '#3a0505');
+      grad.addColorStop(0.4, '#1b0303');
+      grad.addColorStop(0.8, '#0d0202');
+      grad.addColorStop(1, '#050101');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+
+      if (userImg) {
+        ctx.save();
+        applyPhotoClarityFilter(ctx);
+        const baseScale = Math.max(W / userImg.width, H / userImg.height);
+        const finalScale = baseScale * photoZoom;
+        const dw = userImg.width * finalScale;
+        const dh = userImg.height * finalScale;
+        const dx = (W - dw) / 2 + photoPosX;
+        const dy = (H - dh) / 2 + photoPosY;
+        drawPhotoWithBottomFade(ctx, userImg, dx, dy, dw, dh, photoFadeHeight);
+        ctx.restore();
+      }
+
+      const overlayGrad = ctx.createLinearGradient(0, H * 0.35, 0, H);
+      overlayGrad.addColorStop(0, 'rgba(30, 4, 4, 0)');
+      overlayGrad.addColorStop(0.45, 'rgba(40, 5, 5, 0.85)');
+      overlayGrad.addColorStop(1, 'rgba(5, 1, 1, 0.98)');
+      ctx.fillStyle = overlayGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.06)';
+      ctx.lineWidth = 1;
+      for (let y = 0; y < H; y += 40) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+      }
+
+      drawSelectivePrivacyMask(W, H);
+
+      const strapY = (H * 0.54) + headlineOffsetY;
+      const strapH = 50;
+      const strapW = Math.min(380, W - 120);
+      const strapX = 50 + headlineOffsetX;
+
+      ctx.save();
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+      ctx.shadowBlur = 16;
+      ctx.shadowOffsetY = 6;
+
+      ctx.beginPath();
+      const slant = 20;
+      ctx.moveTo(strapX + slant, strapY);
+      ctx.lineTo(strapX + strapW, strapY);
+      ctx.lineTo(strapX + strapW - slant, strapY + strapH);
+      ctx.lineTo(strapX, strapY + strapH);
+      ctx.closePath();
+
+      const strapGrad = ctx.createLinearGradient(strapX, strapY, strapX + strapW, strapY);
+      strapGrad.addColorStop(0, '#dc2626');
+      strapGrad.addColorStop(0.7, '#b91c1c');
+      strapGrad.addColorStop(1, '#991b1b');
+      ctx.fillStyle = strapGrad;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(strapX + slant, strapY);
+      ctx.lineTo(strapX + strapW, strapY);
+      ctx.strokeStyle = '#facc15';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.font = '900 24px "Anek Malayalam", sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = 'rgba(0,0,0,0.8)';
+      ctx.shadowBlur = 6;
+      const strapTitle = '⚡ BREAKING NEWS';
+      ctx.fillText(strapTitle, strapX + 34, strapY + 34);
+      ctx.shadowColor = 'transparent';
+
+      ctx.font = '700 20px "Anek Malayalam", sans-serif';
+      ctx.fillStyle = '#fca5a5';
+      const metaStr = '📅 ' + (cardDateText || getSystemFormattedDate()) + (locationText ? ('  |  📍 ' + locationText) : '');
+      ctx.fillText(metaStr, strapX + strapW + 16, strapY + 34);
+
+      ctx.font = '900 ' + headlineFontSize + 'px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
+      const textStartX = 55 + headlineOffsetX;
+      const maxTextW = W - 110;
+      const hlY = strapY + strapH + 28 + headlineFontSize * 0.8;
+      const hlLineH = headlineFontSize * headlineLineHeightMult;
+      const hlLines = getHeadlineLines(ctx, headlineText || 'ബ്രേക്കിംഗ് ന്യൂസ് തലക്കെട്ട് ഇവിടെ നൽകാം', maxTextW, 4);
+
+      ctx.fillStyle = headlineTextColor || '#fef08a';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.98)';
+      ctx.shadowBlur = 12;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 3;
+      let curHY = hlY;
+      for (let i = 0; i < hlLines.length; i++) {
+        const lw = ctx.measureText(hlLines[i]).width;
+        const lx = (headlineAlign === 'center') ? (textStartX + (maxTextW - lw)/2) :
+                   (headlineAlign === 'right') ? (textStartX + (maxTextW - lw)) : textStartX;
+        ctx.fillText(hlLines[i], lx, curHY);
+        curHY += hlLineH;
+      }
+      ctx.shadowColor = 'transparent';
+
+      window.headlineBounds = {
+        y1: strapY,
+        y2: curHY
+      };
+
+      if (summaryText) {
+        ctx.font = '600 ' + summaryFontSize + 'px "' + selectedSummaryFont + '", "Anek Malayalam", sans-serif';
+        const sumLineH = summaryFontSize * summaryLineHeightMult;
+        const sumY = curHY + 16 + summaryOffsetY;
+        const smLines = getHeadlineLines(ctx, summaryText, maxTextW, summaryMaxLines);
+
+        ctx.fillStyle = summaryTextColor || '#f8fafc';
+        ctx.shadowColor = 'rgba(0,0,0,0.9)';
+        ctx.shadowBlur = 8;
+        let curSY = sumY;
+        for (let i = 0; i < smLines.length; i++) {
+          const lw = ctx.measureText(smLines[i]).width;
+          const lx = (summaryAlign === 'center') ? (textStartX + (maxTextW - lw)/2) :
+                     (summaryAlign === 'right') ? (textStartX + (maxTextW - lw)) : textStartX;
+          ctx.fillText(smLines[i], lx, curSY);
+          curSY += sumLineH;
+        }
+        ctx.shadowColor = 'transparent';
+
+        window.summaryBounds = {
+          y1: sumY - summaryFontSize,
+          y2: curSY + 8
+        };
+      } else {
+        window.summaryBounds = null;
+      }
+
+      if (reporterText) {
+        ctx.font = '600 20px "' + selectedHeadlineFont + '", sans-serif';
+        ctx.fillStyle = '#f87171';
+        const repX = 55 + reporterOffsetX;
+        const repY = H - 72 + reporterOffsetY;
+        ctx.fillText('Report: ' + reporterText, repX, repY);
+        const repW = ctx.measureText('Report: ' + reporterText).width;
+        window.reporterBounds = { x1: repX, x2: repX + repW, y1: repY - 22, y2: repY + 8 };
+      } else {
+        window.reporterBounds = null;
+      }
+    }
+
+    // ==========================================
+    // MODEL 4: SPLIT / HEAD-TO-HEAD DEBATE CARD (⚖️ നേർക്കുനേർ)
+    // ==========================================
+    function renderSplitNewsCard(W, H) {
+      const halfW = W / 2;
+
+      const gradL = ctx.createLinearGradient(0, 0, halfW, H);
+      gradL.addColorStop(0, '#002566');
+      gradL.addColorStop(0.6, '#001438');
+      gradL.addColorStop(1, '#00081a');
+      ctx.fillStyle = gradL;
+      ctx.fillRect(0, 0, halfW, H);
+
+      const gradR = ctx.createLinearGradient(halfW, 0, W, H);
+      gradR.addColorStop(0, '#590514');
+      gradR.addColorStop(0.6, '#33030b');
+      gradR.addColorStop(1, '#1a0105');
+      ctx.fillStyle = gradR;
+      ctx.fillRect(halfW, 0, halfW, H);
+
+      if (userImg) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(0, 0, halfW, H * 0.65);
+        ctx.clip();
+        applyPhotoClarityFilter(ctx);
+        const p1Scale = (H * 0.60 / userImg.height) * photoZoom;
+        const dw1 = userImg.width * p1Scale;
+        const dh1 = userImg.height * p1Scale;
+        const dx1 = (halfW - dw1) / 2 + photoPosX;
+        const dy1 = (H * 0.60 - dh1) + photoPosY;
+        drawPhotoWithBottomFade(ctx, userImg, dx1, dy1, dw1, dh1, photoFadeHeight);
+        ctx.restore();
+      }
+
+      if (userImg2) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(halfW, 0, halfW, H * 0.65);
+        ctx.clip();
+        applyPhotoClarityFilter(ctx);
+        const p2Scale = (H * 0.60 / userImg2.height) * photo2Zoom;
+        const dw2 = userImg2.width * p2Scale;
+        const dh2 = userImg2.height * p2Scale;
+        const dx2 = halfW + (halfW - dw2) / 2 + photo2PosX;
+        const dy2 = (H * 0.60 - dh2) + photo2PosY;
+        if (photo2Flipped) {
+          ctx.translate(dx2 + dw2 / 2, dy2 + dh2 / 2);
+          ctx.scale(-1, 1);
+          drawPhotoWithBottomFade(ctx, userImg2, -dw2 / 2, -dh2 / 2, dw2, dh2, photoFadeHeight);
+        } else {
+          drawPhotoWithBottomFade(ctx, userImg2, dx2, dy2, dw2, dh2, photoFadeHeight);
+        }
+        ctx.restore();
+      }
+
+      ctx.save();
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 3;
+      ctx.shadowColor = 'rgba(251, 191, 36, 0.6)';
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.moveTo(halfW, 0);
+      ctx.lineTo(halfW, H * 0.62);
+      ctx.stroke();
+      ctx.restore();
+
+      const vsY = Math.floor(H * 0.32);
+      const vsR = 42;
+      ctx.save();
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.85)';
+      ctx.shadowBlur = 14;
+      ctx.shadowOffsetY = 4;
+      ctx.beginPath();
+      ctx.arc(halfW, vsY, vsR, 0, Math.PI * 2);
+      const vsGrad = ctx.createLinearGradient(halfW - vsR, vsY - vsR, halfW + vsR, vsY + vsR);
+      vsGrad.addColorStop(0, '#facc15');
+      vsGrad.addColorStop(0.5, '#d97706');
+      vsGrad.addColorStop(1, '#b45309');
+      ctx.fillStyle = vsGrad;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(halfW, vsY, vsR - 5, 0, Math.PI * 2);
+      ctx.fillStyle = '#0f172a';
+      ctx.fill();
+
+      ctx.font = '900 28px sans-serif';
+      ctx.fillStyle = '#fbbf24';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('VS', halfW, vsY);
+      ctx.restore();
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
+
+      drawSelectivePrivacyMask(W, H);
+
+      const topBadgeY = 75 + headlineOffsetY;
+      ctx.font = '800 20px "Anek Malayalam", sans-serif';
+      const debLabel = '⚖️ നേർക്കുനേർ (DEBATE)';
+      const dW = ctx.measureText(debLabel).width + 30;
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.roundRect((W - dW)/2, topBadgeY - 25, dW, 36, 8);
+      ctx.fill();
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.fillStyle = '#fbbf24';
+      ctx.fillText(debLabel, (W - dW)/2 + 15, topBadgeY);
+
+      const textPlateY = Math.floor(H * 0.58) + headlineOffsetY;
+      const bGrad = ctx.createLinearGradient(0, textPlateY - 40, 0, H);
+      bGrad.addColorStop(0, 'rgba(5, 10, 24, 0)');
+      bGrad.addColorStop(0.3, 'rgba(5, 10, 24, 0.94)');
+      bGrad.addColorStop(1, 'rgba(2, 6, 18, 0.98)');
+      ctx.fillStyle = bGrad;
+      ctx.fillRect(0, textPlateY - 40, W, H - (textPlateY - 40));
+
+      ctx.font = '700 20px "Anek Malayalam", sans-serif';
+      ctx.fillStyle = '#cbd5e1';
+      const meta = '📅 ' + (cardDateText || getSystemFormattedDate()) + (locationText ? ('  •  📍 ' + locationText) : '');
+      ctx.fillText(meta, 55 + headlineOffsetX, textPlateY - 8);
+
+      ctx.font = '800 ' + headlineFontSize + 'px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
+      const maxTextW = W - 110;
+      const hlY = textPlateY + headlineFontSize + 12;
+      const hlLineH = headlineFontSize * headlineLineHeightMult;
+      const hlLines = getHeadlineLines(ctx, headlineText || 'സംവാദ വിഷയം / നേർക്കുനേർ തലക്കെട്ട്', maxTextW, 3);
+
+      ctx.fillStyle = headlineTextColor || '#ffffff';
+      ctx.shadowColor = 'rgba(0,0,0,0.9)';
+      ctx.shadowBlur = 10;
+      let curHY = hlY;
+      for (let i = 0; i < hlLines.length; i++) {
+        const lw = ctx.measureText(hlLines[i]).width;
+        const lx = (headlineAlign === 'center') ? (55 + headlineOffsetX + (maxTextW - lw)/2) :
+                   (headlineAlign === 'right') ? (55 + headlineOffsetX + (maxTextW - lw)) : (55 + headlineOffsetX);
+        ctx.fillText(hlLines[i], lx, curHY);
+        curHY += hlLineH;
+      }
+      ctx.shadowColor = 'transparent';
+
+      window.headlineBounds = { y1: textPlateY - 30, y2: curHY };
+
+      if (summaryText) {
+        ctx.font = '500 ' + summaryFontSize + 'px "' + selectedSummaryFont + '", sans-serif';
+        const sumLineH = summaryFontSize * summaryLineHeightMult;
+        const sumY = curHY + 14 + summaryOffsetY;
+        const smLines = getHeadlineLines(ctx, summaryText, maxTextW, summaryMaxLines);
+        ctx.fillStyle = summaryTextColor || '#94a3b8';
+        let curSY = sumY;
+        for (let i = 0; i < smLines.length; i++) {
+          const lw = ctx.measureText(smLines[i]).width;
+          const lx = (summaryAlign === 'center') ? (55 + summaryOffsetX + (maxTextW - lw)/2) :
+                     (summaryAlign === 'right') ? (55 + summaryOffsetX + (maxTextW - lw)) : (55 + summaryOffsetX);
+          ctx.fillText(smLines[i], lx, curSY);
+          curSY += sumLineH;
+        }
+        window.summaryBounds = { y1: sumY - summaryFontSize, y2: curSY + 8 };
+      } else {
+        window.summaryBounds = null;
+      }
+
+      if (reporterText) {
+        ctx.font = '600 20px "' + selectedHeadlineFont + '", sans-serif';
+        ctx.fillStyle = '#f87171';
+        const repX = 55 + reporterOffsetX;
+        const repY = H - 75 + reporterOffsetY;
+        ctx.fillText('Report: ' + reporterText, repX, repY);
+        const repW = ctx.measureText('Report: ' + reporterText).width;
+        window.reporterBounds = { x1: repX, x2: repX + repW, y1: repY - 22, y2: repY + 8 };
+      } else {
+        window.reporterBounds = null;
+      }
+    }
+
+    // ==========================================
+    // MODEL 5: MODERN MINIMAL EDITORIAL (✨ പ്രീമിയം മിനിമൽ)
+    // ==========================================
+    function renderMinimalNewsCard(W, H) {
+      ctx.fillStyle = '#080a10';
+      ctx.fillRect(0, 0, W, H);
+
+      if (userImg) {
+        ctx.save();
+        applyPhotoClarityFilter(ctx);
+        const baseScale = Math.max(W / userImg.width, (H * 0.58) / userImg.height);
+        const finalScale = baseScale * photoZoom;
+        const dw = userImg.width * finalScale;
+        const dh = userImg.height * finalScale;
+        const dx = (W - dw) / 2 + photoPosX;
+        const dy = photoPosY;
+        drawPhotoWithBottomFade(ctx, userImg, dx, dy, dw, dh, photoFadeHeight);
+        ctx.restore();
+      }
+
+      const matte = ctx.createLinearGradient(0, H * 0.30, 0, H * 0.60);
+      matte.addColorStop(0, 'rgba(8, 10, 16, 0)');
+      matte.addColorStop(0.65, 'rgba(8, 10, 16, 0.85)');
+      matte.addColorStop(1, '#080a10');
+      ctx.fillStyle = matte;
+      ctx.fillRect(0, H * 0.30, W, H * 0.70);
+
+      drawSelectivePrivacyMask(W, H);
+
+      const tagY = (H * 0.53) + headlineOffsetY;
+      const catText = '✦ ' + (punchlineText || 'പ്രത്യേകം') + '  |  ' + (cardDateText || getSystemFormattedDate());
+      ctx.font = '700 19px "Anek Malayalam", sans-serif';
+      const catW = ctx.measureText(catText).width + 26;
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.07)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(60 + headlineOffsetX, tagY - 24, catW, 34, 6);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillText(catText, 73 + headlineOffsetX, tagY);
+
+      if (locationText) {
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '600 19px "Anek Malayalam", sans-serif';
+        ctx.fillText('📍 ' + locationText, 60 + headlineOffsetX + catW + 14, tagY);
+      }
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillRect(60 + headlineOffsetX, tagY + 22, 45, 3.5);
+
+      ctx.font = '800 ' + headlineFontSize + 'px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
+      const maxTextW = W - 120;
+      const textStartX = 60 + headlineOffsetX;
+      const hlY = tagY + 45 + headlineFontSize;
+      const hlLineH = headlineFontSize * headlineLineHeightMult;
+      const hlLines = getHeadlineLines(ctx, headlineText || 'മിനിമൽ എഡിറ്റോറിയൽ തലക്കെട്ട്', maxTextW, 4);
+
+      ctx.fillStyle = headlineTextColor || '#ffffff';
+      let curHY = hlY;
+      for (let i = 0; i < hlLines.length; i++) {
+        const lw = ctx.measureText(hlLines[i]).width;
+        const lx = (headlineAlign === 'center') ? (textStartX + (maxTextW - lw)/2) :
+                   (headlineAlign === 'right') ? (textStartX + (maxTextW - lw)) : textStartX;
+        ctx.fillText(hlLines[i], lx, curHY);
+        curHY += hlLineH;
+      }
+
+      window.headlineBounds = { y1: tagY - 20, y2: curHY };
+
+      if (summaryText) {
+        ctx.font = '400 ' + summaryFontSize + 'px "' + selectedSummaryFont + '", "Anek Malayalam", sans-serif';
+        const sumLineH = summaryFontSize * summaryLineHeightMult;
+        const sumY = curHY + 16 + summaryOffsetY;
+        const smLines = getHeadlineLines(ctx, summaryText, maxTextW, summaryMaxLines);
+        ctx.fillStyle = summaryTextColor || '#cbd5e1';
+        let curSY = sumY;
+        for (let i = 0; i < smLines.length; i++) {
+          const lw = ctx.measureText(smLines[i]).width;
+          const lx = (summaryAlign === 'center') ? (textStartX + (maxTextW - lw)/2) :
+                     (summaryAlign === 'right') ? (textStartX + (maxTextW - lw)) : textStartX;
+          ctx.fillText(smLines[i], lx, curSY);
+          curSY += sumLineH;
+        }
+        window.summaryBounds = { y1: sumY - summaryFontSize, y2: curSY + 8 };
+      } else {
+        window.summaryBounds = null;
+      }
+
+      if (reporterText) {
+        ctx.font = '600 19px "' + selectedHeadlineFont + '", sans-serif';
+        ctx.fillStyle = '#64748b';
+        const repX = 60 + reporterOffsetX;
+        const repY = H - 75 + reporterOffsetY;
+        ctx.fillText('എഡിറ്റോറിയൽ: ' + reporterText, repX, repY);
+        const repW = ctx.measureText('എഡിറ്റോറിയൽ: ' + reporterText).width;
+        window.reporterBounds = { x1: repX, x2: repX + repW, y1: repY - 20, y2: repY + 6 };
+      } else {
+        window.reporterBounds = null;
+      }
+    }
+
+    // ==========================================
+    // MODEL 6: MAGAZINE FULL PHOTO GLASSMORPHISM (📖 മാഗസിൻ)
+    // ==========================================
+    function renderMagazineNewsCard(W, H) {
+      if (userImg) {
+        ctx.save();
+        applyPhotoClarityFilter(ctx);
+        const baseScale = Math.max(W / userImg.width, H / userImg.height);
+        const finalScale = baseScale * photoZoom;
+        const dw = userImg.width * finalScale;
+        const dh = userImg.height * finalScale;
+        const dx = (W - dw) / 2 + photoPosX;
+        const dy = (H - dh) / 2 + photoPosY;
+        ctx.drawImage(userImg, dx, dy, dw, dh);
+        ctx.restore();
+      } else {
+        const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+        bgGrad.addColorStop(0, '#0f172a');
+        bgGrad.addColorStop(1, '#020617');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      const vig = ctx.createLinearGradient(0, H * 0.25, 0, H);
+      vig.addColorStop(0, 'rgba(3, 7, 18, 0)');
+      vig.addColorStop(0.55, 'rgba(3, 7, 18, 0.75)');
+      vig.addColorStop(1, 'rgba(3, 7, 18, 0.96)');
+      ctx.fillStyle = vig;
+      ctx.fillRect(0, 0, W, H);
+
+      drawSelectivePrivacyMask(W, H);
+
+      const cardX = 40 + headlineOffsetX;
+      const cardY = (H * 0.48) + headlineOffsetY;
+      const cardW = W - 80;
+      const cardH = (H * 0.45);
+      const cardR = 18;
+
+      ctx.save();
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
+      ctx.shadowBlur = 35;
+      ctx.shadowOffsetY = 14;
+
+      ctx.fillStyle = 'rgba(11, 19, 38, 0.78)';
+      ctx.beginPath();
+      ctx.roundRect(cardX, cardY, cardW, cardH, cardR);
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.20)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.save();
+      const specGrad = ctx.createLinearGradient(cardX, cardY, cardX + cardW, cardY);
+      specGrad.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
+      specGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.5)');
+      specGrad.addColorStop(1, 'rgba(255, 255, 255, 0.1)');
+      ctx.strokeStyle = specGrad;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(cardX + cardR, cardY + 1);
+      ctx.lineTo(cardX + cardW - cardR, cardY + 1);
+      ctx.stroke();
+      ctx.restore();
+
+      const badgeY = cardY + 38;
+      ctx.font = '700 20px "Anek Malayalam", sans-serif';
+      const featText = '📖 ' + (punchlineText || 'സ്പെഷ്യൽ ഫീച്ചർ');
+      const fW = ctx.measureText(featText).width + 24;
+
+      ctx.fillStyle = '#0284c7';
+      ctx.beginPath();
+      ctx.roundRect(cardX + 24, badgeY - 24, fW, 32, 6);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(featText, cardX + 36, badgeY - 1);
+
+      ctx.font = '600 19px "Anek Malayalam", sans-serif';
+      ctx.fillStyle = '#cbd5e1';
+      const meta = '📅 ' + (cardDateText || getSystemFormattedDate()) + (locationText ? ('  •  📍 ' + locationText) : '');
+      ctx.fillText(meta, cardX + 24 + fW + 14, badgeY - 1);
+
+      ctx.font = '800 ' + headlineFontSize + 'px "' + selectedHeadlineFont + '", "Anek Malayalam", sans-serif';
+      const innerW = cardW - 48;
+      const textStartX = cardX + 24;
+      const hlY = badgeY + 28 + headlineFontSize * 0.85;
+      const hlLineH = headlineFontSize * headlineLineHeightMult;
+      const hlLines = getHeadlineLines(ctx, headlineText || 'മാഗസിൻ ഫീച്ചർ തലക്കെട്ട്', innerW, 3);
+
+      ctx.fillStyle = headlineTextColor || '#ffffff';
+      ctx.shadowColor = 'rgba(0,0,0,0.85)';
+      ctx.shadowBlur = 8;
+      let curHY = hlY;
+      for (let i = 0; i < hlLines.length; i++) {
+        const lw = ctx.measureText(hlLines[i]).width;
+        const lx = (headlineAlign === 'center') ? (textStartX + (innerW - lw)/2) :
+                   (headlineAlign === 'right') ? (textStartX + (innerW - lw)) : textStartX;
+        ctx.fillText(hlLines[i], lx, curHY);
+        curHY += hlLineH;
+      }
+      ctx.shadowColor = 'transparent';
+
+      window.headlineBounds = { y1: cardY, y2: curHY };
+
+      if (summaryText) {
+        ctx.font = '500 ' + summaryFontSize + 'px "' + selectedSummaryFont + '", sans-serif';
+        const sumLineH = summaryFontSize * summaryLineHeightMult;
+        const sumY = curHY + 14 + summaryOffsetY;
+        const smLines = getHeadlineLines(ctx, summaryText, innerW, summaryMaxLines);
+        ctx.fillStyle = summaryTextColor || '#e2e8f0';
+        let curSY = sumY;
+        for (let i = 0; i < smLines.length; i++) {
+          const lw = ctx.measureText(smLines[i]).width;
+          const lx = (summaryAlign === 'center') ? (textStartX + (innerW - lw)/2) :
+                     (summaryAlign === 'right') ? (textStartX + (innerW - lw)) : textStartX;
+          ctx.fillText(smLines[i], lx, curSY);
+          curSY += sumLineH;
+        }
+        window.summaryBounds = { y1: sumY - summaryFontSize, y2: curSY + 8 };
+      } else {
+        window.summaryBounds = null;
+      }
+
+      if (reporterText) {
+        ctx.font = '600 20px "' + selectedHeadlineFont + '", sans-serif';
+        ctx.fillStyle = '#38bdf8';
+        const repX = cardX + 24 + reporterOffsetX;
+        const repY = cardY + cardH - 24 + reporterOffsetY;
+        ctx.fillText('By: ' + reporterText, repX, repY);
+        const repW = ctx.measureText('By: ' + reporterText).width;
+        window.reporterBounds = { x1: repX, x2: repX + repW, y1: repY - 20, y2: repY + 6 };
+      } else {
+        window.reporterBounds = null;
+      }
+    }
+
+    // ==========================================
+    // MODEL 7: FACT CHECK VERIFICATION CARD (🔍 ഫാക്റ്റ് ചെക്ക്)
+    // ==========================================
+    function renderFactCheckNewsCard(W, H) {
+      const bg = ctx.createLinearGradient(0, 0, W, H);
+      bg.addColorStop(0, '#0a0e1a');
+      bg.addColorStop(0.5, '#05070f');
+      bg.addColorStop(1, '#020308');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, W, H);
+
+      if (userImg) {
+        ctx.save();
+        applyPhotoClarityFilter(ctx);
+        const baseScale = Math.max(W / userImg.width, (H * 0.45) / userImg.height);
+        const dw = userImg.width * baseScale;
+        const dh = userImg.height * baseScale;
+        ctx.filter = 'blur(10px) brightness(0.35)';
+        ctx.drawImage(userImg, (W - dw)/2 + photoPosX, photoPosY, dw, dh);
+        ctx.restore();
+      }
+
+      drawSelectivePrivacyMask(W, H);
+
+      const deskY = 70 + headlineOffsetY;
+      ctx.font = '800 21px "Anek Malayalam", sans-serif';
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillText('🔍 KOZHIKODE VISION FACT CHECK DESK', 50 + headlineOffsetX, deskY);
+      ctx.font = '600 19px "Anek Malayalam", sans-serif';
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText('📅 ' + (cardDateText || getSystemFormattedDate()), 50 + headlineOffsetX, deskY + 28);
+
+      const stampType = factCheckStamp || 'true';
+      let stampText = '✅ സത്യം (TRUE)';
+      let stampCol = '#10b981';
+      let stampBg = 'rgba(6, 78, 59, 0.88)';
+      if (stampType === 'fake') {
+        stampText = '❌ വ്യാജം (FAKE)';
+        stampCol = '#ef4444';
+        stampBg = 'rgba(127, 29, 29, 0.88)';
+      } else if (stampType === 'misleading') {
+        stampText = '⚠️ തെറ്റിദ്ധരിപ്പിക്കുന്നത്';
+        stampCol = '#f59e0b';
+        stampBg = 'rgba(120, 53, 15, 0.88)';
+      }
+
+      ctx.save();
+      const stampCX = W - 180 + photoPosX;
+      const stampCY = 110 + photoPosY;
+      ctx.translate(stampCX, stampCY);
+      ctx.rotate(-7 * Math.PI / 180);
+
+      ctx.font = '900 24px "Anek Malayalam", sans-serif';
+      const stW = ctx.measureText(stampText).width + 36;
+      const stH = 50;
+
+      ctx.strokeStyle = stampCol;
+      ctx.lineWidth = 3.5;
+      ctx.fillStyle = stampBg;
+      ctx.beginPath();
+      ctx.roundRect(-stW/2, -stH/2, stW, stH, 8);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.setLineDash([5, 4]);
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(-stW/2 + 5, -stH/2 + 5, stW - 10, stH - 10);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(stampText, 0, 0);
+      ctx.restore();
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
+
+      const box1X = 50 + headlineOffsetX;
+      const box1Y = 170 + headlineOffsetY;
+      const boxW = W - 100;
+      const box1H = Math.max(160, Math.floor(H * 0.28));
+
+      ctx.save();
+      ctx.fillStyle = 'rgba(69, 10, 10, 0.45)';
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(box1X, box1Y, boxW, box1H, 12);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#ef4444';
+      ctx.beginPath();
+      ctx.roundRect(box1X + 16, box1Y - 14, 220, 28, 6);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 16px "Anek Malayalam", sans-serif';
+      ctx.fillText('📢 പ്രചരിക്കുന്ന സന്ദേശം (CLAIM)', box1X + 26, box1Y + 5);
+
+      ctx.font = '700 ' + Math.min(38, headlineFontSize) + 'px "' + selectedHeadlineFont + '", sans-serif';
+      const claimLines = getHeadlineLines(ctx, '“' + (headlineText || 'സമൂഹമാധ്യമങ്ങളിൽ പ്രചരിക്കുന്ന സന്ദേശം...') + '”', boxW - 36, 4);
+      ctx.fillStyle = '#fee2e2';
+      let cY = box1Y + 45;
+      for (let i = 0; i < claimLines.length; i++) {
+        ctx.fillText(claimLines[i], box1X + 18, cY);
+        cY += Math.min(38, headlineFontSize) * 1.25;
+      }
+      ctx.restore();
+
+      window.headlineBounds = { y1: box1Y, y2: box1Y + box1H };
+
+      const box2Y = box1Y + box1H + 28 + summaryOffsetY;
+      const box2H = Math.max(180, Math.floor(H * 0.32));
+
+      ctx.save();
+      ctx.fillStyle = 'rgba(6, 78, 59, 0.45)';
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(box1X, box2Y, boxW, box2H, 12);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.roundRect(box1X + 16, box2Y - 14, 240, 28, 6);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 16px "Anek Malayalam", sans-serif';
+      ctx.fillText('🔍 യഥാർത്ഥ വസ്തുത (VERIFIED FACT)', box1X + 26, box2Y + 5);
+
+      ctx.font = '600 ' + summaryFontSize + 'px "' + selectedSummaryFont + '", sans-serif';
+      const factLines = getHeadlineLines(ctx, summaryText || 'വസ്തുതാ പരിശോധനയിൽ കണ്ടെത്തിയ വിവരങ്ങൾ ഇവിടെ ചേർക്കുക...', boxW - 36, summaryMaxLines);
+      ctx.fillStyle = '#d1fae5';
+      let fY = box2Y + 45;
+      for (let i = 0; i < factLines.length; i++) {
+        ctx.fillText(factLines[i], box1X + 18, fY);
+        fY += summaryFontSize * summaryLineHeightMult;
+      }
+      ctx.restore();
+
+      window.summaryBounds = { y1: box2Y, y2: box2Y + box2H };
+
+      if (reporterText) {
+        ctx.font = '600 20px "' + selectedHeadlineFont + '", sans-serif';
+        ctx.fillStyle = '#94a3b8';
+        const repX = 50 + reporterOffsetX;
+        const repY = H - 75 + reporterOffsetY;
+        ctx.fillText('പരിശോധിച്ചത്: ' + reporterText, repX, repY);
+        const repW = ctx.measureText('പരിശോധിച്ചത്: ' + reporterText).width;
+        window.reporterBounds = { x1: repX, x2: repX + repW, y1: repY - 20, y2: repY + 6 };
+      } else {
+        window.reporterBounds = null;
+      }
+    }
+
     function renderCard() {
       const W = canvas.width;
       const H = canvas.height;
@@ -9595,6 +10744,20 @@ service cloud.firestore {
       // =====================================
       if (cardType === 'news' || cardType === 'duo') {
         const isDuo = (cardType === 'duo');
+
+        if (!isDuo && newsCardModel === 'quote') {
+          renderQuoteNewsCard(W, H);
+        } else if (!isDuo && newsCardModel === 'breaking') {
+          renderBreakingNewsCard(W, H);
+        } else if (!isDuo && newsCardModel === 'split') {
+          renderSplitNewsCard(W, H);
+        } else if (!isDuo && newsCardModel === 'minimal') {
+          renderMinimalNewsCard(W, H);
+        } else if (!isDuo && newsCardModel === 'magazine') {
+          renderMagazineNewsCard(W, H);
+        } else if (!isDuo && newsCardModel === 'factcheck') {
+          renderFactCheckNewsCard(W, H);
+        } else {
 
         // BACKGROUND & PHOTOS RENDERING
         if (isDuo) {
@@ -9961,6 +11124,7 @@ service cloud.firestore {
           drawPunchlineBadge(ctx, W - 260, H - 90, punchlineText);
         }
 
+        } // End of classic news model
       }
 
       // =====================================
@@ -12585,7 +13749,7 @@ service cloud.firestore {
           });
         }
       } catch (err) {}
-      var target = window.location.pathname + '?v=8.3.6.' + Date.now() + window.location.hash;
+      var target = window.location.pathname + '?v=8.3.7.' + Date.now() + window.location.hash;
       window.location.href = target;
     });
   }
